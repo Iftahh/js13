@@ -12,10 +12,6 @@ rq = requestAnimationFrame
 floor = Math.floor
 trns = function(hsc,hsk,vsk,vsc,x,y) { c.setTransform(hsc,hsk,vsk,vsc,x,y) }
 OA = 255 // opaque alpha
-stroke= c.stroke
-fillText= c.fillText
-fill= c.fill
-save= c.save
 
 PI = Math.PI
 TPI = 2*PI
@@ -36,7 +32,7 @@ for (i=0; i<128; i++) { // skipping 0 and
 }
 coins = {
     init: function() {
-        save()
+        c.save()
         c.strokeStyle = "#aa6"
         c.shadowBlur=30;
         c.lineWidth=2;
@@ -49,13 +45,13 @@ coins = {
         trns(RS[d],0,0,1, $.x, $.y)
         c.fillStyle = "#fe4"
         c.arc(0, 0, 10, 0, TPI);
-        fill();
+        c.fill(); // TODO: can save space by binding to global function:  F= function() {c.fill();}
         c.fillStyle = "#aa6"
         if (d>L/2)
-            fillText("1",-3,3.5)
+            c.fillText("1",-3,3.5)
         else
-            fillText("\u265B",-5,3.5)
-        stroke();
+            c.fillText("\u265B",-5,3.5)
+        c.stroke();
     }
 }
 
@@ -507,16 +503,31 @@ function turret(x,y,z,w,h,d,wd, th,tw, tgap, bw, draw) {
 
 }
 
-addCube(50,50,600,   20, 20, 20,  0x1, "#ff0", 15, brickDraw)
-addCube(100,50,600,  20, 20, 20,  0x2, "#ff0", 15,  brickDraw)
-addCube(150,50,600,  20, 20, 20,  0x4, "#ff0", 15, brickDraw)
-addCube(200,50,600,  20, 20, 20,  0x8, "#ff0", 15, brickDraw)
-addCube(250,50,600,  20, 20, 20, 0x10, "#ff0", 15, brickDraw)
-addCube(300,50,600,  20, 20, 20, 0x20, "#ff0", 15, brickDraw)
-addCube(350,50,600,  20, 20, 20, 0x40, "#ff0", 15, brickDraw)
-addCube(400,50,600,  20, 20, 20, 0x80, "#ff0", 15, brickDraw)
-addCube(450,50,600,  20, 20, 20,0x100, "#ff0", 15, brickDraw)
+faces = ["{◕ ◡ ◕}", "ಠ◡ಠ", "ಠ_๏", "ಥ_ಥ", "(•‿•)", "☼.☼", "ಠ_ಠ", "(͡๏̯͡๏)", "◔̯◔","ತಎತ", "◉_◉","סּ_סּ", "(｡◕‿◕｡)", "(｡◕‿◕｡)"]
 
+
+addCube(50,50,600,   20, 20, 20,  0x1, "#f0f", 15, brickDraw)
+addCube(100,50,600,  20, 20, 20,  0x2, "#f0f", 15,  brickDraw)
+addCube(150,50,600,  20, 20, 20,  0x4, "#f0f", 15, brickDraw)
+addCube(200,50,600,  20, 20, 20,  0x8, "#f0f", 15, brickDraw)
+addCube(250,50,600,  20, 20, 20, 0x10, "#f0f", 15, brickDraw)
+addCube(300,50,600,  20, 20, 20, 0x20, "#f0f", 15, brickDraw)
+addCube(350,50,600,  20, 20, 20, 0x40, "#f0f", 15, brickDraw)
+addCube(400,50,600,  20, 20, 20, 0x80, "#f0f", 15, brickDraw)
+addCube(450,50,600,  20, 20, 20,0x100, "#f0f", 15, brickDraw)
+
+
+function stairs(x1,y1,z1,w1,d1,x2,y2,w2,d2, h,n, fn) {
+
+    // TODO: see if can be DRY
+    var dx=(x2-x1)/ n, dy=(y2-y1)/ n, dw=(w2-w1)/ n, dd=(d2-d1)/n;
+    for (var i=0; i<n;i++)
+        addCube(x1+dx*i, y1+dy*i, z1+h*i-1, w1+dw*i,h+1,d1+dd*i, 0x1ee, BBC,30,fn);  // x,y,z, w,h,d, borders, borderColor, brickWidth, draw
+}
+
+stairs(100,100,300,250,250, 200,200,50,50, 20,10, brickDraw)
+
+//
 // back tower
 addCube(255,650,0,   90, 200, 90, 0x1fe, BBC, 27, brickDraw)
 turret(220,610,200,  160, 45, 160, 17,  17, 17.5, 17.5, 27, brickDraw)
@@ -526,6 +537,8 @@ turret(280,250,0,    50, 100, 400, 20,  20, 20, 20, 30, brickDraw)
 addCube(250,150,0,   100, 200, 100, 0x1fe, BBC, 33, brickDraw)
 turret(210,110,200,  180, 50, 180, 20,  20, 20, 20, 33, brickDraw)
 
+stairs(100,100,0,250,100, 300,100,50,100, 20,5, brickDraw)
+
 
 
 //hsc = 1, hsk =0,vsk=0,vsc=1,X=450,Y=550, W=100, H=20
@@ -533,6 +546,13 @@ turret(210,110,200,  180, 50, 180, 20,  20, 20, 20, 33, brickDraw)
 //function setup(a,b,c,d) {
 //    hsc = a; hsk=b; vsk=c; vsc=d;
 //}
+
+var grd = c.createRadialGradient(12, -3, 5, 12, -3, 40);
+// light blue
+grd.addColorStop(0, '#8ED6FF');
+// dark blue
+grd.addColorStop(1, '#004CB3');
+
 t = 0;
 function tick() {
     t++;
@@ -549,15 +569,32 @@ function tick() {
     texturecube(50, 500, 80, 120, 100, stones[0],stones[1],stones[2]);
     c.restore()
 
-//    coins.init();
-//    for (i in coins.d) {
-//        coins.draw(coins.d[i])
-//    }
-//    c.restore()
+    coins.init();
+    for (i in coins.d) {
+        coins.draw(coins.d[i])
+    }
+    c.restore()
 
 //    trns(hsc, hsk,vsk,vsc,X,Y)
 //    c.drawImage(dirt2, 0,0, W,H);
 
-//    rq(tick)
+
+
+    var x=40;
+    for (i=0; i<faces.length; i++) {
+        var s=faces[i];
+        var l= s.length;
+        trns(1,0,0,1, x,50+l);
+        c.beginPath();
+        c.fillStyle = grd;
+        c.arc(0, 0, 20+l, 0, TPI);
+        c.fill();
+        c.fillStyle = "#222"
+        c.fillText(faces[i],-5-l*2,-4+l)
+        c.stroke()
+        x+= 40+l*6;
+    }
+
+    //rq(tick)
 }
 rq(tick);
