@@ -1,12 +1,15 @@
 
 DC = document
-C = DC.getElementById('c')
-width = C.width;
+C = DC.getElementById("c")
+width = C.width; // todo: hard code 800x600 ?
 height = C.height;
-C = C.getContext('2d')
+FdC = C.getContext("2d")
+C=FdC
+BgC = DC.getElementById("b").getContext("2d")
 rnd = Math.random
 abs = Math.abs
 min = Math.min
+max = Math.max
 cos= Math.cos
 rq = requestAnimationFrame
 floor = Math.floor

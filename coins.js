@@ -11,6 +11,8 @@ coins = {
         C.shadowBlur=30;
         C.lineWidth=2;
         C.shadowColor="#ff2"
+        C.shadowOffsetX=0
+        C.shadowOffsetY=0
     },
     draw: function($) {
         C.beginPath();

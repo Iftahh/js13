@@ -281,7 +281,7 @@ fourWall=function(x,y,z,w,h,d,wd) {  // wd = wall thickness
     TBC2 = "#385"
     // bottom
     B=0,BW=40
-    X=x,Y=y,Z=z,W=W,H=1,D=d
+    X=x,Y=y,Z=z,W=w,H=1,D=d
     addSprite()
     TBC1 = "#e86" // top brick color 1
     TBC2 = "#eda"
@@ -347,16 +347,5 @@ function stairs(x1,y1,z1,w1,d1,x2,y2,w2,d2, h,n) {
 }
 
 
-//hsc = 1, hsk =0,vsk=0,vsc=1,X=450,Y=550, W=100, H=20
-//p= -.5
-//function setup(a,b,c,d) {
-//    hsc = a; hsk=b; vsk=c; vsc=d;
-//}
-
-grd = C.createRadialGradient(12, -3, 5, 12, -3, 40);
-// light blue
-grd.addColorStop(0, '#8ED6FF');
-// dark blue
-grd.addColorStop(1, '#004CB3');
 
 
