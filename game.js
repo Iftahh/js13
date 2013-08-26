@@ -97,25 +97,43 @@ function tree(x,y,z, w,h1,h2) {
     })
 }
 
-sprites = [];
+backSprites = []; // background sprites - drawn in the order inserted
+sprites = [];   // sprites that should be sorted (TODO)
+frontSprites = [];  // sprites drawn on top - in order inserted -  and become transparent if player behind them
+csprites = backSprites; // current sprites - where the addSprite will insert
 CL = []  // collision when moving left (X--)
 CR = []  // collision when moving right (X++)
 CD = []  // collision when moving down (Z--)
 CU = []  // collision when moving up (Z++)
 CF = [] // when moving front (Y--)
 CB = [] // when moving back (Y++)
-drawSprites = function() {
-    each(sprites, function() {
+drawBackSprites = function() {  // container
+    each(backSprites, function() {
         x= $.sx, y= $.sy,w= $.w,h= $.h,d= $.d, b= $.br, $.draw();
     })
 }
+
+drawFrontSprites = function() {  // container
+    each(frontSprites, function() {
+        x= $.sx, y= $.sy,w= $.w,h= $.h,d= $.d, b= $.br;
+        if (x-100 < PSX && x+100+w+d/2 > PSX  && y-100<PSY && y+100+h+d/2> PSY) {
+            C.globalAlpha = .3
+        }
+        else {
+            C.globalAlpha = 1
+        }
+        $.draw();
+    })
+    C.globalAlpha = 1
+}
+
 // using globals
 // X,Y,Z,   W,H,D
 // B - borders
 // BC - border color
 // BW - brick width
 // DR - draw
-function addSprite() {
+function addSprite() {  // container
     addNonBlockSprite()
     // add blocking data
     if (D>10 && H>10) {
@@ -190,7 +208,7 @@ var findFloor = function(x,y,z) {
 // DR - draw
 function addNonBlockSprite() {
     ts()
-    sprites.push({
+    csprites.push({
         x:X, // world x
         y:Y,
         z:Z,
@@ -365,8 +383,8 @@ fourWall=function(x,y,z,w,h,d,wd) {  // wd = wall thickness
 }
 
 // TODO: make tw,th,wd  automatic?  relative to y?
-turret=function(x,y,z, w,h,d, wd, th,tw,tgap, bw) {  // wd= wall thickness,  th=top-square height, tw=top-width, tgap= gap between two top squares
-    fourWall(x,y,z,w,h,d,wd);
+turret=function( x,y,z, w,h,d, wd, th,tw,tgap, bw) {  // wd= wall thickness,  th=top-square height, tw=top-width, tgap= gap between two top squares
+    fourWall( x,y,z,w,h,d,wd);
     // back
     Y=y+d-wd,Z=z+h-1,W=wd,H=th,D=tw,B=0x1fe,BC=BBC,BW=bw*.9
     for (X=x; X<=x+w-tw; X+=tw+tgap) {

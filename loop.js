@@ -4,7 +4,7 @@ C.fillStyle = "#CDF";
 trns(1,0,0,1,0,0);
 C.fillRect(0,0,width,height);
 
-drawSprites() // TODO: inline
+drawBackSprites() // TODO: inline
 
 //texturecube(50, 500, 80, 120, 100, stones[0],stones[1],stones[2]);
 C.restore()
@@ -44,6 +44,8 @@ function tick() {
 //    trns(1,0,0,1,0,0);
 
     player();
+
+    drawFrontSprites();
     rq(tick)
 }
 rq(tick);

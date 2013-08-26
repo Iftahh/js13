@@ -6,7 +6,8 @@ grd.addColorStop(0, '#8ED6FF');
 // dark blue
 grd.addColorStop(1, '#004CB3');
 
-
+PR=15
+P2R=2*PR
 initPlayer = function() {
     PX = 50
     PY = 100
@@ -25,15 +26,15 @@ player=function(){ // TODO: inline
     else VX=VX*.9
 
     PX+=VX;
-    H=30;
-    var wall = collide(PX-H,PY,PZ, H, VX>0 ? CL: CR );
+    H=P2R;
+    var wall = collide(PX-P2R,PY,PZ, P2R, VX>0 ? CL: CR );
     if (wall) {
         PX-= VX;
         VX= -VX*.8;
     }
 
     PY+=VY; // TODO: collide front and back of cubes?
-    wall = collide(PX-H,PY+H/2,PZ, H, VY>0 ? CB: CF );
+    wall = collide(PX-P2R,PY+PR,PZ, P2R, VY>0 ? CB: CF );
     if (wall) {
         PY-= VY;
         VY= -VY*.8;
@@ -46,7 +47,7 @@ player=function(){ // TODO: inline
         initPlayer()
     }
 
-    var floor = findFloor(PX,PY,PZ+H/2);
+    var floor = findFloor(PX,PY,PZ+PR);
     if (PZ <= floor.z) {// bounce
         PZ =floor.z;
         if (KEYS[32]) VZ=max(abs(VZ/2),6); else VZ=max(max(abs(VZ/2),abs(VX)/1.5),abs(VY)/1.5)// space
@@ -60,10 +61,10 @@ player=function(){ // TODO: inline
 
     // TODO: make horizontal ellipse when crashes down with speed to floor,  make vertical ellipse when flying up quick and/or at the top of jump
     // shadow
-    var sx=SX,sy=SY;
+    PSX=SX,PSY=SY;
     Z=floor.z;ts();
     C.save();
-    trns(1,0,0,.3, SX-4,SY+H/2+5);
+    trns(1,0,0,.3, SX-4,SY+PR+5);
     C.arc(0, 0, 20, 0, TPI);
     C.fillStyle = RGB(15,15,15,0.5);
     C.shadowColor = RGB(15,15,15,0.5);
@@ -72,7 +73,7 @@ player=function(){ // TODO: inline
     C.restore()
 
     // ball
-    trns(1,0,0,1, sx,sy);
+    trns(1,0,0,1, PSX,PSY);
     C.beginPath();
     C.fillStyle = grd;
     C.arc(0, 0, 20, 0, TPI);

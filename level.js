@@ -30,11 +30,16 @@ addSprite()
 turret(220,610,200,  160,45,160,  18, 12,18,  17.5, 27)
 
 // mid section wall
-turret(280,250,0,    50, 100, 400, 20,  14, 20, 20, 30)
+turret(280,450,0,    50, 100, 200, 20,  14, 20, 20, 30)
+
+csprites = frontSprites;
+//turret(280,250,0,    50, 100, 200, 20,  14, 20, 20, 30)
+
 // front tower
 BW=33,B=0x1fe,X=250,Y=150,Z=0,W=100,H=200,D=100
 addSprite()
-turret(210,110,200,  180, 50, 180, 20,  16, 20, 20, 33)
+range(5, function() {X+=W; addSprite(); })
+//turret(210,110,200,  180, 50, 180, 20,  16, 20, 20, 33)
 
 ///////// end of castle
 
