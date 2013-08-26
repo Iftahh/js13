@@ -98,11 +98,12 @@ function tree(x,y,z, w,h1,h2) {
 }
 
 sprites = [];
-CL = []  // collision when moving left
-CR = []  // collision when moving right
-CB = []  // collision when moving down
-CT = []  // collision when moving up
-
+CL = []  // collision when moving left (X--)
+CR = []  // collision when moving right (X++)
+CD = []  // collision when moving down (Z--)
+CU = []  // collision when moving up (Z++)
+CF = [] // when moving front (Y--)
+CB = [] // when moving back (Y++)
 drawSprites = function() {
     for (i=0; i<sprites.length; i++)
         $=sprites[i], x= $.sx,y= $.sy,w= $.w,h= $.h,d= $.d, b= $.br, $.draw();
@@ -116,6 +117,70 @@ drawSprites = function() {
 function addSprite() {
     addNonBlockSprite()
     // add blocking data
+    if (D>10 && H>10) {
+        CL.push({
+            y:Y,z:Z,
+            d:D, h:H, w:0,
+            x:X
+        })
+        CR.push({
+            y:Y,z:Z,
+            d:D, h:H,w:0,
+            x:X+W
+        })
+    }
+    if (D>10 && W>10) {
+        CD.push({
+            x:X,y:Y,
+            w:W, d:D, h:0,
+            z:Z+H
+        })
+        CU.push({
+            x:X,y:Y,
+            w:W, d:D, h:0,
+            z:Z
+        })
+    }
+    if (H>10 && W>10) {
+        CF.push({
+            x:X,z:Z,
+            w:W, h:H, d:0,
+            y:Y+D
+        })
+        CB.push({
+            x:X,z:Z,
+            w:W, h:H, d:0,
+            y:Y
+        })
+    }
+}
+
+var collide = function(x,y,z,r, C) {  // C is either CR/CL/CT/CF/etc..,   (x,y,z) is the bottom left front corner, r is the cube height/width/depth (same all)
+    for (i=0; i<C.length;i++) { // TODO: iterate function? it(C,function(p){
+        var plane = C[i];
+        // doing cube collision for simplicity - TODO: change to sphere collision
+        if ((x < plane.x+plane.w && x+r >= plane.x) &&
+            (y < plane.y+plane.d && y+r >= plane.y ) &&
+            (z < plane.z+plane.h && z+r >= plane.z )) {
+            return plane;
+        }
+    }
+}
+
+
+var findFloor = function(x,y,z) {
+    // find floor below the point
+    var maxPlane = {z:-10e9};
+    for (i=0; i<CD.length;i++) {  // TODO maybe will be shrunk better with jscrush when using "var C=CT" before
+        var plane = CD[i];
+        if (plane.z>maxPlane.z && // above the current maxPlane
+            z>plane.z && // but below the player
+            x>plane.x && x<plane.x+plane.w &&
+            y>plane.y && y<plane.y+plane.d ) {
+            maxPlane = plane;
+        }
+    }
+    return maxPlane;
 }
 
 // using globals
@@ -130,9 +195,9 @@ function addNonBlockSprite() {
         x:X, // world x
         y:Y,
         z:Z,
-        br:B,
-        bc:BC,
-        bw:BW,
+        br:B,  // border flags
+        bc:BC, // brick color
+        bw:BW, // brick width
 
         tr:TR, // texture right
         tt:TT, // texture top

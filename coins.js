@@ -28,7 +28,23 @@ coins = {
         else
             C.fillText("♛",-5,3.5)
         C.stroke();
-    }
+    },
+//    initShadows: function() {
+//
+//    }
+//    drawShadows: function($) {
+//        // shadow
+//        var sx=SX,sy=SY;
+//        Z=floor.z;ts();
+//        C.save();
+//        trns(1,0,0,.3, SX-4,SY+H/2+5);
+//        C.arc(0, 0, 20, 0, TPI);
+//        C.fillStyle = RGB(15,15,15,0.5);
+//        C.shadowColor = RGB(15,15,15,0.5);
+//        C.shadowBlur = 25;
+//        C.fill();
+//        C.restore()
+//    }
 }
 
 

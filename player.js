@@ -1,6 +1,6 @@
 
 
-grd = C.createRadialGradient(12, -3, 5, 12, -3, 40);
+grd = C.createRadialGradient(12, -7, 3, 12, -7, 30);
 // light blue
 grd.addColorStop(0, '#8ED6FF');
 // dark blue
@@ -17,22 +17,45 @@ player=function(){ // TODO: inline
     else if (KEYS[40]) {VY=max(-3,VY -.1)} // down
     else VY=VY*.9
 
-    if (KEYS[37]) {VX=max(-3,VX -.1)} // left
-    else if (KEYS[39]) {VX=min(3,VX +.1)}  // right
+    if (KEYS[37]) {VX=max(-2.5-KEYS[32],VX -.15)} // left
+    else if (KEYS[39]) {VX=min(2.5+KEYS[32],VX +.15)}  // right
     else VX=VX*.9
 
-    PX+=VX; PY+=VY;
-    VZ-= .2 // Gravity accelerates down
-    PZ+=VZ;
-    if (PZ <= 0) {// bounce
-        PZ =0;
-        if (KEYS[32]) VZ=max(abs(VZ/2),6); else VZ=max(max(abs(VZ/2),abs(VX)),abs(VY))// space
+    PX+=VX;
+    H=30;
+    var wall = collide(PX-H,PY,PZ, H, VX>0 ? CL: CR );
+    if (wall) {
+        PX-= VX;
+        VX= -VX*.8;
     }
 
-    X=PX;Y=PY;Z=PZ;H=30;ts();
+    PY+=VY; // TODO: collide front and back of cubes?
+    wall = collide(PX-H,PY,PZ, H, VY>0 ? CB: CF );
+    if (wall) {
+        PY-= VY;
+        VY= -VY*.8;
+    }
 
+    VZ-= .2 // Gravity accelerates down
+    PZ+=VZ;
+
+    var floor = findFloor(PX,PY,PZ+H/2);
+    if (PZ <= floor.z) {// bounce
+        PZ =floor.z;
+        if (KEYS[32]) VZ=max(abs(VZ/2),6); else VZ=max(max(abs(VZ/2),abs(VX)/1.5),abs(VY)/1.5)// space
+    }
+
+    X=PX;Y=PY;Z=PZ;ts();
+
+    // draw player
+
+    // TODO: make horizontal ellipse when crashes down with speed to floor,  make vertical ellipse when flying up quick and/or at the top of jump
+
+    // shadow
+    var sx=SX,sy=SY;
+    Z=floor.z;ts();
     C.save();
-    trns(1,0,0,.3, SX,SY+PZ+H/2+5);
+    trns(1,0,0,.3, SX-4,SY+H/2+5);
     C.arc(0, 0, 20, 0, TPI);
     C.fillStyle = RGB(15,15,15,0.5);
     C.shadowColor = RGB(15,15,15,0.5);
@@ -40,7 +63,8 @@ player=function(){ // TODO: inline
     C.fill();
     C.restore()
 
-    trns(1,0,0,1, SX,SY);
+    // ball
+    trns(1,0,0,1, sx,sy);
     C.beginPath();
     C.fillStyle = grd;
     C.arc(0, 0, 20, 0, TPI);

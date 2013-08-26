@@ -9,15 +9,17 @@ B=0x1ff
 W=40,H=10,D=W
 for (i=0;i<200;i++) {
     for (j=20;j>0;j--) {
-        X=i*D,Y=j*D,Z=irnd(0,H)//5+4*cos(TPI*i/10)+6*cos(TPI*(5+j)/8)
+        X=i*D,Y=j*D,Z=irnd(-H,0)//5+4*cos(TPI*i/10)+6*cos(TPI*(5+j)/8)
         addSprite()
     }
 }
 
 
 DR=brickDraw
+
 // pyramid
-//stairs(100,100,300,250,250, 200,200,50,50, 20,10)
+// x1,y1,z1,w1,d1,x2,y2,w2,d2, h,n
+//stairs(-300+100,200+100,0,250,250,  -300+220,200+220,10,10,4,30)
 
 
 // CASTLE
