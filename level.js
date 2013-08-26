@@ -7,12 +7,12 @@ DR=texturecube
 B=0x1ff
 
 W=40,H=10,D=W
-for (i=0;i<200;i++) {
+range(200, function() {
     for (j=20;j>0;j--) {
         X=i*D,Y=j*D,Z=irnd(-H,0)//5+4*cos(TPI*i/10)+6*cos(TPI*(5+j)/8)
         addSprite()
     }
-}
+})
 
 
 DR=brickDraw

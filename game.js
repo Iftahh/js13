@@ -88,13 +88,13 @@ function tree(x,y,z, w,h1,h2) {
     C.fillRect(SX,SY, w,h1)
     SX+=w/2
 
-    for(i=0;i<30+h2;i++) {
+    range(30+h2, function() {
         C.fillStyle="rgba("+irnd(25,30)+","+irnd(170,210)+","+irnd(55,70)+", 0.7)"
         C.beginPath()
         Y=rnd()
         C.arc(SX+2*w*Y*nrnd(-1,1),SY-h2+Y*(h2+5), 5+Y*rnd()*9,0,TPI)
         C.fill()
-    }
+    })
 }
 
 sprites = [];
@@ -105,8 +105,9 @@ CU = []  // collision when moving up (Z++)
 CF = [] // when moving front (Y--)
 CB = [] // when moving back (Y++)
 drawSprites = function() {
-    for (i=0; i<sprites.length; i++)
-        $=sprites[i], x= $.sx,y= $.sy,w= $.w,h= $.h,d= $.d, b= $.br, $.draw();
+    each(sprites, function() {
+        x= $.sx, y= $.sy,w= $.w,h= $.h,d= $.d, b= $.br, $.draw();
+    })
 }
 // using globals
 // X,Y,Z,   W,H,D
@@ -156,30 +157,28 @@ function addSprite() {
 }
 
 var collide = function(x,y,z,r, C) {  // C is either CR/CL/CT/CF/etc..,   (x,y,z) is the bottom left front corner, r is the cube height/width/depth (same all)
-    for (i=0; i<C.length;i++) { // TODO: iterate function? it(C,function(p){
-        var plane = C[i];
+    return each(C, function() {
         // doing cube collision for simplicity - TODO: change to sphere collision
-        if ((x < plane.x+plane.w && x+r >= plane.x) &&
-            (y < plane.y+plane.d && y+r >= plane.y ) &&
-            (z < plane.z+plane.h && z+r >= plane.z )) {
-            return plane;
+        if ((x < $.x+$.w && x+r >= $.x) &&
+            (y < $.y+$.d && y+r >= $.y ) &&
+            (z < $.z+$.h && z+r >= $.z )) {
+            return $;
         }
-    }
+    })
 }
 
 
 var findFloor = function(x,y,z) {
     // find floor below the point
     var maxPlane = {z:-10e9};
-    for (i=0; i<CD.length;i++) {  // TODO maybe will be shrunk better with jscrush when using "var C=CT" before
-        var plane = CD[i];
-        if (plane.z>maxPlane.z && // above the current maxPlane
-            z>plane.z && // but below the player
-            x>plane.x && x<plane.x+plane.w &&
-            y>plane.y && y<plane.y+plane.d ) {
-            maxPlane = plane;
+    each(CD, function() {
+        if ($.z>maxPlane.z && // above the current maxPlane
+            z>$.z && // but below the player
+            x>$.x && x<$.x+$.w &&
+            y>$.y && y<$.y+$.d ) {
+            maxPlane = $;
         }
-    }
+    })
     return maxPlane;
 }
 
@@ -405,10 +404,10 @@ faces = ["(ᵔᴥᵔ)", "{◕ ◡ ◕}", "ಠ◡ಠ", "ಠ_๏", "ಥ_ಥ", "(�
 
 function stairs(x1,y1,z1,w1,d1,x2,y2,w2,d2, h,n) {
     BC=BBC,BW=30,B=0x1ee,H=h+1
-    for (var i=0; i<n;i++) {
+    range(n, function(){
         X=x1+i*(x2-x1)/n, Y=y1+i*(y2-y1)/n, Z=z1+i*h-1,W=w1+i*(w2-w1)/n,D=d1+i*(d2-d1)/n
         addSprite()
-    }
+    })
 }
 
 

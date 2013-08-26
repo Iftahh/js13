@@ -7,10 +7,13 @@ grd.addColorStop(0, '#8ED6FF');
 grd.addColorStop(1, '#004CB3');
 
 
-PX = 50
-PY = 100
-PZ = 50
-VX=VY = VZ = 0
+initPlayer = function() {
+    PX = 50
+    PY = 100
+    PZ = 50
+    VX=VY = VZ = 0
+}
+initPlayer()
 
 player=function(){ // TODO: inline
     if (KEYS[38]) {VY=min(3,VY+.1)}  // up
@@ -30,7 +33,7 @@ player=function(){ // TODO: inline
     }
 
     PY+=VY; // TODO: collide front and back of cubes?
-    wall = collide(PX-H,PY,PZ, H, VY>0 ? CB: CF );
+    wall = collide(PX-H,PY+H/2,PZ, H, VY>0 ? CB: CF );
     if (wall) {
         PY-= VY;
         VY= -VY*.8;
@@ -38,6 +41,10 @@ player=function(){ // TODO: inline
 
     VZ-= .2 // Gravity accelerates down
     PZ+=VZ;
+
+    if (PZ < -2000) {
+        initPlayer()
+    }
 
     var floor = findFloor(PX,PY,PZ+H/2);
     if (PZ <= floor.z) {// bounce
@@ -47,10 +54,11 @@ player=function(){ // TODO: inline
 
     X=PX;Y=PY;Z=PZ;ts();
 
+//}
+//drawPlayer = function() {
     // draw player
 
     // TODO: make horizontal ellipse when crashes down with speed to floor,  make vertical ellipse when flying up quick and/or at the top of jump
-
     // shadow
     var sx=SX,sy=SY;
     Z=floor.z;ts();
