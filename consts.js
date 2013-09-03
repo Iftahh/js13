@@ -11,27 +11,39 @@ abs = Math.abs
 min = Math.min
 max = Math.max
 cos= Math.cos
+round = Math.round
 rq = requestAnimationFrame
 floor = Math.floor
 OA = 255 // opaque alpha
 PI = Math.PI
 TPI = 2*PI
 
-trns = function(a,b,c,d,e,f) { C.setTransform(a,b,c,d,e,f) }  // hscale,hskew,vskew,vscale,x,y
 nrnd = function(a,b) { return a+(b-a)*rnd()}
 irnd = function(a,b) { return nrnd(a,b)<<0 }
 
-each = function(a,b) { // collection, iterator     -  note uses global "i" and "$" !!!
-    for (i=0; i< a.length; i++) {
-        $ = a[i];
-        var res = b()
-        if (res) return res
-    }
-}
-range = function(a,b) { // max int, iterator      - note uses global "i"  !!!!
-    for (i=0; i<a; i++)
+range = function(a,b,c) { // max int, iterator, increment      - note uses global "i"  !!!!
+    c = c || 1;
+    for (i=0; i<a; i += c)
         b()
 }
+brrange = function(a,b,c) { // breaking range: max int, iterator, increment      - note uses global "i"  !!!!
+    c = c || 1;
+    for (i=0; i<a; i += c) {
+        var res = b()
+        if (res) return res;
+    }
+}
+each = function(a,b) { // collection, iterator     -  note uses global "i" and "$" !!!
+    range(a.length, function() {$=a[i]; b();})
+}
+breach = function(a,b) { // breaking each: collection, iterator     -  note uses global "i" and "$" !!!
+    return brrange(a.length, function() {$=a[i]; return b();})
+}
+
+
+OffsetX = OffsetY = 0;
+trns = function(a,b,c,d,e,f) { C.setTransform(a,b,c,d,e-OffsetX,f-OffsetY) }  // hscale,hskew,vskew,vscale,x,y
+
 
 // these aren't consts but are using to pass parameters (made global to save space on repeating values)
 // TODO: this optimization may be more harmful than worth the saving

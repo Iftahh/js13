@@ -18,7 +18,7 @@ function r2c(width, height, renderFunction) {
     var buffer = DC.createElement('canvas');
     buffer.width = width;
     buffer.height = height;
-    renderFunction(buffer.getContext('2d'));
+    renderFunction(buffer.getContext('2d'), buffer);
     return buffer;
 }
 
@@ -73,7 +73,8 @@ TF = r2c(D,D, function(c) { noise(c, D,D, 120,20, 110,20, 40,30)})
 TR = r2c(D,D, function(c) { noise(c, D,D, 140,25, 120,25, 50,40)})
 
 
-
+CameraX = 0;
+CameraY = 0;
 
 // toscreen
 function ts() { SX=X+Y/2, SY=height-Y/2-H-Z}
@@ -107,17 +108,12 @@ CD = []  // collision when moving down (Z--)
 CU = []  // collision when moving up (Z++)
 CF = [] // when moving front (Y--)
 CB = [] // when moving back (Y++)
-drawBackSprites = function() {  // container
-    each(backSprites, function() {
-        x= $.sx, y= $.sy,w= $.w,h= $.h,d= $.d, b= $.br, $.draw();
-    })
-}
 
 drawFrontSprites = function() {  // container
     each(frontSprites, function() {
         x= $.sx, y= $.sy,w= $.w,h= $.h,d= $.d, b= $.br;
         if (x-100 < PSX && x+100+w+d/2 > PSX  && y-100<PSY && y+100+h+d/2> PSY) {
-            C.globalAlpha = .3
+            C.globalAlpha = .3  // TODO: make alpha based on distance from player
         }
         else {
             C.globalAlpha = 1
@@ -175,7 +171,7 @@ function addSprite() {  // container
 }
 
 var collide = function(x,y,z,r, C) {  // C is either CR/CL/CT/CF/etc..,   (x,y,z) is the bottom left front corner, r is the cube height/width/depth (same all)
-    return each(C, function() {
+    return breach(C, function() {
         // doing cube collision for simplicity - TODO: change to sphere collision
         if ((x < $.x+$.w && x+r >= $.x) &&
             (y < $.y+$.d && y+r >= $.y ) &&
@@ -326,7 +322,7 @@ function brickDraw() {
 
 function texturecube() {
     // front
-    y-=h;
+    y-=h/2;
     trns(1, 0,0,1, x,y)    // hscale,hskew,vskew,vscale,x,y
     C.drawImage($.tf, 0,0, w,h);
     BORF()

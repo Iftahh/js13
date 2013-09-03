@@ -1,25 +1,52 @@
 C=BgC
-C.save()
-C.fillStyle = "#CDF";
-trns(1,0,0,1,0,0);
-C.fillRect(0,0,width,height);
 
-drawBackSprites() // TODO: inline
+initBackgroundDraw();
+
+getClose = function(a,b) {
+    return Math.round(abs(a-b) <= 1 ? b :  a *.9+b *.1)
+}
 
 //texturecube(50, 500, 80, 120, 100, stones[0],stones[1],stones[2]);
 C.restore()
 
 C=FdC
 t = 0;
+oldCameraX = oldCameraY = 0;
+fcurCameraX = fcurCameraY = 0 //  fcur-camera defines what is being viewed
+curCameraX = curCameraY = 0;  // cur-Camera is the integer round of fcur - needed in order to avoid fuzzy drawimage for background
+                              // CameraXY  defines where the camera should move to
+
 function tick() {
     t++;
-    trns(1,0,0,1,0,0);
-    C.clearRect(0, 0, width, height);
 
-    coins.init(); // TODO: inline
-    for (i in coins.d) {
-        coins.draw(coins.d[i])
+    if (CameraX != oldCameraX || CameraY != oldCameraY) {
+        if (abs(curCameraX-CameraX) <= 1) {
+            curCameraX = Math.round(CameraX);
+            oldCameraX = CameraX; // stop animating background
+        }
+        else {
+            fcurCameraX = fcurCameraX*.9 + CameraX*.1;
+            curCameraX = round(fcurCameraX);
+        }
+        if (abs(curCameraY-CameraY) <= 1) {
+            curCameraY = Math.round(CameraY);
+            oldCameraY = CameraY; // stop animating background
+        }
+        else {
+            fcurCameraY = fcurCameraY*.9 + CameraY*.1;
+            curCameraY = round(fcurCameraY);
+        }
+
+        drawBackground();  // TODO: inline
     }
+
+    trns(1,0,0,1,0,0);
+    C.clearRect(curCameraX, curCameraY, width, height);
+
+    initCoins(); // TODO: inline
+    each(coins, function(){
+        drawCoin()
+    })
     C.restore()
 
 //    trns(hsc, hsk,vsk,vsc,X,Y)
@@ -44,6 +71,8 @@ function tick() {
 //    trns(1,0,0,1,0,0);
 
     player();
+
+    //drawBackSprites();
 
     drawFrontSprites();
     rq(tick)
