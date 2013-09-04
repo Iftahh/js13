@@ -29,9 +29,9 @@ initPlayer = function() {
 initPlayer()
 
 player=function(){ // TODO: inline
-    if (KEYS[38]) {VY=min(3,VY+.1)}  // up
-    else if (KEYS[40]) {VY=max(-3,VY -.1)} // down
-    else VY=VY*.9
+//    if (KEYS[38]) {VY=min(3,VY+.1)}  // up
+//    else if (KEYS[40]) {VY=max(-3,VY -.1)} // down
+//    else VY=VY*.9
 
     left = KEYS[37];
     right = KEYS[39];
@@ -47,23 +47,32 @@ player=function(){ // TODO: inline
 
     PX+=VX;
     H=P2R;
-    var wall = collide(PX,PY,PZ, P2R, VX>0 ? CL: CR );
+    var wall = collide(PX,PY,PZ+PR, PR, VX>0 ? CL: CR ); // collide left and right
     if (wall) {
+        console.log("Collide left or right")
         PX-= VX;
         VX= -VX*.8;
     }
 
     if (abs(VX) < 0.05) VX = 0;
 
-    PY+=VY; // TODO: collide front and back of cubes?
-    wall = collide(PX-P2R,PY+PR,PZ, P2R, VY>0 ? CB: CF );
-    if (wall) {
-        PY-= VY;
-        VY= -VY*.8;
-    }
+//    PY+=VY; // TODO: collide front and back of cubes?
+//    wall = collide(PX-P2R,PY+PR,PZ, P2R, VY>0 ? CB: CF );
+//    if (wall) {
+//        PY-= VY;
+//        VY= -VY*.8;
+//    }
 
     VZ-= .2 // Gravity accelerates down
     PZ+=VZ;
+    if (VZ>0) {
+        wall = collide(PX,PY,PZ+PR, PR, CU ); // collide top
+        if (wall) {
+            console.log("Collide up")
+            PZ-= VZ;
+            VZ= -VZ*.8;
+        }
+    }
 
     if (PZ < -2000) {
         initPlayer()
@@ -75,12 +84,16 @@ player=function(){ // TODO: inline
         if (KEYS[32]) VZ=max(abs(VZ/2),6); else VZ=max(max(abs(VZ/2),abs(VX)/1.5),abs(VY)/1.5)// space - jump on touch floor
     }
 
+
+
     X=PX;Y=PY;Z=PZ;ts();
 
     PSX=SX,PSY=SY;
 
     if (left || right)
         CameraX = (PSX - width *(.5 - VX / 20));
+
+    CameraY = (PSY - height *(.8 - min(VY,5) / 20));
 
 //}
 //drawPlayer = function() {

@@ -11,9 +11,9 @@ C.restore()
 
 C=FdC
 t = 0;
-oldCameraX = oldCameraY = 0;
-fcurCameraX = fcurCameraY = 0 //  fcur-camera defines what is being viewed
-curCameraX = curCameraY = 0;  // cur-Camera is the integer round of fcur - needed in order to avoid fuzzy drawimage for background
+var oldCameraX = oldCameraY = 0;
+var fcurCameraX = fcurCameraY = 0 //  fcur-camera defines what is being viewed
+var curCameraX = curCameraY = 0;  // cur-Camera is the integer round of fcur - needed in order to avoid fuzzy drawimage for background
                               // CameraXY  defines where the camera should move to
 
 function tick() {

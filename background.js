@@ -1,9 +1,9 @@
 
-    cachedParams= {
+    var cachedParams= {
         leftX: Infinity,
         topY: Infinity
     }
-    buffers= [{
+    var buffers= [{
         cacheContext: null,
         cachedImage: null
     }, {
@@ -11,18 +11,18 @@
         cachedImage: null
     }]
 
-    drawingBuffer= 0
-    bufferWidth= null
-    bufferHeight= null
+    var drawingBuffer= 0
+    var bufferWidth= null
+    var bufferHeight= null
 
 
-    buffer_extra = 1.6;  // TODO: inline later ?
-    padding = (buffer_extra - 1) / 2;
+    var buffer_extra = 1.6;  // TODO: inline later ?
+    var padding = (buffer_extra - 1) / 2;
 
-    qcw = padding * width;   // padding of current client width - quarter client width
-    qch = padding * height;
+    var qcw = padding * width;   // padding of current client width - quarter client width
+    var qch = padding * height;
 
-    initBackgroundDraw = function() {  // TODO: inline  // if the width/height of the screen changes - call this function again
+    var initBackgroundDraw = function() {  // TODO: inline  // if the width/height of the screen changes - call this function again
         console.log("Creating cache")
         bufferWidth = width * buffer_extra;
         bufferHeight = height * buffer_extra;
@@ -36,7 +36,7 @@
         r2c(bw,bh,fu);
     }
 
-    _drawBackground = function(ctx, left, top, width, height) {  // TODO: change to use global for ctx and not param?
+    var _drawBackground = function(ctx, left, top, width, height) {  // TODO: change to use global for ctx and not param?
         if (height ==0 || width == 0) return;
         var oldC = C;
         C = ctx;
@@ -60,7 +60,7 @@
     }
 
     // draw at curCamera - inside backbuffer
-    drawBackground = function() {
+    var drawBackground = function() {
         screenOffsetX = 0;
         screenOffsetY = 0;
 
@@ -120,18 +120,18 @@
                     x, y, reuseWidth, reuseHeight);
 
 
-                var top  = curCameraY-qch;
+                var top  = curCameraY -qch;
                 var left = curCameraX;//bufferWidth;
                 if (dy < 0) {
                     // draw horizontal strip at top of buffer
-                    console.log("horiz strip at "+left+", "+top+ "   w,h="+bufferWidth+","+ady+ " (top of buffer)");
+                    console.log("1 horiz strip at "+left+", "+top+ "   w,h="+bufferWidth+","+ady+ " (top of buffer)");
                     _drawBackground(cctx2, left, top, bufferWidth, ady);
                     // the vertical strip should DY down
                     screenOffsetY = ady;
                     top += ady;
                 }
                 else {
-                    console.log("horiz strip at "+left+", "+(top+bufferHeight-ady)+ "   w,h="+bufferWidth+","+ady + " (bottom of buffer)");
+                    console.log("2 horiz strip at "+left+", "+(top+bufferHeight-ady)+ "   w,h="+bufferWidth+","+ady + " (bottom of buffer)");
                     // draw horizontal strip at bottom of buffer
                     screenOffsetY = bufferHeight-ady;
                     _drawBackground(cctx2, left, top+bufferHeight-ady, bufferWidth, ady);

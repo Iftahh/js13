@@ -1,11 +1,11 @@
-RS = [] // rotation scale
+var RS = [] // rotation scale
 for (i=0; i<128; i++) { // skipping 0 and
     s = abs(Math.sin(TPI*i/128))
     if (s> 0.1)
         RS.push(s)
 }
 
-initCoins = function() {  // TODO: inline
+var initCoins = function() {  // TODO: inline
     C.save()
     C.strokeStyle = "#aa6"
     C.shadowBlur=30;
@@ -15,7 +15,7 @@ initCoins = function() {  // TODO: inline
     C.shadowOffsetY=0
 }
 
-drawCoin = function() {
+var drawCoin = function() {
     C.beginPath();
     L = RS.length
     var d= ($.t+t)%L;
@@ -49,9 +49,9 @@ drawCoin = function() {
 //}
 
 
-coins = []; // data
+var coins = []; // data
 
-addCoin = function(x,y) {
+var addCoin = function(x,y) {
     X=x;Z=y;Y=IPZ;ts();
     coins.push({x:SX, y:SY, t:irnd(0,100)})
 }

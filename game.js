@@ -14,7 +14,7 @@
 
 
 // render to canvas
-function r2c(width, height, renderFunction) {
+var r2c=function (width, height, renderFunction) {
     var buffer = DC.createElement('canvas');
     buffer.width = width;
     buffer.height = height;
@@ -23,14 +23,14 @@ function r2c(width, height, renderFunction) {
 }
 
 
-function setPixel(d,x, r, g, b, a) {
+var setPixel=function (d,x, r, g, b, a) {
     d[x] = r;
     d[x+1] = g;
     d[x+2] = b;
     d[x+3] = a;
 }
 
-function noise(c,w,h,r1,dr,g1,dg,b1,db) { //random noise texture
+var noise=function(c,w,h,r1,dr,g1,dg,b1,db) { //random noise texture
     var imgData=c.createImageData(w,h);
     var d = imgData.data;
     for (var i=0;i<d.length;i+=4)
@@ -39,7 +39,7 @@ function noise(c,w,h,r1,dr,g1,dg,b1,db) { //random noise texture
 }
 
 // brick texture at of width and height,  bw = brick width, nr= num rows
-function brick(w,h,c1,c2) {
+var brick=function (w,h,c1,c2) {
     C.fillStyle = c1
     C.fillRect(0,0,w,h)
     C.strokeStyle = c2;
@@ -67,19 +67,19 @@ function brick(w,h,c1,c2) {
 
 
 
-D=20
-TT = r2c(D,D, function(c) { noise(c, D,D, 80,20, 180,40, 80,40)})
-TF = r2c(D,D, function(c) { noise(c, D,D, 120,20, 110,20, 40,30)})
-TR = r2c(D,D, function(c) { noise(c, D,D, 140,25, 120,25, 50,40)})
+var D=20
+var TT = r2c(D,D, function(c) { noise(c, D,D, 80,20, 180,40, 80,40)})
+var TF = r2c(D,D, function(c) { noise(c, D,D, 120,20, 110,20, 40,30)})
+var TR = r2c(D,D, function(c) { noise(c, D,D, 140,25, 120,25, 50,40)})
 
 
-CameraX = 0;
-CameraY = 0;
+var CameraX = 0;
+var CameraY = 0;
 
 // toscreen
-function ts() { SX=X+Y/2, SY=height-Y/2-H-Z}
+var ts = function () { SX=X+Y/2, SY=height-Y/2-H-Z}
 
-function tree(x,y,z, w,h1,h2) {
+var tree = function(x,y,z, w,h1,h2) {
     X=x,Y=y,Z=z,H=h1
     ts()
     grd = C.createLinearGradient(SX,SY,SX+w,SY)
@@ -98,18 +98,18 @@ function tree(x,y,z, w,h1,h2) {
     })
 }
 
-backSprites = []; // background sprites - drawn in the order inserted
-sprites = [];   // sprites that should be sorted (TODO)
-frontSprites = [];  // sprites drawn on top - in order inserted -  and become transparent if player behind them
-csprites = backSprites; // current sprites - where the addSprite will insert
-CL = []  // collision when moving left (X--)
-CR = []  // collision when moving right (X++)
-CD = []  // collision when moving down (Z--)
-CU = []  // collision when moving up (Z++)
-CF = [] // when moving front (Y--)
-CB = [] // when moving back (Y++)
+var backSprites = []; // background sprites - drawn in the order inserted
+var sprites = [];   // sprites that should be sorted (TODO)
+var frontSprites = [];  // sprites drawn on top - in order inserted -  and become transparent if player behind them
+var csprites = backSprites; // current sprites - where the addSprite will insert
+var CL = []  // collision when moving left (X--)
+var CR = []  // collision when moving right (X++)
+var CD = []  // collision when moving down (Z--)
+var CU = []  // collision when moving up (Z++)
+var CF = [] // when moving front (Y--)
+var CB = [] // when moving back (Y++)
 
-drawFrontSprites = function() {  // container
+var drawFrontSprites = function() {  // container
     each(frontSprites, function() {
         x= $.sx, y= $.sy,w= $.w,h= $.h,d= $.d, b= $.br;
         if (x-100 < PSX && x+100+w+d/2 > PSX  && y-100<PSY && y+100+h+d/2> PSY) {
@@ -129,7 +129,7 @@ drawFrontSprites = function() {  // container
 // BC - border color
 // BW - brick width
 // DR - draw
-function addSprite() {  // container
+var addSprite = function() {  // container
     addNonBlockSprite()
     // add blocking data
     if (D>10 && H>10) {
@@ -202,7 +202,7 @@ var findFloor = function(x,y,z) {
 // BC - border color
 // BW - brick width
 // DR - draw
-function addNonBlockSprite() {
+var addNonBlockSprite=function() {
     ts()
     csprites.push({
         x:X, // world x
@@ -223,14 +223,14 @@ function addNonBlockSprite() {
     })
 }
 
-TBC1 = "#e86" // top brick color 1
-TBC2 = "#eda"
-FBC1="#d74" // front brick color
-FBC2="#dc8"
-RBC1="#b52"
-RBC2="#ba6"
+var TBC1 = "#e86" // top brick color 1
+var TBC2 = "#eda"
+var FBC1="#d74" // front brick color
+var FBC2="#dc8"
+var RBC1="#b52"
+var RBC2="#ba6"
 
-function BORT() {
+var BORT=function() {
     if (b & 384) {
         C.strokeStyle = $.bc;
         C.beginPath();
@@ -246,7 +246,7 @@ function BORT() {
     }
 }
 
-function BORF() {
+var BORF=function() {
     if (b & 15) {
         C.strokeStyle = $.bc;
         C.beginPath();
@@ -270,7 +270,7 @@ function BORF() {
     }
 }
 
-function BORR() {
+var BORR=function() {
     if (b & 112) { // TODO: can reomve this if
         C.strokeStyle = $.bc;
         C.beginPath();
@@ -294,7 +294,7 @@ function BORR() {
     }
 }
 
-function brickDraw() {
+var brickDraw=function() {
     //  Borders
     //      ___ 7 ____
     //    8/        6/|
@@ -320,7 +320,7 @@ function brickDraw() {
     BORR()
 }
 
-function texturecube() {
+var texturecube=function () {
     // front
     y-=h/2;
     trns(1, 0,0,1, x,y)    // hscale,hskew,vskew,vscale,x,y
@@ -351,10 +351,10 @@ function texturecube() {
 //    }
 }
 
-RGB=function(a,b,c,d) { return "rgba("+a+","+b+","+c+","+(d||1)+")"}
-BBC = RGB(15,15,15,.3) // brick border color
+var RGB=function(a,b,c,d) { return "rgba("+a+","+b+","+c+","+(d||1)+")"}
+var BBC = RGB(15,15,15,.3) // brick border color
 
-fourWall=function(x,y,z,w,h,d,wd) {  // wd = wall thickness
+var fourWall=function(x,y,z,w,h,d,wd) {  // wd = wall thickness
     TBC1 = "#226" // top brick color 1
     TBC2 = "#385"
     // bottom
@@ -379,7 +379,7 @@ fourWall=function(x,y,z,w,h,d,wd) {  // wd = wall thickness
 }
 
 // TODO: make tw,th,wd  automatic?  relative to y?
-turret=function( x,y,z, w,h,d, wd, th,tw,tgap, bw) {  // wd= wall thickness,  th=top-square height, tw=top-width, tgap= gap between two top squares
+var turret=function( x,y,z, w,h,d, wd, th,tw,tgap, bw) {  // wd= wall thickness,  th=top-square height, tw=top-width, tgap= gap between two top squares
     fourWall( x,y,z,w,h,d,wd);
     // back
     Y=y+d-wd,Z=z+h-1,W=wd,H=th,D=tw,B=0x1fe,BC=BBC,BW=bw*.9
@@ -402,7 +402,7 @@ turret=function( x,y,z, w,h,d, wd, th,tw,tgap, bw) {  // wd= wall thickness,  th
 
 }
 
-faces = ["(ᵔᴥᵔ)", "{◕ ◡ ◕}", "ಠ◡ಠ", "ಠ_๏", "ಥ_ಥ", "(•‿•)", "☼.☼", "ಠ_ಠ", "(͡๏̯͡๏)", "◔̯◔","ತಎತ", "◉_◉","סּ_סּ", "(｡◕‿◕｡)", "｡◕‿◕｡"]
+var faces = ["(ᵔᴥᵔ)", "{◕ ◡ ◕}", "ಠ◡ಠ", "ಠ_๏", "ಥ_ಥ", "(•‿•)", "☼.☼", "ಠ_ಠ", "(͡๏̯͡๏)", "◔̯◔","ತಎತ", "◉_◉","סּ_סּ", "(｡◕‿◕｡)", "｡◕‿◕｡"]
 
 //
 //addSprite(50,50,600,   20, 20, 20,  0x1, "#f0f", 15, brickDraw)
@@ -416,7 +416,7 @@ faces = ["(ᵔᴥᵔ)", "{◕ ◡ ◕}", "ಠ◡ಠ", "ಠ_๏", "ಥ_ಥ", "(�
 //addSprite(450,50,600,  20, 20, 20,0x100, "#f0f", 15, brickDraw)
 
 
-function stairs(x1,y1,z1,w1,d1,x2,y2,w2,d2, h,n) {
+var stairs=function (x1,y1,z1,w1,d1,x2,y2,w2,d2, h,n) {
     BC=BBC,BW=30,B=0x1ee,H=h+1
     range(n, function(){
         X=x1+i*(x2-x1)/n, Y=y1+i*(y2-y1)/n, Z=z1+i*h-1,W=w1+i*(w2-w1)/n,D=d1+i*(d2-d1)/n
