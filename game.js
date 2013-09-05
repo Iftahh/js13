@@ -19,6 +19,7 @@ var r2c=function (width, height, renderFunction) {
     buffer.width = width;
     buffer.height = height;
     renderFunction(buffer.getContext('2d'), buffer);
+    buffer.draw = function(x,y,w,h) { C.drawImage(this, x,y,w,h) }
     return buffer;
 }
 
@@ -68,10 +69,20 @@ var brick=function (w,h,c1,c2) {
 
 
 var D=20
-var TT = r2c(D,D, function(c) { noise(c, D,D, 80,20, 180,40, 80,40)})
-var TF = r2c(D,D, function(c) { noise(c, D,D, 120,20, 110,20, 40,30)})
-var TR = r2c(D,D, function(c) { noise(c, D,D, 140,25, 120,25, 50,40)})
-
+var TT= r2c(D,D, function(c) { noise(c, D,D, 80,20, 180,40, 80,40)})
+var TF= r2c(D,D, function(c) { noise(c, D,D, 120,20, 110,20, 40,30)})
+var TR= r2c(D,D, function(c) { noise(c, D,D, 140,25, 120,25, 50,40)})
+var toPattern = function(texture) {
+    var r = C.createPattern(r2c(3*D,3*D, function(c) {c.drawImage(texture,0,0,3*D,3*D)}), 'repeat');
+    r.draw = function(x,y,w,h) {
+        C.fillStyle= this;
+        C.fillRect(x,y,w,h)
+    }
+    return r;
+}
+var PT = toPattern(TT)
+var PF = toPattern(TF)
+var PR = toPattern(TR)
 
 var CameraX = 0;
 var CameraY = 0;
@@ -90,7 +101,7 @@ var tree = function(x,y,z, w,h1,h2) {
     SX+=w/2
 
     range(30+h2, function() {
-        C.fillStyle="rgba("+irnd(25,30)+","+irnd(170,210)+","+irnd(55,70)+", 0.7)"
+        C.fillStyle=RGB(irnd(25,30),irnd(170,210),irnd(55,70),0.7)
         C.beginPath()
         Y=rnd()
         C.arc(SX+2*w*Y*nrnd(-1,1),SY-h2+Y*(h2+5), 5+Y*rnd()*9,0,TPI)
@@ -173,9 +184,9 @@ var addSprite = function() {  // container
 var collide = function(x,y,z,r, C) {  // C is either CR/CL/CT/CF/etc..,   (x,y,z) is the bottom left front corner, r is the cube height/width/depth (same all)
     return breach(C, function() {
         // doing cube collision for simplicity - TODO: change to sphere collision
-        if ((x < $.x+$.w && x+r >= $.x) &&
-            (y < $.y+$.d && y+r >= $.y ) &&
-            (z < $.z+$.h && z+r >= $.z )) {
+        if ((x+r >= $.x && x < $.x+$.w ) &&
+            (y+r >= $.y && y < $.y+$.d) &&
+            (z+r >= $.z && z < $.z+$.h )) {
             return $;
         }
     })
@@ -186,10 +197,10 @@ var findFloor = function(x,y,z) {
     // find floor below the point
     var maxPlane = {z:-10e9};
     each(CD, function() {
-        if ($.z>maxPlane.z && // above the current maxPlane
-            z>$.z && // but below the player
-            x>$.x && x<$.x+$.w &&
-            y>$.y && y<$.y+$.d ) {
+        if ($.z >maxPlane.z && // above the current maxPlane
+            z >=$.z && // but below the player
+            x >= $.x && x<$.x+$.w &&
+            y >= $.y && y<$.y+$.d ) {
             maxPlane = $;
         }
     })
@@ -212,9 +223,9 @@ var addNonBlockSprite=function() {
         bc:BC, // brick color
         bw:BW, // brick width
 
-        tr:TR, // texture right
-        tt:TT, // texture top
-        tf:TF, // texture front
+        tr:PR, // texture right
+        tt:PT, // texture top
+        tf:PF, // texture front
 
         sx:SX,     // screen x
         sy:SY,
@@ -322,21 +333,23 @@ var brickDraw=function() {
 
 var texturecube=function () {
     // front
-    y-=h/2;
+    //y-=h/2;
     trns(1, 0,0,1, x,y)    // hscale,hskew,vskew,vscale,x,y
-    C.drawImage($.tf, 0,0, w,h);
+    $.tf.draw(0,0,w,h)
+    //C.drawImage($.tf, 0,0, w,h);
     BORF()
 
 //    if (p > 0) {
     // right
     p = .5
     trns(p, -p,0,1,x+w,y)
-    C.drawImage($.tr, 0,0, d,h);
+    $.tr.draw(0,0,d,h)
+    //C.drawImage($.tr, 0,0, d,h);
     BORR()
 
     // top
     trns(1, 0,-p, p,x+.4 +p*d,y-p*d)
-    C.drawImage($.tt, 0,0,w,d);
+    $.tt.draw(0,0,w,d)
     BORT()
 
 //    }
@@ -402,6 +415,8 @@ var turret=function( x,y,z, w,h,d, wd, th,tw,tgap, bw) {  // wd= wall thickness,
 
 }
 
+
+//  skull: ☠  ⚠   radioactive: ☢  biohazard: ☣  heart: ♥   flower: ⚘❀❃❁☘♧♣  arrow:➸➱➫   sun: ☀   cloud: ☁   coffin: ⚰⚱
 var faces = ["(ᵔᴥᵔ)", "{◕ ◡ ◕}", "ಠ◡ಠ", "ಠ_๏", "ಥ_ಥ", "(•‿•)", "☼.☼", "ಠ_ಠ", "(͡๏̯͡๏)", "◔̯◔","ತಎತ", "◉_◉","סּ_סּ", "(｡◕‿◕｡)", "｡◕‿◕｡"]
 
 //

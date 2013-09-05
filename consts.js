@@ -52,3 +52,6 @@ var trns = function(a,b,c,d,e,f) { C.setTransform(a,b,c,d,e-OffsetX,f-OffsetY) }
 // BC - border color
 // BW - brick width
 // DR - draw
+
+//var log = function(){}
+var log = function(x) { console.log(x) }

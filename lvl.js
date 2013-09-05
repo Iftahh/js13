@@ -1,13 +1,16 @@
-PY=IPY=50;Y=0; BW=27;BC=BBC;DR=texturecube;B=0x1ff;D=100;
+PY=IPY=50;Y=0; BW=27;BC=BBC;
+//DR=texturecube;
+DR=brickDraw;
+B=0x1ff;D=100;
 
-X=7;Z=-38;W=997;H=52;addSprite(); /* Platform ID: rect3010 */
-X=205;Z=83;W=128;H=18;addSprite(); /* Platform ID: rect3012 */
-X=390;Z=130;W=115;H=18;addSprite(); /* Platform ID: rect3014 */
-X=274;Z=211;W=104;H=21;addSprite(); /* Platform ID: rect3019 */
-X=96;Z=266;W=158;H=36;addSprite(); /* Platform ID: rect3021 */
+X=80;Z=-514;W=614;H=34;addSprite(); /* Platform ID: svg_1 */
+X=187;Z=-248;W=174;H=16;addSprite(); /* Platform ID: svg_5 */
+X=217;Z=-398;W=141;H=12;addSprite(); /* Platform ID: svg_2 */
+X=392;Z=-329;W=141;H=28;addSprite(); /* Platform ID: svg_4 */
+X=449;Z=-480;W=141;H=71;addSprite(); /* Platform ID: svg_3 */
 H=10;
-IPX=PX=87;IPZ=PZ=90; /* ID: path3069 */
-addCoin(111,317); /*  coin ID: path3242 */
-addCoin(149,320); /*  coin ID: path3244 */
-addCoin(179,327); /*  coin ID: path3246 */
-addCoin(213,318); /*  coin ID: path3248 */
+IPX=PX=126;IPZ=PZ=-432; /* ID: svg_6 */
+addCoin(208,-193); /*  coin ID: svg_7 */
+addCoin(260,-210); /*  coin ID: svg_8 */
+addCoin(317,-188); /*  coin ID: svg_9 */
+addCoin(461,-270); /*  coin ID: svg_11 */

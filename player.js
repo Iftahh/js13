@@ -1,3 +1,7 @@
+KEYS={32:0}
+DC.addEventListener('keydown', function(e){KEYS[e.keyCode]=1})
+DC.addEventListener('keyup', function(e){KEYS[e.keyCode]=0})
+
 
 // at this stage the level should be set - check the max and min coordinates and use it to set world boundaries
 //wx1=wy1 = Infinity;
@@ -8,7 +12,7 @@
 //    wx2 = max($.sx+ $.w, wx2);
 //    wy2 = max($.sy+ $.h, wy2);
 //})
-//console.log("Level packed in ("+wx1+","+wy1+")  to ("+wx2+","+wy2+")")
+//log("Level packed in ("+wx1+","+wy1+")  to ("+wx2+","+wy2+")")
 
 grd = C.createRadialGradient(12, -7, 3, 12, -7, 30);
 // light blue
@@ -17,14 +21,16 @@ grd.addColorStop(0, '#8ED6FF');
 grd.addColorStop(1, '#004CB3');
 
 //setCameraX = function(a) { CameraX = min(wx2, max(wx1,a));}
-PR=15
+PR=12
 P2R=2*PR
 initPlayer = function() {
     PX = IPX;
     PY = IPY;
     PZ = IPZ;
     VX=VY = VZ = 0
-    CameraX=100 - width *.5
+
+    X=PX;Y=PY;Z=PZ;ts();
+    PSX=SX; PSY=SY;
 }
 initPlayer()
 
@@ -47,9 +53,9 @@ player=function(){ // TODO: inline
 
     PX+=VX;
     H=P2R;
-    var wall = collide(PX,PY,PZ+PR, PR, VX>0 ? CL: CR ); // collide left and right
+    var wall = collide(PX,PY,PZ, P2R, VX>0 ? CL: CR ); // collide left and right
     if (wall) {
-        console.log("Collide left or right")
+        log("Collide left or right")
         PX-= VX;
         VX= -VX*.8;
     }
@@ -66,9 +72,9 @@ player=function(){ // TODO: inline
     VZ-= .2 // Gravity accelerates down
     PZ+=VZ;
     if (VZ>0) {
-        wall = collide(PX,PY,PZ+PR, PR, CU ); // collide top
+        wall = collide(PX,PY,PZ+P2R, PR, CU ); // collide top
         if (wall) {
-            console.log("Collide up")
+            log("Collide up")
             PZ-= VZ;
             VZ= -VZ*.8;
         }
@@ -78,7 +84,7 @@ player=function(){ // TODO: inline
         initPlayer()
     }
 
-    var floor = findFloor(PX,PY,PZ+PR);
+    var floor = findFloor(PX,PY,PZ+PR); // inline?
     if (PZ <= floor.z) {// bounce
         PZ =floor.z;
         if (KEYS[32]) VZ=max(abs(VZ/2),6); else VZ=max(max(abs(VZ/2),abs(VX)/1.5),abs(VY)/1.5)// space - jump on touch floor
@@ -100,12 +106,12 @@ player=function(){ // TODO: inline
     // draw player
 
     // TODO: make horizontal ellipse when crashes down with speed to floor,  make vertical ellipse when flying up quick and/or at the top of jump
-    // shadow
 
+    // shadow
     Z=floor.z;ts();
     C.save();
-    trns(1,0,0,.3, SX-4,SY+PR+1);
-    C.arc(0, 0, 20, 0, TPI);
+    trns(1,0,0,.3, SX-4,SY+P2R+1);
+    C.arc(0, 0, P2R, 0, TPI);
     C.fillStyle = RGB(15,15,15,0.5);
     C.shadowColor = RGB(15,15,15,0.5);
     C.shadowBlur = 25;
@@ -116,7 +122,7 @@ player=function(){ // TODO: inline
     trns(1,0,0,1, PSX,PSY);
     C.beginPath();
     C.fillStyle = grd;
-    C.arc(0, 0, 20, 0, TPI);
+    C.arc(0, 0, P2R, 0, TPI);
     C.fill();
     C.fillStyle=RGB(0,0,0,0)
     C.fillStyle = "#222"

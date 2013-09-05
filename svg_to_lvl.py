@@ -3,9 +3,11 @@ import sys
 import re
 
 transform = re.compile(r'''transform="matrix\((?P<xs>[^,]+),(?P<xk>[^,]+),(?P<yk>[^,]+),(?P<ys>[^,]+),(?P<xt>[^,]+),(?P<yt>[^\)]+)\)"''')
-arc_re = re.compile(r'''<path sodipodi:type="arc" style="fill:#(?P<color>[0-9a-f]+)[^"]*" id="(?P<id>[^"]+)" sodipodi:cx="(?P<x>[^"]+)" sodipodi:cy="(?P<y>[^"]+)" (?P<leftover>[^>]+)>''')
-#'<ellipse style="fill: #0000ff" cx="([^"]+)" cy="([^"]+)"[^>]+>''')
-rect_re = re.compile(r'''<rect style="fill:#(?P<color>[0-9a-f]+)[^"]*" id="(?P<id>[^"]+)" width="(?P<w>[^"]+)" height="(?P<h>[^"]+)" x="(?P<x>[^"]+)" y="(?P<y>[^"]+)"(?P<leftover>[^>]+)>''')
+translate = re.compile(r'''transform="translate\((?P<xt>[^,]+),(?P<yt>[^\)]+)\)"''')
+#arc_re = re.compile(r'''<path sodipodi:type="arc" style="fill:#(?P<color>[0-9a-f]+)[^"]*" id="(?P<id>[^"]+)" sodipodi:cx="(?P<x>[^"]+)" sodipodi:cy="(?P<y>[^"]+)" (?P<leftover>[^>]+)>''')
+arc_re = re.compile(r'''<ellipse .*?id="(?P<id>[^"]+)" .*?cy="(?P<y>[^"]+)" cx="(?P<x>[^"]+)" .*?fill="#(?P<color>[0-9a-f]+)"(?P<leftover>[^>]+)>''')
+#rect_re = re.compile(r'''<rect style="fill:#(?P<color>[0-9a-f]+)[^"]*" id="(?P<id>[^"]+)" width="(?P<w>[^"]+)" height="(?P<h>[^"]+)" x="(?P<x>[^"]+)" y="(?P<y>[^"]+)"(?P<leftover>[^>]+)>''')
+rect_re = re.compile(r'''<rect .*?id="(?P<id>[^"]+)" .*?height="(?P<h>[^"]+)" width="(?P<w>[^"]+)" y="(?P<y>[^"]+)" x="(?P<x>[^"]+)" .*?fill="#(?P<color>[0-9a-f]+)"(?P<leftover>[^>]+)>''')
 #coins_re = re.compile('<path sodipodi:type="arc" style="fill:#ffff00" id="(?P<id>[^"]+)" sodipodi:cx="(?P<x>[^"]+)" sodipodi:cy="(?P<y>[^"]+)"[^>]+>')
 #'<ellipse style="fill: #ffff00" cx="([^"]+)" cy="([^"]+)"[^>]+/>')
 #heart_re = re.compile('<path style="[^"]*stroke-dasharray: 4;[^"]*" d="[^"]*"/>')
@@ -40,7 +42,7 @@ def process_arc(arc):
         print "/* unknown arc: {} */".format(arc)
 
 def process_rect(rect):
-    if rect.get('color')== '550000':
+    if rect.get('color') in ['7fff00', '7f3f00']: #'550000':
         del rect['color']
         #rect['h'] = 10
         print to_platform(**rect)
@@ -67,7 +69,7 @@ scanner = rect_re.scanner(txt)
 rect = scanner.search()
 while rect:
     rect= rect.groupdict()
-    t = transform.search(rect.get('leftover', ''))
+    t = transform.search(rect.get('leftover', '')) or translate.search(rect.get('leftover',''))
     if t:
         applyTransform(rect, t.groupdict())
     del rect['leftover']
@@ -79,7 +81,7 @@ scanner  = arc_re.scanner(txt)
 arc = scanner.search()
 while arc:
     arc = arc.groupdict()
-    t = transform.search(arc.get('leftover', ''))
+    t = transform.search(arc.get('leftover', '')) or translate.search(arc.get('leftover',''))
     if t:
         applyTransform(arc, t.groupdict())
     del arc['leftover']
