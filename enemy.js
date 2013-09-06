@@ -1,72 +1,83 @@
-var generate = function() {
-    long seed = r.nextLong();
-    r = new Random(seed);
 
-    long time = System.currentTimeMillis();
-    clear();
-    int iterations = 0;
-    for (int count = 0; count < (w * h / 2) * fillPercentage; ++iterations) {
-        count += grow() ? 1 : 0; // count amount of pixels set
+
+
+var enemies = []
+
+var addEnemy = function(x,y) {
+    var $ = {
+        x:x, y:IPY,z:y,
+        h: E2R,
+        vx: -1,
+        vz: 0,
     }
-    addDecoration();
+    $ts($)
 
-    log("Iterations: " + iterations);
-    log("Random seed: " + seed);
+    $.floor = findFloor($.x, $.y, $.z+E2R);
+    if (DEBUG && !$.floor) {
+        alert("Enemy must be above floor")
+    }
+
+    enemies.push($)
 }
 
-var grow = function() {
-    // log("Open list size: " + openList.size());
-    // log("Closed list size: " + closedList.size());
-    var xx, yy, p;
-    Iterator it;
-    do {
-        it = openList.iterator();
-        p = it.next();
+var enemyColor = C.createRadialGradient(15, -9, 3, 15, -9, 32);
+// light red
+enemyColor.addColorStop(0, '#FFD6CE');
+// dark red
+enemyColor.addColorStop(1, '#B34C80');
 
-        // Randomly pick element
-        int num = r.nextInt(openList.size());
-        for (int i = 0; i < num; ++i) {
-            p = it.next();
-        }
+var E2R = 22
 
-        xx = p.getX();
-        yy = p.getY();
+var drawEnemy = function($,i) {
 
-        if (pixels[map(xx, yy)] != PColor.EMPTY) { // Pixel is already set
-            // Move to closed list
-            it.remove();
-            closedList.add(p);
-        }
-    } while (pixels[map(xx, yy)] != PColor.EMPTY);
 
-    int countSide = 0, countDiag = 0;
-    for (int ix = xx - 1; ix <= xx + 1; ++ix) {
-        for (int iy = yy - 1; iy <= yy + 1; ++iy) {
-            if (ix < 0 || ix >= w || iy < 0 || iy >= h / 2) // outside drawing range
-                continue;
-            if (pixels[map(ix, iy)] != PColor.EMPTY) {
-                if (ix == xx ^ iy == yy)
-                    ++countSide;
-                else
-                    ++countDiag;
-            }
+    $.x += $.vx;
+    $.vz -= .2 // Gravity accelerates down
+    $.z+= $.vz;
+    $ts($);
+
+    if ($.sx+E2R+10 >= PSX && $.sx < PSX+P2R+10 && $.sy+E2R >= PSY-15 && $.sy < PSY+P2R+10) {
+        if (t - lastTimeHadCoin > 180) // 3 seconds
+            coinSoundIndex=0;
+        //coins.splice(i,1);
+        //i--;
+        coinsSounds[coinSoundIndex++].play();
+        coinSoundIndex = coinSoundIndex % coinsSounds.length;
+        lastTimeHadCoin = t;
+        initPlayer()
+        return;
+    }
+
+    var floor = findFloor($.x, $.y, $.z+E2R); // inline?
+    if (floor != $.floor) {
+        // made it to edge - turn back
+        $.x -= $.vx;
+        $.vx *= -1;
+    }
+    else {
+        if ($.z <= floor.z) {// bounce
+            $.z =floor.z;
+            $.vz = 2;
         }
     }
-    // Check if we should set this pixel
-    if (r.nextFloat() < evaluator.getPixelSetChance(countSide, countDiag)) {
-        pixels[map(xx, yy)] = PColor.NORMAL;
 
-        // Move point to closed list
-        it.remove();
-        closedList.add(p);
+//    var wall = collide($.x+P2R4, $.y, $.z+P2R4, PR, VX>0 ? CollisionLeftFace: CollisionRightFace ); // collide left and right
+//    if (wall) {
+//        PX-= VX;
+//        bounceWall.play();
+//        if (PZ-floor.z > 10) {
+//            // collide while in jump - hardly bouncing back to make it easier to jump onto platforms
+//            VX= -VX*.2;
+//        }
+//        else {
+//            // collide on ground - bounce back
+//            VX= -VX*.8;
+//        }
+//    }
 
-        // Add surrounding points to open list
-        addPoint(xx + 1, yy);
-        addPoint(xx - 1, yy);
-        addPoint(xx, yy + 1);
-        addPoint(xx, yy - 1);
+//    if (abs(VX) < 0.05) VX = 0;
 
-        return true;
-    }
-    return false;
+
+    drawBall($.floor, $.vx<0, $.x, $.y, $.z, E2R , enemyColor, "◕` ᐟ◕ ノ", "⁔", -8,9)
 }
+

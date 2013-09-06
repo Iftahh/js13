@@ -37,37 +37,47 @@ function tick() {
 
     leftPlayerEdge = PSX-2
 
-    each(sprites, function() {
+    each(sprites, function($,i) {
         // behind player - draw before player
         // TODO: check clip
-        if ($.preDraw(true)) {
-            $.draw()
+        if ($.preDraw($,true)) {
+            $.draw($)
         }
     })
 
     player();
+    each(enemies, drawEnemy)
 
-    each(sprites, function() {
+
+    each(sprites, function($,i) {
         // not behind player - draw after player
         // TODO: check clip
-        if ($.preDraw(false)) {
-            $.draw()
+        if ($.preDraw($,false)) {
+            $.draw($)
         }
     })
     C.globalAlpha = 1
 
     // TODO: coins are just front facing sprites
-    initCoins(); // TODO: inline
-    each(coins, function(){
-        drawCoin()
-    })
-    C.restore()
 
-    //drawBackSprites();
+    drawCoins();
 
-//    C.save()
-//    drawFrontSprites();
-//    C.restore()
+
+//    X = PX+50
+//    Y = PY;
+//    Z = PZ;
+//    H=30
+//    ts();
+//    $ = {sx:SX, sy:SY}
+//    drawEnemy()
+
+    trns(1,0,0,1,0,0)
+    C.fillStyle = RGB(50,60,150,0.5);
+    C.fillRect(PSX,PSY, P2R,P2R);
+    C.fillStyle = RGB(150,60,50,0.5);
+    var $ = enemies[0]
+    C.fillRect($.sx, $.sy, E2R,E2R);
+
     rq(tick)
 }
 rq(tick);

@@ -7,7 +7,7 @@ DR=texturecube
 B=0x1ff
 
 W=40,H=10,D=W
-range(200, function() {
+range(200, function(i) {
     for (j=5;j>-5;j--) {
         X=i*D,Y=j*D,Z=irnd(-H,0)//5+4*cos(TPI*i/10)+6*cos(TPI*(5+j)/8)
         addSprite()

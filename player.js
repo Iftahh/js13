@@ -1,4 +1,4 @@
-KEYS={32:0}
+var KEYS={32:0}
 DC.addEventListener('keydown', function(e){KEYS[e.keyCode]=1})
 DC.addEventListener('keyup', function(e){KEYS[e.keyCode]=0})
 
@@ -6,7 +6,7 @@ DC.addEventListener('keyup', function(e){KEYS[e.keyCode]=0})
 // at this stage the level should be set - check the max and min coordinates and use it to set world boundaries
 //wx1=wy1 = Infinity;
 //wx2=wy2 = -Infinity;
-//each(backSprites, function() {
+//each(backSprites, function($) {
 //    wx1 = min($.sx,wx1);
 //    wy1 = min($.sy,wy1);
 //    wx2 = max($.sx+ $.w, wx2);
@@ -14,11 +14,11 @@ DC.addEventListener('keyup', function(e){KEYS[e.keyCode]=0})
 //})
 //log("Level packed in ("+wx1+","+wy1+")  to ("+wx2+","+wy2+")")
 
-grd = C.createRadialGradient(12, -7, 3, 12, -7, 30);
+var playerColor = C.createRadialGradient(12, -7, 3, 12, -7, 28);
 // light blue
-grd.addColorStop(0, '#8ED6FF');
+playerColor.addColorStop(0, '#8ED6FF');
 // dark blue
-grd.addColorStop(1, '#004CB3');
+playerColor.addColorStop(1, '#004CB3');
 
 //setCameraX = function(a) { CameraX = min(wx2, max(wx1,a));}
 PR=10       // player radius
@@ -33,6 +33,9 @@ var initPlayer = function() {
 
     X=PX;Y=PY;Z=PZ;ts();
     PSX=SX; PSY=SY;
+    CameraX = PSX - width *.5;
+
+    CameraY = PSY - height *.7;
 }
 initPlayer()
 
@@ -40,7 +43,9 @@ var bounceFloor = jsfxr([0,,0.1453,,0.225,0.3726,,0.12,0.22,,,,,0.1547,,,,,1,,,,
 var smallBounceFloor = jsfxr([0,,0.1,,0.22,0.3726,,0.14,0.2,,,,0.12,0.1547,,,,,1,,,,,0.26])
 var bounceWall = jsfxr([0,,0.11,0.16,0.09,0.227,0.04,-0.18,0.34,,,,,0.23,0.12,,,,1,0.2,0.16,0.1,,0.32])
 
-MAX_PZ = -Infinity
+//MAX_PZ = -Infinity
+
+var shadowColor = RGB(15,15,15,0.5)
 
 var player=function(){ // TODO: inline
 //    if (KEYS[38]) {VY=min(3,VY+.1)}  // up
@@ -63,7 +68,7 @@ var player=function(){ // TODO: inline
     VZ-= .2 // Gravity accelerates down
     PZ+=VZ;
 
-    MAX_PZ = max(MAX_PZ, PZ)
+    //MAX_PZ = max(MAX_PZ, PZ)
     H=P2R;
 
 //    PY+=VY; // Changed my mind: no collision with front and back of cubes
@@ -125,7 +130,7 @@ var player=function(){ // TODO: inline
     if (left || right)
         CameraX = (PSX - width *(.5 - VX / 20));
 
-    CameraY = (PSY - height *(.8 - min(VY,5) / 20));
+    CameraY = PSY - height *.7;
 
 //}
 //drawPlayer = function() {
@@ -133,27 +138,37 @@ var player=function(){ // TODO: inline
 
     // TODO: make horizontal ellipse when crashes down with speed to floor,  make vertical ellipse when flying up quick and/or at the top of jump
 
+    drawBall(floor, VX<0, PX,PY, PZ, P2R, playerColor,"｡◕  ◕｡", "‿",-5,5 )
+}
+
+// Assumes X,Y,H are set already
+var drawBall = function(floor, left, x,y,z, diam, color, face, mouth, mx,my) {
     // shadow
-    Z=floor.z;ts();
+    // TODO: use $ for both player and enenmy
+    X=x;Y=y; // todo this was already set for player - but not for
+    Z=floor.z;
+    ts();
     C.save();
-    trns(1,0,0,.3, SX-4,SY+P2R+1);
+    trns(1,0,0,.3, SX-4,SY+diam+1);
     C.beginPath()
     C.arc(0, 0, P2R, 0, TPI);
-    C.fillStyle = RGB(15,15,15,0.5);
+    C.fillStyle = shadowColor;
     C.fill();
 
+    Z=z;
+    ts()
     // ball
-    trns(1,0,0,1, PSX,PSY);
+    trns(1,0,0,1, SX,SY);
     C.lineWidth=1;
     C.strokeStyle="#111";
-    C.fillStyle = grd;
+    C.fillStyle = color;
     C.beginPath();
-    C.arc(0, 0, P2R, 0, TPI);
+    C.arc(0, 0, diam, 0, TPI);
     C.fill();
+    C.scale(left? 1: -1, 1);
     C.fillStyle = "#222"
-    C.fillText("｡◕‿◕｡",-15,1)
+    C.fillText(face,-15,1)
+    C.fillText(mouth,mx,my)
     C.stroke()
     C.restore()
-
-
 }

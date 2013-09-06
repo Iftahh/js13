@@ -89,6 +89,7 @@ var CameraY = 0;
 
 // toscreen
 var ts = function () { SX=X+Y/2, SY=height-Y/2-H-Z}
+var $ts = function ($) {$.sx= $.x+ $.y/2; $.sy=height- $.y/2- $.h- $.z}
 
 var tree = function(x,y,z, w,h1,h2) {
     X=x,Y=y,Z=z,H=h1
@@ -100,7 +101,7 @@ var tree = function(x,y,z, w,h1,h2) {
     C.fillRect(SX,SY, w,h1)
     SX+=w/2
 
-    range(30+h2, function() {
+    range(30+h2, function(i) {
         C.fillStyle=RGB(irnd(25,30),irnd(170,210),irnd(55,70),0.7)
         C.beginPath()
         Y=rnd()
@@ -119,7 +120,7 @@ var CollisionBottomFace = []  // collision when moving up (Z++)
 //var CollisionFrontFace = [] // when moving back (Y++)
 
 var drawFrontSprites = function() {  // container
-    each(frontSprites, function() {
+    each(frontSprites, function($,i) {
         x= $.sx, y= $.sy,w= $.w,h= $.h,d= $.d, b= $.br;
         if (x-100 < PSX && x+100+w+d/2 > PSX  && y-100<PSY && y+100+h+d/2> PSY) {
             C.globalAlpha = .3  // TODO: make alpha based on distance from player
@@ -186,7 +187,7 @@ var addCube = function() {  // container
 }
 
 var collide = function(x,y,z,r, C) {  // C is either CollisionRightFace/CollisionLeftFace/CT/CollisionBackFace/etc..,   (x,y,z) is the bottom left front corner, r is the cube height/width/depth (same all)
-    return breach(C, function() {
+    return breach(C, function($,i) {
         // doing cube collision for simplicity - TODO: change to sphere collision
         if ((x+r > $.x && x < $.x+$.w ) &&
             (y+r > $.y && y < $.y+$.d) &&
@@ -200,7 +201,7 @@ var collide = function(x,y,z,r, C) {  // C is either CollisionRightFace/Collisio
 var findFloor = function(x,y,z) {
     // find floor below the point
     var maxPlane = {z:-10e9};
-    each(CollisionTopFace, function() {
+    each(CollisionTopFace, function($,i) {
         if ($.z >maxPlane.z && // above the current maxPlane
             z >=$.z && // but below the player
             x >= $.x && x<$.x+$.w &&
@@ -296,7 +297,8 @@ var RBC2="#ba6"
 //   |         | /5
 //   +--- 0 ---+/
 
-var drawBorders=function(b,w,h) {
+var drawBorders=function($) {
+    var b = $.borders, w=$.dim1, h=$.dim2;
     if (b & 15) {
         C.strokeStyle = $.bc;
         C.beginPath();
@@ -320,7 +322,7 @@ var drawBorders=function(b,w,h) {
     }
 }
 
-var _setAlpha=function(x0,x1) {
+var _setAlpha=function($,x0,x1) {
     if ($.sx-x0 < PSX && $.sx+x1+ $.w+ $.d/2 > PSX  && $.y+ $.d < IPY) {
         C.globalAlpha = .3  // TODO: make alpha based on distance from player
     }
@@ -329,7 +331,7 @@ var _setAlpha=function(x0,x1) {
     }
 }
 
-var topDraw = function(behind) {
+var topDraw = function($,behind) {
     // TODO: check clip
     if (behind) {
         if ($.z >= PZ) {
@@ -340,13 +342,13 @@ var topDraw = function(behind) {
         if ($.z < PZ) { // above player - draw after player
             return;
         }
-        _setAlpha(10,10)
+        _setAlpha($,10,10)
     }
     trns(1, 0,-.5,.5, $.sx+0.4 +.5* $.d, $.sy-.5* $.d);
     return 1;
 }
 
-var frontDraw = function(behind) {
+var frontDraw = function($,behind) {
     // TODO: check clip
 
     if (behind) {
@@ -358,13 +360,13 @@ var frontDraw = function(behind) {
         if ($.y > PY) {
             return;
         }
-        _setAlpha(10,10)
+        _setAlpha($,10,10)
     }
     trns(1, 0,0,1, $.sx, $.sy);
     return 1;
 }
 
-var rightDraw = function(behind) {
+var rightDraw = function($,behind) {
     if (behind) {
         if ($.x+ $.w >= leftPlayerEdge) {
             return;
@@ -374,7 +376,7 @@ var rightDraw = function(behind) {
         if ($.x+$.w < leftPlayerEdge) {
             return;
         }
-        _setAlpha(0,40)
+        _setAlpha($,0,40)
     }
     trns(.5, -.5,0,1, $.sx+ $.w, $.sy)
     return 1;
@@ -393,13 +395,14 @@ var rightDraw = function(behind) {
 
 
 
-var brickDraw=function() {
+var brickDraw=function($) {
     brick($.dim1, $.dim2, $.col1, $.col2, $.bw, $.bh);
-    drawBorders($.borders, $.dim1, $.dim2)
+    drawBorders($)
 }
 
-var textureDraw=function() {
+var textureDraw=function($) {
     $.texture.draw(0,0, $.dim1, $.dim2)
+    drawBorders($)
 }
 
 
@@ -469,7 +472,7 @@ var faces = ["(ᵔᴥᵔ)", "{◕ ◡ ◕}", "ಠ◡ಠ", "ಠ_๏", "ಥ_ಥ", 
 
 var stairs=function (x1,y1,z1,w1,d1,x2,y2,w2,d2, h,n) {
     BC=BBC,BW=30,B=0x1ee,H=h+1
-    range(n, function(){
+    range(n, function(i){
         X=x1+i*(x2-x1)/n, Y=y1+i*(y2-y1)/n, Z=z1+i*h-1,W=w1+i*(w2-w1)/n,D=d1+i*(d2-d1)/n
         addCube()
     })

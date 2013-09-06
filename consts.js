@@ -31,26 +31,26 @@ onresize()
 var nrnd = function(a,b) { return a+(b-a)*rnd()}
 var irnd = function(a,b) { return nrnd(a,b)<<0 }
 
-var range = function(maxInt,iterFu,increment) { //       - note uses global "i"  !!!!
+var range = function(maxInt,iterFu,increment) {
     increment = increment || 1;
-    for (i=0; i<maxInt; i += increment)
-        iterFu()
+    for (var i=0; i<maxInt; i += increment)
+        iterFu(i)
 }
-var brrange = function(maxInt,iterFu,increment) { //     - note uses global "i"  !!!!
+var brrange = function(maxInt,iterFu,increment) {
     increment = increment || 1;
-    for (i=0; i<maxInt; i += increment) {
-        var res = iterFu()
+    for (var i=0; i<maxInt; i += increment) {
+        var res = iterFu(i)
         if (res) return res;
     }
 }
-var each = function(collection, iterFu) { // collection, iterator     -  note uses global "i" and "$" !!!
-    for (i=0; i<collection.length; i++) { // not using range: because length might change at loop time (eg. collecting coins)
-        $=collection[i];
-        iterFu();
+var each = function(collection, iterFu) {
+    for (var i=0; i<collection.length; i++) {
+        var $=collection[i];
+        iterFu($,i);
     }
 }
 var breach = function(collection, iterFu) { // breaking each: collection, iterator     -  note uses global "i" and "$" !!!
-    return brrange(collection.length, function() {$=collection[i]; return iterFu();})
+    return brrange(collection.length, function(i) {var $=collection[i]; return iterFu($,i);})
 }
 
 
@@ -92,9 +92,9 @@ var cloneUpdateObj = function($,D) {
 // shallow copy of array, and then update
 var cloneUpdateArray = function($,D) {
     var res = []
-    range($.length, function() {
+    for (var i=0; i<$.length; i++) { // not using range, to allow cloning within range
         res[i]=$[i]
-    })
+    }
     update(res, D)
     return res;
 }
@@ -104,5 +104,6 @@ BW=27;BH=0;   // brick width and height (height=0 use .3*width
 B=0xfff;
 BC=BBC // border color
 
+DEBUG=true
 //var log = function(){}
-var log = function(x) { console.log(x) }
+var log = function(x) { if(!DEBUG) {alert("Forgot a log")} console.log(x) }
