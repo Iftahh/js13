@@ -16,10 +16,6 @@ var padding = (buffer_extra - 1) / 2;
 var qcw = padding * width;   // padding of current client width - quarter client width
 var qch = padding * height;
 
-var oldCameraX, oldCameraY,
-    fcurCameraX, fcurCameraY,  //  fcur-camera defines what is being viewed
-    curCameraX, curCameraY = 0;  // cur-Camera is the integer round of fcur - needed in order to avoid fuzzy drawimage for background
-
 var drawn = 0;
 
 var initBackgroundDraw = function() {  // TODO: inline  // if the width/height of the screen changes - call this function again
@@ -35,12 +31,6 @@ var initBackgroundDraw = function() {  // TODO: inline  // if the width/height o
     r2c(bw,bh, fu);
     buffers[1] = drawn = {};
     r2c(bw,bh,fu);
-
-    oldCameraX = fcurCameraX = CameraX = (PSX - width *.5);
-    oldCameraY = fcurCameraY = CameraY = (PSY - height *.8);
-    curCameraX = round(CameraX);
-    curCameraY = round(CameraY);
-
 
     var top  = curCameraY-qch;// - bufferHeight/2;
     var left = curCameraX-qcw;// - bufferWidth /2;

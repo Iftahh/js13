@@ -1,6 +1,11 @@
-//C=BgC
-C=FdC
-initBackgroundDraw();
+BgC.fillStyle="#222"
+BgC.fillRect(0,0,width,height)
+
+
+fcurCameraX = CameraX = (PSX - width *.5);
+fcurCameraY = CameraY = (PSY - height *.8);
+
+//initBackgroundDraw();
 
 
 //texturecube(50, 500, 80, 120, 100, stones[0],stones[1],stones[2]);
@@ -10,49 +15,114 @@ C=FdC
 t = 0;
                               // CameraXY  defines where the camera should move to
 
+// hack - because playerY doesn't change we can get the behind and front part pre-loop
+// TODO: use cached background buffer for these
+var behindPlayer = []
+each(frontFacingSprites, function() {
+    if ($.y > PY) { // behind player - draw before player
+        behindPlayer.push($)
+    }
+})
+var infrontPlayer = []
+each(frontFacingSprites, function() {
+    if ($.y <= PY) { // behind player - draw before player
+        infrontPlayer.push($)
+    }
+})
+
+
 function tick() {
     t++;
 
+    fcurCameraX = fcurCameraX*.9 + CameraX*.1;
+    OffsetX = round(fcurCameraX);
+    fcurCameraY = fcurCameraY*.9 + CameraY*.1;
+    OffsetY = round(fcurCameraY);
 
-    drawBackground();  // TODO: inline
+    //drawBackground();  // TODO: inline
 
     trns(1,0,0,1,0,0);
-    C.clearRect(curCameraX, curCameraY, width, height);
+    C.clearRect(OffsetX, OffsetY, width, height);
 
+
+
+
+    each(behindPlayer, function() {
+        // behind player - draw before player
+        // TODO: check clip
+        frontDraw()
+        $.draw()
+    })
+    each(topFacingSprites, function() {
+        if ($.z < PZ) { // below player - draw before player
+            // TODO: check clip
+            topDraw();
+            $.draw()
+        }
+    })
+    each(rightFacingSprites, function() {
+        if ($.x+ $.w < PX) { // to the left of the player - draw before the player
+            // TODO: check clip
+            rightDraw();
+            $.draw();
+        }
+    })
+
+
+
+    player();
+
+    each(topFacingSprites, function() {
+        if ($.z >= PZ) { // above player - draw after player
+            // TODO: check clip
+            if ($.sx-10 < PSX && $.sx+10+ $.w+ $.d/2 > PSX  && $.y+ $.d < IPY) {
+                C.globalAlpha = .3  // TODO: make alpha based on distance from player
+            }
+            else {
+                C.globalAlpha = 1
+            }
+            topDraw();
+            $.draw()
+        }
+    })
+    each(infrontPlayer, function() {
+        // TODO: check clip
+        if ($.sx-10 < PSX && $.sx+10+ $.w+ $.d/2 > PSX  && $.y+ $.d < IPY) {
+            C.globalAlpha = .3  // TODO: make alpha based on distance from player
+        }
+        else {
+            C.globalAlpha = 1
+        }
+        frontDraw()
+        $.draw()
+    })
+    each(rightFacingSprites, function() {
+        if ($.x+$.w >= PX) { // to the right of the player - draw after the player
+            // TODO: check clip
+            if ($.sx < PSX && $.sx+40+ $.w+ $.d/2 > PSX  && $.y+ $.d < IPY) {
+                C.globalAlpha = .3  // TODO: make alpha based on distance from player
+            }
+            else {
+                C.globalAlpha = 1
+            }
+            rightDraw();
+            $.draw();
+        }
+    })
+    C.globalAlpha = 1
+
+    // TODO: coins are just front facing sprites
     initCoins(); // TODO: inline
     each(coins, function(){
         drawCoin()
     })
     C.restore()
 
-//    trns(hsc, hsk,vsk,vsc,X,Y)
-//    C.drawImage(dirt2, 0,0, W,H);
-
-
-
-//    var x=40;
-//    for (i=0; i<faces.length; i++) {
-//        var s=faces[i];
-//        var l= s.length;
-//        trns(1,0,0,1, x,50+l);
-//        C.beginPath();
-//        C.fillStyle = grd;
-//        C.arc(0, 0, 20+l, 0, TPI);
-//        C.fill();
-//        C.fillStyle = "#222"
-//        C.fillText(faces[i],-5-l*2,-4+l)
-//        C.stroke()
-//        x+= 40+l*6;
-//    }
-//    trns(1,0,0,1,0,0);
-
-    player();
-
     //drawBackSprites();
 
-    C.save()
-    drawFrontSprites();
-    C.restore()
+//    C.save()
+//    drawFrontSprites();
+//    C.restore()
     rq(tick)
 }
 rq(tick);

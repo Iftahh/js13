@@ -52,7 +52,7 @@ var drawCoin = function() {
 var coins = []; // data
 
 var addCoin = function(x,y) {
-    X=x;Z=y;Y=IPY;ts();
+    X=x;Z=y;ts();
     coins.push({x:SX, y:SY, t:irnd(0,100)})
 }
 

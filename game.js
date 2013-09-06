@@ -3,7 +3,7 @@
  *
  * make all function params the same  (a,b,c,d,e...)
  * for non-recursive functions  use globals instead of locals  (remove "var ")  - make sure names do not collide
- * use globals instead of function parameters?   x=4,y=5, addSprite()  instead of addSprite(4,5)  ?
+ * use globals instead of function parameters?   x=4,y=5, addCube()  instead of addCube(4,5)  ?
  * remove seed - all pure random :(
  * shorten canvas functions?  c.lg = c.createLinearGradient
  *
@@ -40,11 +40,11 @@ var noise=function(c,w,h,r1,dr,g1,dg,b1,db) { //random noise texture
 }
 
 // brick texture at of width and height,  bw = brick width, nr= num rows
-var brick=function (w,h,c1,c2) {
+var brick=function (w,h,c1,c2,bw,bh) {
     C.fillStyle = c1
     C.fillRect(0,0,w,h)
     C.strokeStyle = c2;
-    row=0
+    var row=0;  // TODO: can make global to avoid var
     C.lineWidth = bh/5
     y0=0;y1=bh
     C.beginPath()
@@ -109,16 +109,18 @@ var tree = function(x,y,z, w,h1,h2) {
     })
 }
 
-var backSprites = []; // background sprites - drawn in the order inserted
-var sprites = [];   // sprites that should be sorted (TODO)
-var frontSprites = [];  // sprites drawn on top - in order inserted -  and become transparent if player behind them
-var csprites = backSprites; // current sprites - where the addSprite will insert
-var CL = []  // collision when moving left (X--)
-var CR = []  // collision when moving right (X++)
-var CD = []  // collision when moving down (Z--)
-var CU = []  // collision when moving up (Z++)
-var CF = [] // when moving front (Y--)
-var CB = [] // when moving back (Y++)
+var frontFacingSprites = [];
+var rightFacingSprites = [];
+var topFacingSprites = [];
+// there are no left, back or bottom facing sprites in this game...
+
+
+var CollisionLeftFace = []  // collision when moving left (X--)
+var CollisionRightFace = []  // collision when moving right (X++)
+var CollisionTopFace = []  // collision when moving down (Z--)
+var CollisionBottomFace = []  // collision when moving up (Z++)
+//var CollisionBackFace = [] // when moving front (Y--)
+//var CollisionFrontFace = [] // when moving back (Y++)
 
 var drawFrontSprites = function() {  // container
     each(frontSprites, function() {
@@ -134,59 +136,65 @@ var drawFrontSprites = function() {  // container
     C.globalAlpha = 1
 }
 
+var MIN_BLOCK = 16
 // using globals
 // X,Y,Z,   W,H,D
 // B - borders
-// BC - border color
+// BL - border color
 // BW - brick width
 // DR - draw
-var addSprite = function() {  // container
-    addNonBlockSprite()
+var addCube = function() {  // container
+    addNonBlockCube()
+    // hack: because player-Y doesn't change avoid adding collision bodies for Y the player won't hit
+    if (Y+D < IPY  || Y > IPY) {
+        return;
+    }
+
     // add blocking data
-    if (D>10 && H>10) {
-        CL.push({
+    if (D>MIN_BLOCK && H>MIN_BLOCK) {
+        CollisionLeftFace.push({
             y:Y,z:Z,
             d:D, h:H, w:0,
             x:X
         })
-        CR.push({
+        CollisionRightFace.push({
             y:Y,z:Z,
             d:D, h:H,w:0,
             x:X+W
         })
     }
-    if (D>10 && W>10) {
-        CD.push({
+    if (D>MIN_BLOCK && W>MIN_BLOCK) {
+        CollisionTopFace.push({
             x:X,y:Y,
             w:W, d:D, h:0,
             z:Z+H
         })
-        CU.push({
+        CollisionBottomFace.push({
             x:X,y:Y,
             w:W, d:D, h:0,
             z:Z
         })
     }
-    if (H>10 && W>10) {
-        CF.push({
-            x:X,z:Z,
-            w:W, h:H, d:0,
-            y:Y+D
-        })
-        CB.push({
-            x:X,z:Z,
-            w:W, h:H, d:0,
-            y:Y
-        })
-    }
+//    if (H>MIN_BLOCK && W>MIN_BLOCK) {    // Changed my mind: this is going to be a left-right up-down game,  no front-back movement
+//        CollisionBackFace.push({
+//            x:X,z:Z,
+//            w:W, h:H, d:0,
+//            y:Y+D
+//        })
+//        CollisionFrontFace.push({
+//            x:X,z:Z,
+//            w:W, h:H, d:0,
+//            y:Y
+//        })
+//    }
 }
 
-var collide = function(x,y,z,r, C) {  // C is either CR/CL/CT/CF/etc..,   (x,y,z) is the bottom left front corner, r is the cube height/width/depth (same all)
+var collide = function(x,y,z,r, C) {  // C is either CollisionRightFace/CollisionLeftFace/CT/CollisionBackFace/etc..,   (x,y,z) is the bottom left front corner, r is the cube height/width/depth (same all)
     return breach(C, function() {
         // doing cube collision for simplicity - TODO: change to sphere collision
-        if ((x+r >= $.x && x < $.x+$.w ) &&
-            (y+r >= $.y && y < $.y+$.d) &&
-            (z+r >= $.z && z < $.z+$.h )) {
+        if ((x+r > $.x && x < $.x+$.w ) &&
+            (y+r > $.y && y < $.y+$.d) &&
+            (z+r > $.z && z < $.z+$.h )) {
             return $;
         }
     })
@@ -196,7 +204,7 @@ var collide = function(x,y,z,r, C) {  // C is either CR/CL/CT/CF/etc..,   (x,y,z
 var findFloor = function(x,y,z) {
     // find floor below the point
     var maxPlane = {z:-10e9};
-    each(CD, function() {
+    each(CollisionTopFace, function() {
         if ($.z >maxPlane.z && // above the current maxPlane
             z >=$.z && // but below the player
             x >= $.x && x<$.x+$.w &&
@@ -207,31 +215,67 @@ var findFloor = function(x,y,z) {
     return maxPlane;
 }
 
+
 // using globals
 // X,Y,Z,   W,H,D
 // B - borders
 // BC - border color
 // BW - brick width
 // DR - draw
-var addNonBlockSprite=function() {
+var addNonBlockCube=function() {
     ts()
-    csprites.push({
+    var cube = {
         x:X, // world x
         y:Y,
         z:Z,
-        br:B,  // border flags
-        bc:BC, // brick color
-        bw:BW, // brick width
 
-        tr:PR, // texture right
-        tt:PT, // texture top
-        tf:PF, // texture front
+        br:B,  // border flags
+        bc:BC, // border color
+
+        bw:BW, // brick width
+        bh:BH || BW *.3,
 
         sx:SX,     // screen x
         sy:SY,
-        w:W, h:H, d:D,
-        draw: DR
-    })
+
+        w:W, h:H, d:D
+    }
+
+    if (W>0 && H>0) {
+        frontFacingSprites.push(cloneUpdateObj(cube, {
+            col1: FBC1,
+            col2: FBC2,
+            texture: PF,
+            dim1: W,
+            dim2: H,
+            borders: B,
+            draw: DR[0] || DR   // DR can be array of 3 functions, or a function
+        }))
+    }
+
+    if (D>0 && H>0) {
+        rightFacingSprites.push(cloneUpdateObj(cube, {
+            col1: RBC1,
+            col2: RBC2,
+            texture: PR,
+            dim1: D,
+            dim2: H,
+            borders: B >> 4,
+            draw: DR[1] || DR
+        }))
+    }
+
+    if (W>0 && D>0) {
+        topFacingSprites.push(cloneUpdateObj(cube, {
+            col1: TBC1,
+            col2: TBC2,
+            texture: PT,
+            dim1: W,
+            dim2: D,
+            borders: B>> 8,
+            draw: DR[2] || DR
+        }))
+    }
 }
 
 var TBC1 = "#e86" // top brick color 1
@@ -241,27 +285,23 @@ var FBC2="#dc8"
 var RBC1="#b52"
 var RBC2="#ba6"
 
-var BORT=function() {
-    if (b & 384) {
-        C.strokeStyle = $.bc;
-        C.beginPath();
-        if (b&256) {
-            C.moveTo(0,0)
-            C.lineTo(0,d)
-        }
-        if (b&128) {
-            C.moveTo(0,0)
-            C.lineTo(w,0)
-        }
-        C.stroke()
-    }
-}
 
-var BORF=function() {
+//  Borders
+//       __________
+//      /    B    /|
+//     /C       A/ |      0xFFF <-- Front           all:  0xFFF
+//    /    9    /7 |        ^^                      no top, no bottom:    0x0AA
+//   +---------+   |6       | \
+//   |    2    |8  |       /   \
+//   3         1  /       Top   Right
+//   |         | /5
+//   +--- 0 ---+/
+
+var drawBorders=function(b,w,h) {
     if (b & 15) {
         C.strokeStyle = $.bc;
         C.beginPath();
-        if (b&4) {          // TODO: dry [4,0,0,w,0]  ?
+        if (b&1) {
             C.moveTo(0,0)
             C.lineTo(w,0)
         }
@@ -269,7 +309,7 @@ var BORF=function() {
             C.moveTo(w,0)
             C.lineTo(w,h)
         }
-        if (b&1){
+        if (b&4){
             C.moveTo(w,h)
             C.lineTo(0,h)
         }
@@ -281,91 +321,41 @@ var BORF=function() {
     }
 }
 
-var BORR=function() {
-    if (b & 112) { // TODO: can reomve this if
-        C.strokeStyle = $.bc;
-        C.beginPath();
-        if (b& 64) {
-            C.moveTo(0,0)
-            C.lineTo(d,0)
-        }
-        if (b& 32) {
-            C.moveTo(d,0)
-            C.lineTo(d,h)
-        }
-        if (b&16){
-            C.moveTo(d,h)
-            C.lineTo(0,h)
-        }
-//        if (b&128){
-//            C.moveTo(0,h)
-//            C.lineTo(0,0)
-//        }
-        C.stroke()
-    }
+
+var topDraw = function() {
+    trns(1, 0,-.5,.5, $.sx+0.4 +.5* $.d, $.sy-.5* $.d)
 }
 
-var brickDraw=function() {
-    //  Borders
-    //      ___ 7 ____
-    //    8/        6/|
-    //    /         / |
-    //   +--- 2 ---+  |5
-    //   |         |  |
-    //   3         1  /
-    //   |         | /4
-    //   +--- 0 ---+/
-    bw= $.bw, bh=bw*.3
-    // top
-    trns(1, 0,-.5,.5,x+0.4 +.5*d,y-.5*d)
-    brick(w, d, TBC1, TBC2);
-    BORT()
-
-    // front
-    trns(1, 0,0,1, x,y)
-    brick(w,h, FBC1, FBC2)
-    BORF()
-    // right
-    trns(.5, -.5,0,1,x+w,y)
-    brick(d,h,RBC1,RBC2)
-    BORR()
+var frontDraw = function() {
+    trns(1, 0,0,1, $.sx, $.sy);
 }
 
-var texturecube=function () {
-    // front
-    //y-=h/2;
-    trns(1, 0,0,1, x,y)    // hscale,hskew,vskew,vscale,x,y
-    $.tf.draw(0,0,w,h)
-    //C.drawImage($.tf, 0,0, w,h);
-    BORF()
+var rightDraw = function() {
+    trns(.5, -.5,0,1, $.sx+ $.w, $.sy)
+}
 
-//    if (p > 0) {
-    // right
-    p = .5
-    trns(p, -p,0,1,x+w,y)
-    $.tr.draw(0,0,d,h)
-    //C.drawImage($.tr, 0,0, d,h);
-    BORR()
-
-    // top
-    trns(1, 0,-p, p,x+.4 +p*d,y-p*d)
-    $.tt.draw(0,0,w,d)
-    BORT()
-
-//    }
-//    else {
+//    else {  p = -.5
 //        // left
 //        trns(p, p,0,1,x,y)
 //        C.drawImage(dirt2, 0,0, d,h);
 //
-//        // top
+//        // top - for left facing cube
 //        trns(1, 0,-p, -p,x-0.5 +p*d,y+p*d)
 //        C.drawImage(grass, 0,0,w,d);
 //    }
+
+
+
+
+var brickDraw=function() {
+    brick($.dim1, $.dim2, $.col1, $.col2, $.bw, $.bh);
+    drawBorders($.borders, $.dim1, $.dim2)
 }
 
-var RGB=function(a,b,c,d) { return "rgba("+a+","+b+","+c+","+(d||1)+")"}
-var BBC = RGB(15,15,15,.3) // brick border color
+var textureDraw=function() {
+    $.texture.draw(0,0, $.dim1, $.dim2)
+}
+
 
 var fourWall=function(x,y,z,w,h,d,wd) {  // wd = wall thickness
     TBC1 = "#226" // top brick color 1
@@ -373,22 +363,22 @@ var fourWall=function(x,y,z,w,h,d,wd) {  // wd = wall thickness
     // bottom
     B=0,BW=40
     X=x,Y=y,Z=z,W=w,H=1,D=d
-    addSprite()
+    addCube()
     TBC1 = "#e86" // top brick color 1
     TBC2 = "#eda"
 
     // left
     BC = BBC, Y=y+wd,W=wd,H=h,D=d-wd, B=0x1df,BW=30
-    addSprite()
+    addCube()
     // back
     X+=wd,Y=y+d-wd,W=w-2*wd,D=wd,B=0x1f7,BW=28
-    addSprite()
+    addCube()
     // right
     X=x+w-wd,Y=y+wd,W=wd,D=d-wd,B=0x1ff,BW=30
-    addSprite()
+    addCube()
     // front
     X=x,Y=y,W=w,D=wd,B=0x1df,BW=32
-    addSprite()
+    addCube()
 }
 
 // TODO: make tw,th,wd  automatic?  relative to y?
@@ -397,20 +387,20 @@ var turret=function( x,y,z, w,h,d, wd, th,tw,tgap, bw) {  // wd= wall thickness,
     // back
     Y=y+d-wd,Z=z+h-1,W=wd,H=th,D=tw,B=0x1fe,BC=BBC,BW=bw*.9
     for (X=x; X<=x+w-tw; X+=tw+tgap) {
-        addSprite();
+        addCube();
     }
     // sides
     Z++,B=0x1ef,BW=bw
     for (Y=y+d-wd; Y>y; Y-= tw+tgap) {
         X=x
-        addSprite();
+        addCube();
         X=x+w-wd
-        addSprite();
+        addCube();
     }
     Y=y
     Z--,B=0x1fe
     for (X=x; X<=x+w-tw; X+=tw+tgap) {
-        addSprite();
+        addCube();
     }
 
 }
@@ -420,22 +410,22 @@ var turret=function( x,y,z, w,h,d, wd, th,tw,tgap, bw) {  // wd= wall thickness,
 var faces = ["(ᵔᴥᵔ)", "{◕ ◡ ◕}", "ಠ◡ಠ", "ಠ_๏", "ಥ_ಥ", "(•‿•)", "☼.☼", "ಠ_ಠ", "(͡๏̯͡๏)", "◔̯◔","ತಎತ", "◉_◉","סּ_סּ", "(｡◕‿◕｡)", "｡◕‿◕｡"]
 
 //
-//addSprite(50,50,600,   20, 20, 20,  0x1, "#f0f", 15, brickDraw)
-//addSprite(100,50,600,  20, 20, 20,  0x2, "#f0f", 15,  brickDraw)
-//addSprite(150,50,600,  20, 20, 20,  0x4, "#f0f", 15, brickDraw)
-//addSprite(200,50,600,  20, 20, 20,  0x8, "#f0f", 15, brickDraw)
-//addSprite(250,50,600,  20, 20, 20, 0x10, "#f0f", 15, brickDraw)
-//addSprite(300,50,600,  20, 20, 20, 0x20, "#f0f", 15, brickDraw)
-//addSprite(350,50,600,  20, 20, 20, 0x40, "#f0f", 15, brickDraw)
-//addSprite(400,50,600,  20, 20, 20, 0x80, "#f0f", 15, brickDraw)
-//addSprite(450,50,600,  20, 20, 20,0x100, "#f0f", 15, brickDraw)
+//addCube(50,50,600,   20, 20, 20,  0x1, "#f0f", 15, brickDraw)
+//addCube(100,50,600,  20, 20, 20,  0x2, "#f0f", 15,  brickDraw)
+//addCube(150,50,600,  20, 20, 20,  0x4, "#f0f", 15, brickDraw)
+//addCube(200,50,600,  20, 20, 20,  0x8, "#f0f", 15, brickDraw)
+//addCube(250,50,600,  20, 20, 20, 0x10, "#f0f", 15, brickDraw)
+//addCube(300,50,600,  20, 20, 20, 0x20, "#f0f", 15, brickDraw)
+//addCube(350,50,600,  20, 20, 20, 0x40, "#f0f", 15, brickDraw)
+//addCube(400,50,600,  20, 20, 20, 0x80, "#f0f", 15, brickDraw)
+//addCube(450,50,600,  20, 20, 20,0x100, "#f0f", 15, brickDraw)
 
 
 var stairs=function (x1,y1,z1,w1,d1,x2,y2,w2,d2, h,n) {
     BC=BBC,BW=30,B=0x1ee,H=h+1
     range(n, function(){
         X=x1+i*(x2-x1)/n, Y=y1+i*(y2-y1)/n, Z=z1+i*h-1,W=w1+i*(w2-w1)/n,D=d1+i*(d2-d1)/n
-        addSprite()
+        addCube()
     })
 }
 

@@ -1,16 +1,24 @@
 <svg width="2640" height="1480" xmlns="http://www.w3.org/2000/svg">
  <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
  <g>
-  <title>Layer 1</title>
-  <rect id="svg_1" height="34" width="614" y="1080.16281" x="79.76744" stroke-width="5" stroke="#000000" fill="#7fff00"/>
-  <rect id="svg_5" stroke="#000000" height="16" width="174.00001" y="832.16281" x="187.26745" stroke-width="5" fill="#7f3f00"/>
-  <ellipse ry="16" rx="18" id="svg_6" cy="1031.66281" cx="126.26744" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke-width="5" stroke="#000000" fill="#0000ff"/>
-  <ellipse ry="11" rx="12" id="svg_7" cy="792.66281" cx="207.76745" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke-width="5" stroke="#000000" fill="#ffff00"/>
-  <ellipse id="svg_8" ry="11" rx="12" cy="810.16281" cx="259.76745" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke-width="5" stroke="#000000" fill="#ffff00"/>
-  <ellipse id="svg_9" ry="11" rx="12" cy="787.66281" cx="316.76745" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke-width="5" stroke="#000000" fill="#ffff00"/>
-  <rect stroke="#000000" id="svg_2" height="11.66355" width="141.35461" y="986.49926" x="216.76745" stroke-width="5" fill="#7f3f00"/>
-  <rect stroke="#000000" id="svg_4" height="27.70094" width="141.35461" y="901.16281" x="391.91285" stroke-width="5" fill="#7f3f00"/>
-  <ellipse ry="11" rx="12" id="svg_11" cy="870.16281" cx="461.26745" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke-width="5" stroke="#000000" fill="#ffff00"/>
-  <rect stroke="#000000" id="svg_3" height="70.66348" width="141.35461" y="1009.16821" x="448.82271" stroke-width="5" fill="#7f3f00"/>
+  <title>Back</title>
+  <rect stroke="#000000" id="svg_12" height="125.00001" width="20" y="875.49999" x="299" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" fill="#7f3f00" opacity="0.5"/>
+ </g>
+ <g display="inline">
+  <title>Main</title>
+  <rect id="svg_1" height="34" width="614" y="1080.16281" x="79.76744" stroke="#000000" fill="#7fff00"/>
+  <rect id="svg_5" stroke="#000000" height="16" width="174.00001" y="832.16281" x="187.26745" fill="#7f3f00"/>
+  <ellipse ry="16" rx="18" id="svg_6" cy="1023.66281" cx="137.26744" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#0000ff"/>
+  <ellipse ry="11" rx="12" id="svg_7" cy="792.66281" cx="207.76745" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00"/>
+  <ellipse id="svg_8" ry="11" rx="12" cy="810.16281" cx="259.76745" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00"/>
+  <ellipse id="svg_9" ry="11" rx="12" cy="787.66281" cx="316.76745" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00"/>
+  <rect stroke="#000000" id="svg_2" height="11.66355" width="141.35461" y="1000.49926" x="216.76745" fill="#7f3f00"/>
+  <rect stroke="#000000" id="svg_4" height="27.70094" width="141.35461" y="914.16281" x="390.91285" fill="#7f3f00"/>
+  <ellipse ry="11" rx="12" id="svg_11" cy="869.16281" cx="461.26745" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00"/>
+  <rect stroke="#000000" id="svg_3" height="70.66348" width="141.35461" y="1009.16821" x="448.82271" fill="#7f3f00"/>
+ </g>
+ <g display="inline">
+  <title>Front (hiding)</title>
+  <rect stroke="#000000" id="svg_10" height="68" width="20" y="1010.99999" x="275" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" fill="#7f3f00" opacity="0.5"/>
  </g>
 </svg>

@@ -26,9 +26,15 @@ def to_player(id, x,y):
     return "IPX=PX={:.0f};IPZ=PZ={:.0f}; /* ID: {} */".format(float(x),flipY(y), id)
 
 def to_platform(id,w,h,x,y):
-    return "X={:.0f};Z={:.0f};W={:.0f};H={:.0f};addSprite(); /* Platform ID: {} */".format(float(x),fixY(y,h),float(w),float(h), id)
+    setGlobal(Y=_y)
+    setGlobal(X="{:.0f}".format(float(x)))
+    setGlobal(Z="{:.0f}".format(fixY(y,h)))
+    setGlobal(W="{:.0f}".format(float(w)))
+    setGlobal(H="{:.0f}".format(float(h)))
+    return "addCube(); /* Platform ID: {} */".format( id)
 
 def to_coins(id, x,y):
+    setGlobal(Y="IPY")
     return "addCoin({:.0f},{:.0f}); /*  coin ID: {} */".format(float(x),flipY(y), id)
 
 def process_arc(arc):
@@ -59,34 +65,59 @@ def applyTransform(d, t):
     if 'h' in d:
         d['h'] = d['h']*float(t.get('ys',1)) 
 
-print "PY=IPY=50;Y=0; BW=27;BC=BBC;DR=texturecube;B=0x1ff;D=100;\n"
+
+jsGlobals = {}
+_y = 0
+def setGlobal(**kwargs):
+    for k,v in kwargs.items():
+        if jsGlobals.get(k) == v:
+            continue
+        jsGlobals[k]=v
+        print "{}={:4}; ".format(k,v),
+
+
+print "PY=IPY=50;Y=0; BW=27;BC=BBC;DR=brickDraw;B=0xfff;D=100;\n"
 fname = sys.argv[1]
-txt = open(fname).read().replace("\n", " ")
-txt = ' '.join(filter(bool, txt.split(" ")))
-#print txt
 
-scanner = rect_re.scanner(txt)
-rect = scanner.search()
-while rect:
-    rect= rect.groupdict()
-    t = transform.search(rect.get('leftover', '')) or translate.search(rect.get('leftover',''))
-    if t:
-        applyTransform(rect, t.groupdict())
-    del rect['leftover']
-    process_rect(rect)
+
+
+
+for line in open(fname):
+    #print line
+    if "<title>Back</title>" in line:
+        print "/****  Back ****/"
+        _y = 90
+        setGlobal(Y=90, D=10)
+    if "<title>Main</title>" in line:
+        print "/***** Main ****/"
+        _y=0  
+        setGlobal(Y=0, D=100)
+    if "<title>Front (hiding)</title>" in line:
+        _y=0
+        print "/***** FRONT *****/"
+        setGlobal(Y=0, D=10)
+    scanner = rect_re.scanner(line)
     rect = scanner.search()
+    while rect:
+        rect= rect.groupdict()
+        t = transform.search(rect.get('leftover', '')) or translate.search(rect.get('leftover',''))
+        if t:
+            applyTransform(rect, t.groupdict())
+        del rect['leftover']
+        process_rect(rect)
+        rect = scanner.search()
 
-print "H=10;"
-scanner  = arc_re.scanner(txt)
-arc = scanner.search()
-while arc:
-    arc = arc.groupdict()
-    t = transform.search(arc.get('leftover', '')) or translate.search(arc.get('leftover',''))
-    if t:
-        applyTransform(arc, t.groupdict())
-    del arc['leftover']
-    process_arc(arc)
+    scanner  = arc_re.scanner(line)
     arc = scanner.search()
+    while arc:
+        setGlobal(H=10)
+        arc = arc.groupdict()
+        t = transform.search(arc.get('leftover', '')) or translate.search(arc.get('leftover',''))
+        if t:
+            applyTransform(arc, t.groupdict())
+        del arc['leftover']
+        process_arc(arc)
+        arc = scanner.search()
 
 
 

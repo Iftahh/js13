@@ -21,28 +21,31 @@ var TPI = 2*PI
 var nrnd = function(a,b) { return a+(b-a)*rnd()}
 var irnd = function(a,b) { return nrnd(a,b)<<0 }
 
-var range = function(a,b,c) { // max int, iterator, increment      - note uses global "i"  !!!!
-    c = c || 1;
-    for (i=0; i<a; i += c)
-        b()
+var range = function(maxInt,iterFu,increment) { //       - note uses global "i"  !!!!
+    increment = increment || 1;
+    for (i=0; i<maxInt; i += increment)
+        iterFu()
 }
-var brrange = function(a,b,c) { // breaking range: max int, iterator, increment      - note uses global "i"  !!!!
-    c = c || 1;
-    for (i=0; i<a; i += c) {
-        var res = b()
+var brrange = function(maxInt,iterFu,increment) { //     - note uses global "i"  !!!!
+    increment = increment || 1;
+    for (i=0; i<maxInt; i += increment) {
+        var res = iterFu()
         if (res) return res;
     }
 }
-var each = function(a,b) { // collection, iterator     -  note uses global "i" and "$" !!!
-    range(a.length, function() {$=a[i]; b();})
+var each = function(collection, iterFu) { // collection, iterator     -  note uses global "i" and "$" !!!
+    range(collection.length, function() {$=collection[i]; iterFu();})
 }
-var breach = function(a,b) { // breaking each: collection, iterator     -  note uses global "i" and "$" !!!
-    return brrange(a.length, function() {$=a[i]; return b();})
+var breach = function(collection, iterFu) { // breaking each: collection, iterator     -  note uses global "i" and "$" !!!
+    return brrange(collection.length, function() {$=collection[i]; return iterFu();})
 }
 
 
-var OffsetX = OffsetY = 0;
-var trns = function(a,b,c,d,e,f) { C.setTransform(a,b,c,d,e-OffsetX,f-OffsetY) }  // hscale,hskew,vskew,vscale,x,y
+
+var fcurCameraX, fcurCameraY; //  fcur-camera defines what is being viewed - needed to be float in order not to lock
+
+var OffsetX = OffsetY = 0; //  is the integer round of fcur - needed to be int in order to avoid fuzzy drawimage for images
+var trns = function(hscale,hskew,vskew,vscale,x,y) { C.setTransform(hscale,hskew,vskew,vscale,x-OffsetX,y-OffsetY) }  //
 
 
 // these aren't consts but are using to pass parameters (made global to save space on repeating values)
@@ -52,6 +55,31 @@ var trns = function(a,b,c,d,e,f) { C.setTransform(a,b,c,d,e-OffsetX,f-OffsetY) }
 // BC - border color
 // BW - brick width
 // DR - draw
+
+var RGB=function(a,b,c,d) { return "rgba("+a+","+b+","+c+","+(d||1)+")"}
+var BBC = RGB(15,15,15,.3) // block border color
+
+
+// update dictionary $ with key/values from D
+var update = function($,D) {
+    for (k in D) {
+        $[k] = D[k];
+    }
+}
+// shallow copy of object, and then update
+var cloneUpdateObj = function($,D) {
+    var res = {}
+    for (k in $) {
+        res[k]=$[k]
+    }
+    update(res, D)
+    return res;
+}
+
+
+BW=27;BH=0;   // brick width and height (height=0 use .3*width
+B=0xfff;
+BC=BBC // border color
 
 //var log = function(){}
 var log = function(x) { console.log(x) }

@@ -21,8 +21,9 @@ grd.addColorStop(0, '#8ED6FF');
 grd.addColorStop(1, '#004CB3');
 
 //setCameraX = function(a) { CameraX = min(wx2, max(wx1,a));}
-PR=12
+PR=10
 P2R=2*PR
+PR3=P2R/3
 initPlayer = function() {
     PX = IPX;
     PY = IPY;
@@ -33,6 +34,8 @@ initPlayer = function() {
     PSX=SX; PSY=SY;
 }
 initPlayer()
+
+MAX_PZ = -Infinity
 
 player=function(){ // TODO: inline
 //    if (KEYS[38]) {VY=min(3,VY+.1)}  // up
@@ -52,27 +55,22 @@ player=function(){ // TODO: inline
     }
 
     PX+=VX;
+    VZ-= .2 // Gravity accelerates down
+    PZ+=VZ;
+
+    MAX_PZ = max(MAX_PZ, PZ)
     H=P2R;
-    var wall = collide(PX,PY,PZ, P2R, VX>0 ? CL: CR ); // collide left and right
-    if (wall) {
-        log("Collide left or right")
-        PX-= VX;
-        VX= -VX*.8;
-    }
 
-    if (abs(VX) < 0.05) VX = 0;
-
-//    PY+=VY; // TODO: collide front and back of cubes?
+//    PY+=VY; // Changed my mind: no collision with front and back of cubes
 //    wall = collide(PX-P2R,PY+PR,PZ, P2R, VY>0 ? CB: CF );
 //    if (wall) {
 //        PY-= VY;
 //        VY= -VY*.8;
 //    }
 
-    VZ-= .2 // Gravity accelerates down
-    PZ+=VZ;
+
     if (VZ>0) {
-        wall = collide(PX,PY,PZ+P2R, PR, CU ); // collide top
+        wall = collide(PX,PY,PZ, P2R, CollisionBottomFace ); // collide top
         if (wall) {
             log("Collide up")
             PZ-= VZ;
@@ -84,12 +82,32 @@ player=function(){ // TODO: inline
         initPlayer()
     }
 
-    var floor = findFloor(PX,PY,PZ+PR); // inline?
+    var floor = findFloor(PX,PY,PZ+P2R); // inline?
     if (PZ <= floor.z) {// bounce
         PZ =floor.z;
-        if (KEYS[32]) VZ=max(abs(VZ/2),6); else VZ=max(max(abs(VZ/2),abs(VX)/1.5),abs(VY)/1.5)// space - jump on touch floor
+        if (KEYS[32])
+            VZ=max(abs(VZ/2),6);
+        else
+            VZ=max(max(abs(VZ/2),abs(VX)/1.5),abs(VY)/1.5)// space - jump on touch floor
     }
 
+    var wall = collide(PX+PR3,PY,PZ+PR3, PR3, VX>0 ? CollisionLeftFace: CollisionRightFace ); // collide left and right
+    if (wall) {
+        log("Collide left or right")
+        PX-= VX;
+        if (PZ-floor.z > 10) {
+            // collide while in jump - hardly bouncing back to make it easier to jump onto platforms
+            VX= -VX*.2;
+        }
+        else {
+            // collide on ground - bounce back
+            VX= -VX*.8;
+        }
+
+
+    }
+
+    if (abs(VX) < 0.05) VX = 0;
 
 
     X=PX;Y=PY;Z=PZ;ts();
@@ -111,24 +129,23 @@ player=function(){ // TODO: inline
     Z=floor.z;ts();
     C.save();
     trns(1,0,0,.3, SX-4,SY+P2R+1);
+    C.beginPath()
     C.arc(0, 0, P2R, 0, TPI);
     C.fillStyle = RGB(15,15,15,0.5);
-    C.shadowColor = RGB(15,15,15,0.5);
-    C.shadowBlur = 25;
     C.fill();
-    C.restore()
 
     // ball
     trns(1,0,0,1, PSX,PSY);
-    C.beginPath();
+    C.lineWidth=1;
+    C.strokeStyle="#111";
     C.fillStyle = grd;
+    C.beginPath();
     C.arc(0, 0, P2R, 0, TPI);
     C.fill();
-    C.fillStyle=RGB(0,0,0,0)
     C.fillStyle = "#222"
     C.fillText("｡◕‿◕｡",-15,1)
     C.stroke()
-    C.closePath()
+    C.restore()
 
 
 }
