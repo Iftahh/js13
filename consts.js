@@ -44,7 +44,10 @@ var brrange = function(maxInt,iterFu,increment) { //     - note uses global "i" 
     }
 }
 var each = function(collection, iterFu) { // collection, iterator     -  note uses global "i" and "$" !!!
-    range(collection.length, function() {$=collection[i]; iterFu();})
+    for (i=0; i<collection.length; i++) { // not using range: because length might change at loop time (eg. collecting coins)
+        $=collection[i];
+        iterFu();
+    }
 }
 var breach = function(collection, iterFu) { // breaking each: collection, iterator     -  note uses global "i" and "$" !!!
     return brrange(collection.length, function() {$=collection[i]; return iterFu();})
@@ -82,6 +85,16 @@ var cloneUpdateObj = function($,D) {
     for (k in $) {
         res[k]=$[k]
     }
+    update(res, D)
+    return res;
+}
+
+// shallow copy of array, and then update
+var cloneUpdateArray = function($,D) {
+    var res = []
+    range($.length, function() {
+        res[i]=$[i]
+    })
     update(res, D)
     return res;
 }

@@ -7,7 +7,7 @@ echo "(function() {" > all.js
 cat consts.js >> all.js
 cat coins.js >> all.js
 cat game.js >> all.js
-cat background.js >> all.js
+cat jsfxr.js >> all.js
 cat lvl.js >> all.js
 cat player.js >> all.js
 cat loop.js >> all.js

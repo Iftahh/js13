@@ -476,5 +476,8 @@ window['jsfxr'] = function(settings) {
     output += base64Characters[a >> 18] + base64Characters[a >> 12 & 63] + base64Characters[a >> 6 & 63] + base64Characters[a & 63];
   }
   i -= used;
-  return output.slice(0, output.length - i) + '=='.slice(0, i);
+
+  var sound = new Audio()
+  sound.src= output.slice(0, output.length - i) + '=='.slice(0, i);
+  return sound;
 }

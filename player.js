@@ -25,7 +25,7 @@ PR=10       // player radius
 P2R=2*PR
 P2R3=P2R/3
 P2R4=P2R/4
-initPlayer = function() {
+var initPlayer = function() {
     PX = IPX;
     PY = IPY;
     PZ = IPZ;
@@ -36,14 +36,13 @@ initPlayer = function() {
 }
 initPlayer()
 
-var bounceFloor = new Audio();
-bounceFloor.src = jsfxr([0,,0.1653,,0.2356,0.3726,,0.12,0.2199,,,,,0.1547,,,,,1,,,,,0.5])
-var bounceWall = new Audio();
-
+var bounceFloor = jsfxr([0,,0.1453,,0.225,0.3726,,0.12,0.22,,,,,0.1547,,,,,1,,,,,0.35])
+var smallBounceFloor = jsfxr([0,,0.1,,0.22,0.3726,,0.14,0.2,,,,0.12,0.1547,,,,,1,,,,,0.26])
+var bounceWall = jsfxr([0,,0.11,0.16,0.09,0.227,0.04,-0.18,0.34,,,,,0.23,0.12,,,,1,0.2,0.16,0.1,,0.32])
 
 MAX_PZ = -Infinity
 
-player=function(){ // TODO: inline
+var player=function(){ // TODO: inline
 //    if (KEYS[38]) {VY=min(3,VY+.1)}  // up
 //    else if (KEYS[40]) {VY=max(-3,VY -.1)} // down
 //    else VY=VY*.9
@@ -78,7 +77,7 @@ player=function(){ // TODO: inline
     if (VZ>0) {
         wall = collide(PX+P2R3,PY,PZ+P2R3, P2R3, CollisionBottomFace ); // collide top
         if (wall) {
-            log("Collide up")
+            bounceWall.play()
             PZ-= VZ;
             VZ= -VZ*.8;
         }
@@ -90,8 +89,11 @@ player=function(){ // TODO: inline
 
     var floor = findFloor(PX,PY,PZ+P2R); // inline?
     if (PZ <= floor.z) {// bounce
-        if (VZ < -2)
+        if (VZ < -2 || KEYS[32])
             bounceFloor.play();
+        else if (VZ < -1)
+            smallBounceFloor.play()
+
         PZ =floor.z;
         if (KEYS[32])
             VZ=max(abs(VZ/2),6);
@@ -101,8 +103,8 @@ player=function(){ // TODO: inline
 
     var wall = collide(PX+P2R4,PY,PZ+P2R4, PR, VX>0 ? CollisionLeftFace: CollisionRightFace ); // collide left and right
     if (wall) {
-        log("Collide left or right")
         PX-= VX;
+        bounceWall.play();
         if (PZ-floor.z > 10) {
             // collide while in jump - hardly bouncing back to make it easier to jump onto platforms
             VX= -VX*.2;
@@ -111,8 +113,6 @@ player=function(){ // TODO: inline
             // collide on ground - bounce back
             VX= -VX*.8;
         }
-
-
     }
 
     if (abs(VX) < 0.05) VX = 0;

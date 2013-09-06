@@ -5,6 +5,15 @@ for (i=0; i<128; i++) { // skipping 0 and
         RS.push(s)
 }
 
+var baseSound = [0,,0.14,0.445,0.4616,0.6,,,,,,0.587,0.5406,,,,,,1,,,,,0.45]
+
+coinsSounds = [
+    jsfxr(baseSound),
+    jsfxr(cloneUpdateArray(baseSound, {5: .65})),
+    jsfxr(cloneUpdateArray(baseSound, {5: .7})),
+    jsfxr(cloneUpdateArray(baseSound, {5: .75}))
+]
+
 var initCoins = function() {  // TODO: inline
     C.save()
     C.strokeStyle = "#aa6"
@@ -15,8 +24,21 @@ var initCoins = function() {  // TODO: inline
     C.shadowOffsetY=0
 }
 
+var coinSoundIndex=0;
+
+var lastTimeHadCoin =0;
 var drawCoin = function() {
     C.beginPath();
+    if ($.x >= PSX-10 && $.x < PSX+P2R+10 && $.y >= PSY-10 && $.y < PSY+P2R+10) {
+        if (t - lastTimeHadCoin > 180) // 3 seconds
+            coinSoundIndex=0;
+        coins.splice(i,1);
+        i--;
+        coinsSounds[coinSoundIndex++].play();
+        coinSoundIndex = coinSoundIndex % coinsSounds.length;
+        lastTimeHadCoin = t;
+        return;
+    }
     L = RS.length
     var d= ($.t+t)%L;
     trns(RS[d],0,0,1, $.x, $.y)
