@@ -12,6 +12,8 @@ addCoin(317,-188); /*  coin ID: svg_9 */
 Y=   0;  X=217 ;  Z=-412;  W=141 ;  H=12  ;  addCube(); /* Platform ID: svg_2 */
 X=391 ;  Z=-342;  H=28  ;  addCube(); /* Platform ID: svg_4 */
 H=  10;  Y=IPY ;  addCoin(461,-269); /*  coin ID: svg_11 */
-Y=   0;  X=449 ;  Z=-480;  H=71  ;  addCube(); /* Platform ID: svg_3 */
+B=0xffb;
+Y=   0;  X=449 ;  Z=-481;  H=71  ;  addCube(); /* Platform ID: svg_3 */
 /***** FRONT *****/
-D=  10;  X=275 ;  Z=-479;  W=20  ;  H=68  ;  addCube(); /* Platform ID: svg_10 */
+B=0x0ea;
+D=  10;  X=275 ;  Z=-481;  W=20  ;  H=70  ;  addCube(); /* Platform ID: svg_10 */

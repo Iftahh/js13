@@ -109,11 +109,7 @@ var tree = function(x,y,z, w,h1,h2) {
     })
 }
 
-var frontFacingSprites = [];
-var rightFacingSprites = [];
-var topFacingSprites = [];
-// there are no left, back or bottom facing sprites in this game...
-
+var sprites = [];
 
 var CollisionLeftFace = []  // collision when moving left (X--)
 var CollisionRightFace = []  // collision when moving right (X++)
@@ -242,37 +238,40 @@ var addNonBlockCube=function() {
     }
 
     if (W>0 && H>0) {
-        frontFacingSprites.push(cloneUpdateObj(cube, {
+        sprites.push(cloneUpdateObj(cube, {
             col1: FBC1,
             col2: FBC2,
             texture: PF,
             dim1: W,
             dim2: H,
             borders: B,
+            preDraw: frontDraw,
             draw: DR[0] || DR   // DR can be array of 3 functions, or a function
         }))
     }
 
     if (D>0 && H>0) {
-        rightFacingSprites.push(cloneUpdateObj(cube, {
+        sprites.push(cloneUpdateObj(cube, {
             col1: RBC1,
             col2: RBC2,
             texture: PR,
             dim1: D,
             dim2: H,
             borders: B >> 4,
+            preDraw: rightDraw,
             draw: DR[1] || DR
         }))
     }
 
     if (W>0 && D>0) {
-        topFacingSprites.push(cloneUpdateObj(cube, {
+        sprites.push(cloneUpdateObj(cube, {
             col1: TBC1,
             col2: TBC2,
             texture: PT,
             dim1: W,
             dim2: D,
             borders: B>> 8,
+            preDraw: topDraw,
             draw: DR[2] || DR
         }))
     }
@@ -321,17 +320,64 @@ var drawBorders=function(b,w,h) {
     }
 }
 
-
-var topDraw = function() {
-    trns(1, 0,-.5,.5, $.sx+0.4 +.5* $.d, $.sy-.5* $.d)
+var _setAlpha=function(x0,x1) {
+    if ($.sx-x0 < PSX && $.sx+x1+ $.w+ $.d/2 > PSX  && $.y+ $.d < IPY) {
+        C.globalAlpha = .3  // TODO: make alpha based on distance from player
+    }
+    else {
+        C.globalAlpha = 1
+    }
 }
 
-var frontDraw = function() {
+var topDraw = function(behind) {
+    // TODO: check clip
+    if (behind) {
+        if ($.z >= PZ) {
+            return;
+        }
+    }
+    else {
+        if ($.z < PZ) { // above player - draw after player
+            return;
+        }
+        _setAlpha(10,10)
+    }
+    trns(1, 0,-.5,.5, $.sx+0.4 +.5* $.d, $.sy-.5* $.d);
+    return 1;
+}
+
+var frontDraw = function(behind) {
+    // TODO: check clip
+
+    if (behind) {
+        if ($.y <= PY) {
+            return;
+        }
+    }
+    else {
+        if ($.y > PY) {
+            return;
+        }
+        _setAlpha(10,10)
+    }
     trns(1, 0,0,1, $.sx, $.sy);
+    return 1;
 }
 
-var rightDraw = function() {
+var rightDraw = function(behind) {
+    if (behind) {
+        if ($.x+ $.w >= leftPlayerEdge) {
+            return;
+        }
+    }
+    else {
+        if ($.x+$.w < leftPlayerEdge) {
+            return;
+        }
+        _setAlpha(0,40)
+    }
     trns(.5, -.5,0,1, $.sx+ $.w, $.sy)
+    return 1;
 }
 
 //    else {  p = -.5

@@ -17,19 +17,8 @@ t = 0;
 
 // hack - because playerY doesn't change we can get the behind and front part pre-loop
 // TODO: use cached background buffer for these
-var behindPlayer = []
-each(frontFacingSprites, function() {
-    if ($.y > PY) { // behind player - draw before player
-        behindPlayer.push($)
-    }
-})
-var infrontPlayer = []
-each(frontFacingSprites, function() {
-    if ($.y <= PY) { // behind player - draw before player
-        infrontPlayer.push($)
-    }
-})
 
+var leftPlayerEdge = PSX-2
 
 function tick() {
     t++;
@@ -46,67 +35,23 @@ function tick() {
 
 
 
+    leftPlayerEdge = PSX-2
 
-    each(behindPlayer, function() {
+    each(sprites, function() {
         // behind player - draw before player
         // TODO: check clip
-        frontDraw()
-        $.draw()
-    })
-    each(topFacingSprites, function() {
-        if ($.z < PZ) { // below player - draw before player
-            // TODO: check clip
-            topDraw();
+        if ($.preDraw(true)) {
             $.draw()
         }
     })
-    each(rightFacingSprites, function() {
-        if ($.x+ $.w < PX) { // to the left of the player - draw before the player
-            // TODO: check clip
-            rightDraw();
-            $.draw();
-        }
-    })
-
-
 
     player();
 
-    each(topFacingSprites, function() {
-        if ($.z >= PZ) { // above player - draw after player
-            // TODO: check clip
-            if ($.sx-10 < PSX && $.sx+10+ $.w+ $.d/2 > PSX  && $.y+ $.d < IPY) {
-                C.globalAlpha = .3  // TODO: make alpha based on distance from player
-            }
-            else {
-                C.globalAlpha = 1
-            }
-            topDraw();
-            $.draw()
-        }
-    })
-    each(infrontPlayer, function() {
+    each(sprites, function() {
+        // not behind player - draw after player
         // TODO: check clip
-        if ($.sx-10 < PSX && $.sx+10+ $.w+ $.d/2 > PSX  && $.y+ $.d < IPY) {
-            C.globalAlpha = .3  // TODO: make alpha based on distance from player
-        }
-        else {
-            C.globalAlpha = 1
-        }
-        frontDraw()
-        $.draw()
-    })
-    each(rightFacingSprites, function() {
-        if ($.x+$.w >= PX) { // to the right of the player - draw after the player
-            // TODO: check clip
-            if ($.sx < PSX && $.sx+40+ $.w+ $.d/2 > PSX  && $.y+ $.d < IPY) {
-                C.globalAlpha = .3  // TODO: make alpha based on distance from player
-            }
-            else {
-                C.globalAlpha = 1
-            }
-            rightDraw();
-            $.draw();
+        if ($.preDraw(false)) {
+            $.draw()
         }
     })
     C.globalAlpha = 1

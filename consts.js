@@ -1,11 +1,12 @@
 
 var DC = document
-var C = DC.getElementById("c")
-var width = C.width; // todo: hard code 800x600 ?
-var height = C.height;
-var FdC = C.getContext("2d")
+var canvasC = DC.getElementById("c")
+var width = canvasC.width; // todo: hard code 800x600 ?
+var height = canvasC.height;
+var FdC = canvasC.getContext("2d")
 var C=FdC
-var BgC = DC.getElementById("b").getContext("2d")
+var canvasB = DC.getElementById("b")
+var BgC = canvasB.getContext("2d")
 var rnd = Math.random
 var abs = Math.abs
 var min = Math.min
@@ -13,10 +14,19 @@ var max = Math.max
 var cos= Math.cos
 var round = Math.round
 var rq = requestAnimationFrame
-var floor = Math.floor
 var OA = 255 // opaque alpha
 var PI = Math.PI
 var TPI = 2*PI
+
+onresize = function() {
+    var offsetY = ((DC.height - height)/2)+"px"
+    var offsetX = ((DC.width - width)/2)+"px"
+    canvasC.style.top = offsetY;
+    canvasC.style.left = offsetX;
+    canvasB.style.top = offsetY;
+    canvasB.style.left = offsetX;
+}
+onresize()
 
 var nrnd = function(a,b) { return a+(b-a)*rnd()}
 var irnd = function(a,b) { return nrnd(a,b)<<0 }

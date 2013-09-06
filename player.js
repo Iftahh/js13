@@ -21,9 +21,10 @@ grd.addColorStop(0, '#8ED6FF');
 grd.addColorStop(1, '#004CB3');
 
 //setCameraX = function(a) { CameraX = min(wx2, max(wx1,a));}
-PR=10
+PR=10       // player radius
 P2R=2*PR
-PR3=P2R/3
+P2R3=P2R/3
+P2R4=P2R/4
 initPlayer = function() {
     PX = IPX;
     PY = IPY;
@@ -34,6 +35,11 @@ initPlayer = function() {
     PSX=SX; PSY=SY;
 }
 initPlayer()
+
+var bounceFloor = new Audio();
+bounceFloor.src = jsfxr([0,,0.1653,,0.2356,0.3726,,0.12,0.2199,,,,,0.1547,,,,,1,,,,,0.5])
+var bounceWall = new Audio();
+
 
 MAX_PZ = -Infinity
 
@@ -70,7 +76,7 @@ player=function(){ // TODO: inline
 
 
     if (VZ>0) {
-        wall = collide(PX,PY,PZ, P2R, CollisionBottomFace ); // collide top
+        wall = collide(PX+P2R3,PY,PZ+P2R3, P2R3, CollisionBottomFace ); // collide top
         if (wall) {
             log("Collide up")
             PZ-= VZ;
@@ -84,6 +90,8 @@ player=function(){ // TODO: inline
 
     var floor = findFloor(PX,PY,PZ+P2R); // inline?
     if (PZ <= floor.z) {// bounce
+        if (VZ < -2)
+            bounceFloor.play();
         PZ =floor.z;
         if (KEYS[32])
             VZ=max(abs(VZ/2),6);
@@ -91,7 +99,7 @@ player=function(){ // TODO: inline
             VZ=max(max(abs(VZ/2),abs(VX)/1.5),abs(VY)/1.5)// space - jump on touch floor
     }
 
-    var wall = collide(PX+PR3,PY,PZ+PR3, PR3, VX>0 ? CollisionLeftFace: CollisionRightFace ); // collide left and right
+    var wall = collide(PX+P2R4,PY,PZ+P2R4, PR, VX>0 ? CollisionLeftFace: CollisionRightFace ); // collide left and right
     if (wall) {
         log("Collide left or right")
         PX-= VX;
