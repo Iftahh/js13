@@ -155,7 +155,7 @@ var drawBall = function(floor, left, x,y,z, radius, color, face, mouth, mx,my) {
     X=x;Y=y; // todo this was already set for player - but not for
     // shadow
     // TODO: use $ for both player and enenmy
-    if (floor.z > -10e6) {
+    if (floor && floor.z > -10e6) {
         Z=floor.z;
         ts();
         C.save();

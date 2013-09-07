@@ -1,3 +1,4 @@
+cd game
 rm -f all.js
 rm -f js13.zip
 rm -f js13.js
@@ -14,8 +15,11 @@ cat player.js >> all.js
 cat loop.js >> all.js
 echo "})()" >> all.js
 
-java -jar ../closure-compiler/compiler.jar  --compilation_level ADVANCED_OPTIMIZATIONS  --js all.js   --js_output_file js13.js
-zip js13.zip js13.js
+java -jar ../../closure-compiler/compiler.jar  --compilation_level ADVANCED_OPTIMIZATIONS  --js all.js   --js_output_file js13.js
+zip js13.zip js13.js game.html
 ls -lh js13.*
 
 rm -f all.js
+mv js13.zip ..
+mv js13.js ..
+cd ..
