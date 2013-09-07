@@ -15,6 +15,7 @@ range(4, function(i) { coinsSounds.push(jsfxr(cloneUpdateArray(baseSound, {5: .8
 var coinSoundIndex=0;
 
 var lastTimeHadCoin =0;
+
 var drawCoins = function($,i) {
     C.save()
     C.strokeStyle = "#aa6"

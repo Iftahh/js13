@@ -310,7 +310,9 @@ var drawBorders=function($) {
 }
 
 var _setAlpha=function($) {
-    if ($.sx-10 < Player.sx+P2R && $.sx+10+ $.w+ $.d/2 > Player.sx  && $.y+ $.d < IPY) {
+    if ($.sx-10 < Player.sx+P2R && $.sx+10+ $.w+ $.d/2 > Player.sx  && $.y+ $.d < IPY &&
+        $.sy-10 < Player.sy+P2R && $.sy+10+ $.h+ $.d/2 > Player.sy 
+        ) {
         C.globalAlpha = .3  // TODO: make alpha based on distance from player
     }
     else {
