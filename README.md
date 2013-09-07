@@ -1,4 +1,6 @@
-js13
+The Unlucky King
 ====
 
-my attempt at making a javascript game under 13kb total size (for js13 contest)
+platform game under 13kb total size (for js13 contest)
+
+all further progress will be on the gh-pages
