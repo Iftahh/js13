@@ -1,3 +1,10 @@
+DEBUG=true
+
+if (DEBUG) {
+    onerror = function (message, url, line) {
+        alert(message, url, line);
+    }
+}
 
 var DC = document
 var canvasC = DC.getElementById("c")
@@ -13,10 +20,11 @@ var min = Math.min
 var max = Math.max
 var cos= Math.cos
 var round = Math.round
-var rq = requestAnimationFrame
 var OA = 255 // opaque alpha
 var PI = Math.PI
 var TPI = 2*PI
+
+
 
 onresize = function() {
     var offsetY = ((DC.height - height)/2)+"px"
@@ -44,22 +52,27 @@ var brrange = function(maxInt,iterFu,increment) {
     }
 }
 var each = function(collection, iterFu) {
-    if (!collection) {
-        alert("Error")
-    }
     for (var i=0; i<collection.length; i++) {
         var $=collection[i];
         iterFu($,i);
     }
 }
 var breach = function(collection, iterFu) { // breaking each: collection, iterator     -  note uses global "i" and "$" !!!
-    if (!collection) {
-        alert("Error")
-    }
     return brrange(collection.length, function(i) {var $=collection[i]; return iterFu($,i);})
 }
 
 
+var rq= window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame;
+if (!rq) {
+    var lastTime = 0;
+    rq = function(callback) {
+        var currTime = new Date().getTime();
+        var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+        var id = window.setTimeout(function() { callback(); },
+            timeToCall);
+        lastTime = currTime + timeToCall;
+    }
+}
 
 var fcurCameraX, fcurCameraY; //  fcur-camera defines what is being viewed - needed to be float in order not to lock
 
@@ -110,6 +123,5 @@ BW=27;BH=0;   // brick width and height (height=0 use .3*width
 B=0xfff;
 BC=BBC // border color
 
-DEBUG=true
 //var log = function(){}
 var log = function(x) { if(!DEBUG) {alert("Forgot a log")} console.log(x) }

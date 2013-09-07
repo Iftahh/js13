@@ -18,7 +18,9 @@ DC.addEventListener('keyup', function(e){
 //})
 //log("Level packed in ("+wx1+","+wy1+")  to ("+wx2+","+wy2+")")
 
-var playerColor = C.createRadialGradient(12, -7, 3, 12, -7, 28);
+
+//var playerColor =  "#3084C4";
+var playerColor  = C.createRadialGradient(12, -7, 3, 12, -7, 28);
 // light blue
 playerColor.addColorStop(0, '#8ED6FF');
 // dark blue
@@ -64,13 +66,13 @@ var playerUpdate = function() {
 //    else if (KEYS[40]) {VY=max(-3,VY -.1)} // down
 //    else VY=VY*.9
 
-    left = KEYS[37];
-    right = KEYS[39];
+    var left = KEYS[37], right = KEYS[39], jump = KEYS[32];
+
     if (left) {Player.vx -= .15} // left   -
     else if (right) {Player.vx+= +.15}  // right
     else Player.vx *= .9
 
-    var maxSpeed = 2.5+KEYS[32];//  hack: max speed is higher if space is pressed
+    var maxSpeed = 2.5+jump;//  hack: max speed is higher if space is pressed
     if (abs(Player.vx) > maxSpeed) {
         if (left) {Player.vx = min(Player.vx *.95, -maxSpeed)}
         else if (right) { Player.vx=max(Player.vx *.95, maxSpeed)}
@@ -105,17 +107,18 @@ var playerUpdate = function() {
     }
 
     Player.floor = findFloor(Player.x+P2R4,Player.y+P2R4,Player.z+P2R4, PR); // todo change to work with $ for both enemy and player
-    if (Player.z <= Player.floor.z) {// bounce
-        if (Player.vz < -2 || KEYS[32])
+    if (Player.z <= Player.floor.z ||  // hit floor
+        (jump && Player.z-Player.floor.z < 5 && abs(Player.vz) < 2)) {
+        if (Player.vz < -2 || jump)
             bounceFloor.play();
         else if (Player.vz < -1)
             smallBounceFloor.play()
 
         Player.z =Player.floor.z;
-        if (KEYS[32])
-            Player.vz=max(abs(Player.vz/2),6);
+        if (jump)
+            Player.vz=max(abs(Player.vz/2),6); // jump on touch floor
         else
-            Player.vz=max(abs(Player.vz/2),abs(Player.vx)/1.5)// space - jump on touch floor
+            Player.vz=max(abs(Player.vz/2),abs(Player.vx)/1.5) // bounce back from fall or  running bounce (ie. bounce when walking)
     }
 
     var wall = collide(Player.x+P2R4,Player.y+P2R4,Player.z+P2R4, PR, Player.vx>0 ? CollisionLeftFace: CollisionRightFace ); // collide left and right

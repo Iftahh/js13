@@ -44,7 +44,7 @@ def to_player(id, x,y):
     global IPX, IPZ
     IPX = float(x)
     IPZ = flipY(y)
-    print "IPX=PX={:.0f};IPZ=PZ={:.0f};".format(IPX, IPZ, id)
+    print "IPX={:.0f};IPZ={:.0f};".format(IPX, IPZ, id)
 
 platform_overrides = {
     "svg_3": {"B":"0xffb"},
@@ -123,7 +123,7 @@ def setGlobal(**kwargs):
         print "{}={:4}; ".format(k,v),
 
 
-print "PY=IPY={};Y=0; BW=27;BC=BBC;DR=brickDraw;D=100;\n".format(IPY)
+print "IPY={};Y=0; BW=27;BC=BBC;DR=brickDraw;D=100;\n".format(IPY)
 fname = sys.argv[1]
 
 
