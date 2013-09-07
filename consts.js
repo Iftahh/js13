@@ -44,12 +44,18 @@ var brrange = function(maxInt,iterFu,increment) {
     }
 }
 var each = function(collection, iterFu) {
+    if (!collection) {
+        alert("Error")
+    }
     for (var i=0; i<collection.length; i++) {
         var $=collection[i];
         iterFu($,i);
     }
 }
 var breach = function(collection, iterFu) { // breaking each: collection, iterator     -  note uses global "i" and "$" !!!
+    if (!collection) {
+        alert("Error")
+    }
     return brrange(collection.length, function(i) {var $=collection[i]; return iterFu($,i);})
 }
 

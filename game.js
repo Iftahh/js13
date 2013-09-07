@@ -89,7 +89,7 @@ var CameraY = 0;
 
 // toscreen
 var ts = function () { SX=X+Y/2, SY=height-Y/2-H-Z}
-var $ts = function ($) {$.sx= $.x+ $.y/2; $.sy=height- $.y/2- $.h- $.z}
+var $ts = function ($) {$.sx= $.x+ $.y/2; $.sy=height- $.y/2- $.h- $.z}   // TODO: store y/2 ?
 
 var tree = function(x,y,z, w,h1,h2) {
     X=x,Y=y,Z=z,H=h1
@@ -119,19 +119,6 @@ var CollisionBottomFace = []  // collision when moving up (Z++)
 //var CollisionBackFace = [] // when moving front (Y--)
 //var CollisionFrontFace = [] // when moving back (Y++)
 
-var drawFrontSprites = function() {  // container
-    each(frontSprites, function($,i) {
-        x= $.sx, y= $.sy,w= $.w,h= $.h,d= $.d, b= $.br;
-        if (x-100 < PSX && x+100+w+d/2 > PSX  && y-100<PSY && y+100+h+d/2> PSY) {
-            C.globalAlpha = .3  // TODO: make alpha based on distance from player
-        }
-        else {
-            C.globalAlpha = 1
-        }
-        $.draw();
-    })
-    C.globalAlpha = 1
-}
 
 var MIN_BLOCK = 16
 // using globals
@@ -198,14 +185,14 @@ var collide = function(x,y,z,r, C) {  // C is either CollisionRightFace/Collisio
 }
 
 
-var findFloor = function(x,y,z) {
+var findFloor = function(x,y,z, r) {
     // find floor below the point
     var maxPlane = {z:-10e9};
-    each(CollisionTopFace, function($,i) {
+    each(CollisionTopFace, function($) {
         if ($.z >maxPlane.z && // above the current maxPlane
-            z >=$.z && // but below the player
-            x >= $.x && x<$.x+$.w &&
-            y >= $.y && y<$.y+$.d ) {
+            z+r >  $.z && // but below the player
+            x+r >  $.x && x<$.x+$.w &&
+            y+r >  $.y && y<$.y+$.d ) {
             maxPlane = $;
         }
     })
@@ -322,8 +309,8 @@ var drawBorders=function($) {
     }
 }
 
-var _setAlpha=function($,x0,x1) {
-    if ($.sx-x0 < PSX && $.sx+x1+ $.w+ $.d/2 > PSX  && $.y+ $.d < IPY) {
+var _setAlpha=function($) {
+    if ($.sx-10 < Player.sx+P2R && $.sx+10+ $.w+ $.d/2 > Player.sx  && $.y+ $.d < IPY) {
         C.globalAlpha = .3  // TODO: make alpha based on distance from player
     }
     else {
@@ -334,16 +321,16 @@ var _setAlpha=function($,x0,x1) {
 var topDraw = function($,behind) {
     // TODO: check clip
     if (behind) {
-        if ($.z >= PZ) {
+        if ($.z- $.h >= Player.z) {
             return;
         }
     }
     else {
-        if ($.z < PZ) { // above player - draw after player
+        if ($.z- $.h < Player.z) { // above player - draw after player
             return;
         }
-        _setAlpha($,10,10)
     }
+    _setAlpha($)
     trns(1, 0,-.5,.5, $.sx+0.4 +.5* $.d, $.sy-.5* $.d);
     return 1;
 }
@@ -352,15 +339,15 @@ var frontDraw = function($,behind) {
     // TODO: check clip
 
     if (behind) {
-        if ($.y <= PY) {
+        if ($.y <= Player.y) {
             return;
         }
     }
     else {
-        if ($.y > PY) {
+        if ($.y > Player.y) {
             return;
         }
-        _setAlpha($,10,10)
+        _setAlpha($)
     }
     trns(1, 0,0,1, $.sx, $.sy);
     return 1;
@@ -368,16 +355,16 @@ var frontDraw = function($,behind) {
 
 var rightDraw = function($,behind) {
     if (behind) {
-        if ($.x+ $.w >= leftPlayerEdge) {
+        if ($.x+ $.w >= rightPlayerEdge) {
             return;
         }
     }
     else {
-        if ($.x+$.w < leftPlayerEdge) {
+        if ($.x+$.w < rightPlayerEdge) {
             return;
         }
-        _setAlpha($,0,40)
     }
+    _setAlpha($)
     trns(.5, -.5,0,1, $.sx+ $.w, $.sy)
     return 1;
 }

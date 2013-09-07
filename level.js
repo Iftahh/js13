@@ -1,5 +1,5 @@
-PY=IPY=50;Y=0;
-IPX=PX=60;IPZ=PZ=20; /* ID: svg_6 */
+IPY=50;Y=0;
+IPX=60;IPZ=20; /* ID: svg_6 */
 BW=27
 B=0x1fe
 BC=BBC

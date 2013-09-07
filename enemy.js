@@ -1,23 +1,27 @@
 
 
 
-var enemies = []
-
 var addEnemy = function(x,y) {
     var $ = {
         x:x, y:IPY,z:y,
         h: E2R,
         vx: -1,
         vz: 0,
+        dim1: E2R,
+        dim2: E2R,
+        borders: 0,
+        preDraw: frontDraw,
+        draw: drawEnemy,
+        update: updateEnemy
     }
     $ts($)
 
-    $.floor = findFloor($.x, $.y, $.z+E2R);
+    $.floor = findFloor($.x+E2R4, $.y+E2R4, $.z+E2R4, ER);
     if (DEBUG && !$.floor) {
         alert("Enemy must be above floor")
     }
 
-    enemies.push($)
+    sprites.push($)
 }
 
 var enemyColor = C.createRadialGradient(15, -9, 3, 15, -9, 32);
@@ -26,17 +30,17 @@ enemyColor.addColorStop(0, '#FFD6CE');
 // dark red
 enemyColor.addColorStop(1, '#B34C80');
 
-var E2R = 22
+var ER = 22
+var E2R = 2*ER
+var E2R4 = E2R/4
 
-var drawEnemy = function($,i) {
-
-
+var updateEnemy = function($) {
     $.x += $.vx;
     $.vz -= .2 // Gravity accelerates down
     $.z+= $.vz;
     $ts($);
 
-    if ($.sx+E2R+10 >= PSX && $.sx < PSX+P2R+10 && $.sy+E2R >= PSY-15 && $.sy < PSY+P2R+10) {
+    if ($.sx+E2R >= Player.sx && $.sx < Player.sx+P2R && $.sy+E2R >= Player.sy && $.sy < Player.sy+P2R) {
         if (t - lastTimeHadCoin > 180) // 3 seconds
             coinSoundIndex=0;
         //coins.splice(i,1);
@@ -46,19 +50,6 @@ var drawEnemy = function($,i) {
         lastTimeHadCoin = t;
         initPlayer()
         return;
-    }
-
-    var floor = findFloor($.x, $.y, $.z+E2R); // inline?
-    if (floor != $.floor) {
-        // made it to edge - turn back
-        $.x -= $.vx;
-        $.vx *= -1;
-    }
-    else {
-        if ($.z <= floor.z) {// bounce
-            $.z =floor.z;
-            $.vz = 2;
-        }
     }
 
 //    var wall = collide($.x+P2R4, $.y, $.z+P2R4, PR, VX>0 ? CollisionLeftFace: CollisionRightFace ); // collide left and right
@@ -78,6 +69,25 @@ var drawEnemy = function($,i) {
 //    if (abs(VX) < 0.05) VX = 0;
 
 
-    drawBall($.floor, $.vx<0, $.x, $.y, $.z, E2R , enemyColor, "◕` ᐟ◕ ノ", "⁔", -8,9)
+    var floor = findFloor($.x+E2R4, $.y+E2R4, $.z+E2R4, ER); // inline?
+    if (floor != $.floor) {
+        // made it to edge - turn back
+        $.x -= $.vx;
+        $.vx *= -1;
+    }
+    else {
+        if ($.z <= floor.z) {// bounce
+            $.z =floor.z;
+            $.vz = 2;
+        }
+    }
+    $ts($);
+}
+
+var drawEnemy = function($) {
+
+
+    H=E2R;
+    drawBall($.floor, $.vx<0, $.x, $.y, $.z, ER , enemyColor, "◕` ᐟ◕ ノ", "⁔", -8,9)
 }
 

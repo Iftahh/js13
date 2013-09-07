@@ -27,7 +27,7 @@ var drawCoins = function($,i) {
     for (var i=0; i<coins.length; i++) {
         var $=coins[i];
 
-        if ($.x >= PSX-10 && $.x < PSX+P2R+10 && $.y >= PSY-15 && $.y < PSY+P2R+10) {
+        if ($.x >= Player.sx && $.x < Player.sx+P2R && $.y >= Player.sy && $.y < Player.sy+P2R) {
             if (t - lastTimeHadCoin > 180) // 3 seconds
                 coinSoundIndex=0;
             coins.splice(i,1);
