@@ -52,19 +52,11 @@ var updateEnemy = function($) {
         return;
     }
 
-//    var wall = collide($.x+P2R4, $.y, $.z+P2R4, PR, VX>0 ? CollisionLeftFace: CollisionRightFace ); // collide left and right
-//    if (wall) {
-//        PX-= VX;
-//        bounceWall.play();
-//        if (PZ-floor.z > 10) {
-//            // collide while in jump - hardly bouncing back to make it easier to jump onto platforms
-//            VX= -VX*.2;
-//        }
-//        else {
-//            // collide on ground - bounce back
-//            VX= -VX*.8;
-//        }
-//    }
+    var wall = collide($.x+E2R4, $.y, $.z+E2R4, ER, $.vx>0 ? CollisionLeftFace: CollisionRightFace ); // collide left and right
+    if (wall) {
+        $.x-= $.vx;
+        $.vx *= -1;
+    }
 
 //    if (abs(VX) < 0.05) VX = 0;
 

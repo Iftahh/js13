@@ -16,7 +16,7 @@ cat loop.js >> all.js
 echo "})()" >> all.js
 
 java -jar ../../closure-compiler/compiler.jar  --compilation_level ADVANCED_OPTIMIZATIONS  --js all.js   --js_output_file js13.js
-zip js13.zip js13.js game.html
+zip js13.zip js13.js index.html
 ls -lh js13.*
 
 rm -f all.js

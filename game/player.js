@@ -1,9 +1,15 @@
 var KEYS={32:0}
 DC.addEventListener('keydown', function(e){
-    KEYS[e.keyCode]=1
+    KEYS[e.keyCode]=1;
+    Player.left = KEYS[37];
+    Player.right = KEYS[39];
+    Player.jump = KEYS[32]
 })
 DC.addEventListener('keyup', function(e){
-    KEYS[e.keyCode]=0
+    KEYS[e.keyCode]=0;
+    Player.left = KEYS[37];
+    Player.right = KEYS[39];
+    Player.jump = KEYS[32]
 })
 
 
@@ -29,7 +35,6 @@ playerColor.addColorStop(1, '#004CB3');
 //setCameraX = function(a) { CameraX = min(wx2, max(wx1,a));}
 var PR=20       // player radius
 var P2R=2*PR
-var P2R3=P2R/3
 var P2R4=P2R/4
 
 var Player = {}
@@ -47,7 +52,6 @@ var initPlayer = function() {
     }
     $ts(Player)
     CameraX = Player.sx - width *.5;
-
     CameraY = Player.sy - height *.7;
 }
 
@@ -66,7 +70,7 @@ var playerUpdate = function() {
 //    else if (KEYS[40]) {VY=max(-3,VY -.1)} // down
 //    else VY=VY*.9
 
-    var left = KEYS[37], right = KEYS[39], jump = KEYS[32];
+    var left = Player.left, right=Player.right, jump=Player.jump;
 
     if (left) {Player.vx -= .15} // left   -
     else if (right) {Player.vx+= +.15}  // right

@@ -1,5 +1,3 @@
-BgC.fillStyle="#222"
-BgC.fillRect(0,0,width,height)
 
 
 fcurCameraX = CameraX = (Player.sx - width *.5);

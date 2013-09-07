@@ -69,9 +69,9 @@ var brick=function (w,h,c1,c2,bw,bh) {
 
 
 var D=20
-var TT= r2c(D,D, function(c) { noise(c, D,D, 80,20, 180,40, 80,40)})
-var TF= r2c(D,D, function(c) { noise(c, D,D, 120,20, 110,20, 40,30)})
-var TR= r2c(D,D, function(c) { noise(c, D,D, 140,25, 120,25, 50,40)})
+var TextureTop= r2c(D,D, function(c) { noise(c, D,D, 80,20, 180,40, 80,40)})
+var TextureFront= r2c(D,D, function(c) { noise(c, D,D, 120,20, 110,20, 40,30)})
+var TextureRight= r2c(D,D, function(c) { noise(c, D,D, 140,25, 120,25, 50,40)})
 var toPattern = function(texture) {
     var r = C.createPattern(r2c(3*D,3*D, function(c) {c.drawImage(texture,0,0,3*D,3*D)}), 'repeat');
     r.draw = function(x,y,w,h) {
@@ -80,9 +80,9 @@ var toPattern = function(texture) {
     }
     return r;
 }
-var PT = toPattern(TT)
-var PF = toPattern(TF)
-var PR = toPattern(TR)
+var PatternTop = toPattern(TextureTop)
+var PatternFront = toPattern(TextureFront)
+var PatternRight = toPattern(TextureRight)
 
 var CameraX = 0;
 var CameraY = 0;
@@ -119,6 +119,7 @@ var CollisionBottomFace = []  // collision when moving up (Z++)
 //var CollisionBackFace = [] // when moving front (Y--)
 //var CollisionFrontFace = [] // when moving back (Y++)
 
+var cubesImageCache = {}
 
 var MIN_BLOCK = 16
 // using globals
@@ -229,7 +230,7 @@ var addNonBlockCube=function() {
         sprites.push(cloneUpdateObj(cube, {
             col1: FBC1,
             col2: FBC2,
-            texture: PF,
+            texture: PatternFront,
             dim1: W,
             dim2: H,
             borders: B,
@@ -242,7 +243,7 @@ var addNonBlockCube=function() {
         sprites.push(cloneUpdateObj(cube, {
             col1: RBC1,
             col2: RBC2,
-            texture: PR,
+            texture: PatternRight,
             dim1: D,
             dim2: H,
             borders: B >> 4,
@@ -255,7 +256,7 @@ var addNonBlockCube=function() {
         sprites.push(cloneUpdateObj(cube, {
             col1: TBC1,
             col2: TBC2,
-            texture: PT,
+            texture: PatternTop,
             dim1: W,
             dim2: D,
             borders: B>> 8,

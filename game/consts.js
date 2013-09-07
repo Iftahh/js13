@@ -7,13 +7,22 @@ if (DEBUG) {
 }
 
 var DC = document
-var canvasC = DC.getElementById("c")
-var width = canvasC.width; // todo: hard code 800x600 ?
-var height = canvasC.height;
-var FdC = canvasC.getContext("2d")
-var C=FdC
-var canvasB = DC.getElementById("b")
-var BgC = canvasB.getContext("2d")
+
+var each = function(collection, iterFu) {
+    for (var i=0; i<collection.length; i++) {
+        var $=collection[i];
+        iterFu($,i);
+    }
+}
+
+var canvases = [];
+each(['b','c','d'], function($) { canvases.push(DC.getElementById($))})
+var width = canvases[0].width; // todo: hard code 800x600 ?
+var height = canvases[0].height;
+var FdC = canvases[1].getContext("2d")
+var C=FdC // current canvas to draw to
+
+var BgC = canvases[0].getContext("2d")
 var rnd = Math.random
 var abs = Math.abs
 var min = Math.min
@@ -27,12 +36,17 @@ var TPI = 2*PI
 
 
 onresize = function() {
-    var offsetY = ((DC.height - height)/2)+"px"
-    var offsetX = ((DC.width - width)/2)+"px"
-    canvasC.style.top = offsetY;
-    canvasC.style.left = offsetX;
-    canvasB.style.top = offsetY;
-    canvasB.style.left = offsetX;
+    var parent = canvases[0].parentElement
+    var offsetY = (parent.offsetTop+(parent.offsetHeight - height)/2)+"px"
+    var offsetX = (parent.offsetLeft+(parent.offsetWidth - width)/2)+"px"
+    each(canvases, function($) {
+        $.style.top = offsetY;
+        $.style.left = offsetX;
+    })
+    width = canvases[0].width; // todo: hard code 800x600 ?
+    height = canvases[0].height
+    BgC.fillStyle="#222"
+    BgC.fillRect(0,0,width,height)
 }
 onresize()
 
