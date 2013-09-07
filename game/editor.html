@@ -6,7 +6,7 @@
 <body style="font-family:sans-serif">
 
 
-<div  style="background-color:#222; padding: 5px; width:1270px; color:white">
+<div  style="background-color:#222; padding: 5px; width:100%; color:white">
     <div style="text-align: center">
     <h1 style="margin-bottom:0; display:inline; margin-right:40px;">Editor</h1> (not part of the contest)
     </div>
@@ -143,6 +143,12 @@
             The other two layers put platforms at the back (behind the player) and in the front of the player.
         </li>
         <li>
+            The order of the elements in the SVG file matters!  They are drawn from back to front. <br>
+            You can use  "send-backwards" or "bring-to-front" (right click on an element in the editor).<br>
+            A good rule of thumb is lower platforms and enemies should be more "backward", top platforms should be "front",<br>
+            so if you <b>plan your level from bottom of screen to top of screen</b> you have natural correct order of elements.
+        </li>
+        <li>
             Currently supported:
             <ul>
                 <li>Yellow circle - coin</li>
@@ -155,7 +161,7 @@
     </ol>
 </div>
 
-<div id="game" style="background-color:#EEEEEE;height:930px;width:670px;float:left;">
+<div id="game" style="height:930px;width:670px;float:left;">
     <canvas id='b' width=640 height=480 class="C" background="#222"></canvas>
     <canvas id='c' width=640 height=480 class="C"></canvas>
     <canvas id='d' width=640 height=480 class="C"></canvas>
