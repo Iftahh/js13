@@ -30,8 +30,6 @@ Tch.shadowColor = RGB(170,180,250,.5);
 Tch.shadowBlur = 30;
 Tch.lineWidth = 7;
 Tch.strokeStyle = RGB(80,90,140,.5);
-Tch.arc(joystick.x, joystick.y, 30, 0, TPI);
-Tch.fill()
 
 var TchCan = canvases[2];
 TchCan.addEventListener('touchstart', function(event) {
