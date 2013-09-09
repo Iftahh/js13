@@ -21,8 +21,8 @@ var width = canvases[0].width; // todo: hard code 800x600 ?
 var height = canvases[0].height;
 var FdC = canvases[1].getContext("2d")
 var C=FdC // current canvas to draw to
-
 var BgC = canvases[0].getContext("2d")
+var Tch = canvases[2].getContext("2d")
 var rnd = Math.random
 var abs = Math.abs
 var min = Math.min

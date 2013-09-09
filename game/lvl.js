@@ -11,7 +11,7 @@ Y=   0;  D= 100;
 /* Platform ID: svg_1  */      DR=textureDraw;  addCube(80 , -514, 614, 34 )
 /* Platform ID: svg_3  */      B=0xffb;  addCube(449, -482, 141, 71 )
 /* Platform ID: svg_5  */      DR=brickDraw;  B=0xfff;  addCube(187, -248, 174, 16 )
-/* Player :  ID: svg_6   */    IPX=137;IPZ=-424; IPX=1330;
+/* Player :  ID: svg_6   */    IPX=137;IPZ=-424;
 /* Coin ID: svg_7    */        addCoin(208,-193); 
 /* Coin ID: svg_8    */        addCoin(260,-210); 
 /* Coin ID: svg_9    */        addCoin(315,-190); 

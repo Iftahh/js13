@@ -12,6 +12,127 @@ DC.addEventListener('keyup', function(e){
     Player.jump = KEYS[32]
 })
 
+DC.body.addEventListener('touchmove', function(event) {
+    event.preventDefault();
+}, false);
+
+
+var joystick = {
+    x: width/8,
+    y: height *.85,
+    move: null,
+    button: null
+}
+
+
+Tch.fillStyle = RGB(140,150,240,.5);
+Tch.shadowColor = RGB(170,180,250,.5);
+Tch.shadowBlur = 30;
+Tch.lineWidth = 7;
+Tch.strokeStyle = RGB(80,90,140,.5);
+Tch.arc(joystick.x, joystick.y, 30, 0, TPI);
+Tch.fill()
+
+var TchCan = canvases[2];
+TchCan.addEventListener('touchstart', function(event) {
+    var ct =  event.changedTouches;
+    var jsMove = null;
+    var jsButton = null;
+    each(ct, function($) {
+        var x = $.clientX- TchCan.offsetLeft;
+        var y = $.clientY-TchCan.offsetTop;
+        if (x < width/2 - 20) {
+            jsMove = [$.identifier, x,y];
+        }
+        else if (x > width/2 + 20) {
+            jsButton = [$.identifier, x,y];
+        }
+    })
+    if (jsMove != null) {
+        joystickMove(jsMove);
+    }
+    if (jsButton != null) {
+        joystickButton(jsButton)
+    }
+
+});
+
+var joystickMove = function(jsMove) {
+    joystick.move = jsMove;
+    var x = jsMove[1];
+    var y = jsMove[2];
+    Tch.clearRect(0,0,width/2,height);
+    Tch.beginPath();
+    Tch.arc(joystick.x, joystick.y, 20, 0, TPI);
+    Tch.moveTo(joystick.x, joystick.y);
+    Tch.lineTo(x, y);
+    Tch.arc(x,y, 35, 0, TPI);
+    Tch.stroke();
+    Tch.fill();
+    if (x < joystick.x-15) {
+        Player.left = 1;
+        Player.right = 0;
+    }
+    else if (x > joystick.x +15) {
+        Player.left = 0;
+        Player.right = 1;
+    }
+    else {
+        Player.left = 0;
+        Player.right = 0;
+    }
+}
+
+var joystickButton=function(button) {
+    Player.jump = 1;
+    joystick.button= button;
+    Tch.clearRect(width/2,0,width/2,height);
+    Tch.beginPath()
+    Tch.arc(button[1],button[2], 35, 0, TPI);
+    Tch.fill();
+}
+
+TchCan.addEventListener('touchmove', function(event) {
+    var ct =  event.changedTouches;
+    var jsMove = null;
+    var jsButton = null;
+    each(ct, function($) {
+        var x = $.clientX- TchCan.offsetLeft;
+        var y = $.clientY-TchCan.offsetTop;
+        if (x < width/2 - 20) {
+            jsMove = [$.identifier, x,y];
+        }
+        else if (x > width/2 + 20) {
+            jsButton = [$.identifier, x,y];
+        }
+    })
+    if (jsMove != null) {
+        joystickMove(jsMove)
+    }
+    if (jsButton != null) {
+        joystickButton(jsButton)
+    }
+});
+
+TchCan.addEventListener('touchend', function(event) {
+    var ct =  event.changedTouches;
+    each(ct, function($) {
+        if (joystick.move != null && $.identifier == joystick.move[0]) {
+            joystick.move = null;
+            Player.left = 0;
+            Player.right = 0;
+            Tch.beginPath();
+            Tch.clearRect(0,0,width/2,height);
+            Tch.arc(joystick.x, joystick.y, 30, 0, TPI);
+            Tch.fill()
+        }
+        if (joystick.button != null && $.identifier == joystick.button[0]) {
+            joystick.button = null;
+            Player.jump = 0;
+            Tch.clearRect(width/2,0,width/2,height);
+        }
+    });
+});
 
 // at this stage the level should be set - check the max and min coordinates and use it to set world boundaries
 //wx1=wy1 = Infinity;
