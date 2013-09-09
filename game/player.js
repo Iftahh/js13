@@ -1,8 +1,10 @@
-var KEYS={32:0}
+var KEYS={}
 DC.addEventListener('keydown', function(e){
     KEYS[e.keyCode]=1;
     Player.left = KEYS[37];
     Player.right = KEYS[39];
+    Player.up = KEYS[38];
+    Player.down = KEYS[40];
     Player.jump = KEYS[32]
 })
 DC.addEventListener('keyup', function(e){
@@ -181,7 +183,7 @@ var playerUpdate = function($) {
     $.z+=$.vz;
 
     //MAX_PZ = max(MAX_PZ, PZ)
-    H=P2R;
+    //H=P2R;
 
 //    PY+=VY; // Changed my mind: no collision with front and back of cubes
 //    wall = collide(PX-P2R,PY+PR,PZ, P2R, VY>0 ? CB: CF );
@@ -258,7 +260,6 @@ var playerDraw=function(){ // TODO: inline
     drawBall(Player )
 }
 
-// Assumes X,Y,H are set already
 var drawBall = function($) {
     // shadow
     C.save();
@@ -316,6 +317,5 @@ var initPlayer = function() {
     CameraY = Player.sy - height *.7;
 }
 
-initPlayer()
 // Player isn't added - he has special treatment because he can move in the queue of the rendering
 //addSprite(Player)

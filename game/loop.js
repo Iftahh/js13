@@ -1,7 +1,5 @@
 
 
-fcurCameraX = CameraX = (Player.sx - width *.5);
-fcurCameraY = CameraY = (Player.sy - height *.8);
 
 //initBackgroundDraw();
 
@@ -14,6 +12,9 @@ var resetJoystick=function() {
     }
 }
 resetJoystick();
+
+loadLevel(lvl);
+
 
 onresize = function() {
     var parent = canvases[0].parentElement;
@@ -44,6 +45,12 @@ onresize = function() {
 }
 onresize()
 
+fcurCameraX = CameraX = (Player.sx - width *.5);
+fcurCameraY = CameraY = (Player.sy - height *.8);
+
+
+
+
 //texturecube(50, 500, 80, 120, 100, stones[0],stones[1],stones[2]);
 //C.restore()
 
@@ -54,7 +61,6 @@ t = 0;
 // hack - because playerY doesn't change we can get the behind and front part pre-loop
 // TODO: use cached background buffer for these
 
-var rightPlayerEdge = 0
 var spritesIn = []
 
 function tick() {

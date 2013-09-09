@@ -72,8 +72,9 @@ var updateEnemy = function($) {
     $.sx -= E2R4;
     $.sy -= E2R4/2;
 
-    if ($.sx+ $.sw >= Player.sx && $.sx < Player.sx+Player.sw && $.sy+ $.sh >= Player.sy
-        && $.sy < Player.sy+Player.sh) {
+    var pad=10;
+    if ($.sx+ $.sw-pad >= Player.sx && $.sx+pad < Player.sx+Player.sw && $.sy+ $.sh-pad >= Player.sy
+        && $.sy+pad < Player.sy+Player.sh) {
         if (t - lastTimeHadCoin > 180) // 3 seconds
             coinSoundIndex=0;
         //coins.splice(i,1);

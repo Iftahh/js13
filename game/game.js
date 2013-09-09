@@ -512,11 +512,11 @@ var stairs=function (x1,y1,z1,w1,d1,x2,y2,w2,d2, h,n) {
     BC=BBC;
     BW=30;
     B=0x1ee;
-    H=h+1;
+    var H=h+1;
     range(n, function(i){
         Y=y1+i*(y2-y1)/n;
         D=d1+i*(d2-d1)/n;
-        addCube(x1+i*(x2-x1)/n,  z1+i*h-1,  w1+i*(w2-w1)/n)
+        addCube(x1+i*(x2-x1)/n,  z1+i*h-1,  w1+i*(w2-w1)/n, H)
     })
 }
 

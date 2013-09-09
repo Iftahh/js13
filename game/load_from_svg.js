@@ -1,6 +1,14 @@
 // load level from SVG
 
+if(typeof exports == 'undefined'){
+    exports = window
+}
+
 function load_from_svg(svg) {
+    loadLevel(svg_to_lvl(svg));
+}
+
+exports.svg_to_lvl = function(svg) {
     var alerted = false;
     var safeAlert = function(t) {
         if (alerted) {
@@ -165,5 +173,5 @@ function load_from_svg(svg) {
             process_ellipse(ellipse)
         }
     }
-    loadLevel(lvl);
+    return lvl;
 }

@@ -1,4 +1,4 @@
-DEBUG=true
+DEBUG=true  // TODO: remove all debug from code
 
 if (DEBUG) {
     onerror = function (message, url, line) {
@@ -32,6 +32,7 @@ var round = Math.round
 var OA = 255 // opaque alpha
 var PI = Math.PI
 var TPI = 2*PI
+
 
 var coins = [];
 var sprites = [];
