@@ -3,18 +3,25 @@
 
 var addEnemy = function(x,y) {
     var $ = {
-        x:x, y:IPY,z:y,
+        x:x+E2R4, y:IPY+E2R4,z:y+E2R4,
         h: E2R,
         vx: -1,
         vz: 0,
-        dim1: E2R,
-        dim2: E2R,
-        borders: 0,
-        preDraw: frontDraw,
+        h:ER,
+        w:ER,
+        d:ER,
+        sw:E2R,
+        sh:E2R,
+        radius:ER,
         draw: drawEnemy,
-        update: updateEnemy
+        update: updateEnemy,
+        color:enemyColor,
+        face: "◕` ᐟ◕ ノ",
+        mouth: "⁔",
+        mx:-8,
+        my:9
     }
-    $ts($)
+    toScreenSpace($)
 
     $.floor = findFloor($.x+E2R4, $.y+E2R4, $.z+E2R4, ER);
     if (DEBUG && !$.floor) {
@@ -38,9 +45,35 @@ var updateEnemy = function($) {
     $.x += $.vx;
     $.vz -= .2 // Gravity accelerates down
     $.z+= $.vz;
-    $ts($);
 
-    if ($.sx+E2R >= Player.sx && $.sx < Player.sx+P2R && $.sy+E2R >= Player.sy && $.sy < Player.sy+P2R) {
+    var wall = collide($.x, $.y, $.z, ER, $.vx>0 ? CollisionLeftFace: CollisionRightFace ); // collide left and right
+    if (wall) {
+        $.x-= $.vx;
+        $.vx *= -1;
+    }
+
+//    if (abs(VX) < 0.05) VX = 0;
+
+
+    var floor = findFloor($.x, $.y, $.z, ER); // inline?
+    if (floor != $.floor) {
+        // made it to edge - turn back
+        $.x -= $.vx;
+        $.vx *= -1;
+    }
+    else {
+        $.floorZ = floor.z + E2R4;
+        if ($.z <= $.floorZ) {// bounce
+            $.z = $.floorZ;
+            $.vz = 2;
+        }
+    }
+    toScreenSpace($);
+    $.sx -= E2R4;
+    $.sy -= E2R4/2;
+
+    if ($.sx+ $.sw >= Player.sx && $.sx < Player.sx+Player.sw && $.sy+ $.sh >= Player.sy
+        && $.sy < Player.sy+Player.sh) {
         if (t - lastTimeHadCoin > 180) // 3 seconds
             coinSoundIndex=0;
         //coins.splice(i,1);
@@ -52,34 +85,11 @@ var updateEnemy = function($) {
         return;
     }
 
-    var wall = collide($.x+E2R4, $.y, $.z+E2R4, ER, $.vx>0 ? CollisionLeftFace: CollisionRightFace ); // collide left and right
-    if (wall) {
-        $.x-= $.vx;
-        $.vx *= -1;
-    }
-
-//    if (abs(VX) < 0.05) VX = 0;
-
-
-    var floor = findFloor($.x+E2R4, $.y+E2R4, $.z+E2R4, ER); // inline?
-    if (floor != $.floor) {
-        // made it to edge - turn back
-        $.x -= $.vx;
-        $.vx *= -1;
-    }
-    else {
-        if ($.z <= floor.z) {// bounce
-            $.z =floor.z;
-            $.vz = 2;
-        }
-    }
-    $ts($);
 }
 
 var drawEnemy = function($) {
 
 
-    H=E2R;
-    drawBall($.floor, $.vx<0, $.x, $.y, $.z, ER , enemyColor, "◕` ᐟ◕ ノ", "⁔", -8,9)
+    drawBall($)
 }
 

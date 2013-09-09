@@ -37,25 +37,6 @@ var PR=20       // player radius
 var P2R=2*PR
 var P2R4=P2R/4
 
-var Player = {}
-
-
-var initPlayer = function() {
-    Player = {
-        x: IPX,
-        y: IPY,
-        z: IPZ,
-        vx:0,
-        vy:0,
-        vz:0,
-        h:P2R
-    }
-    $ts(Player)
-    CameraX = Player.sx - width *.5;
-    CameraY = Player.sy - height *.7;
-}
-
-initPlayer()
 
 var bounceFloor = jsfxr([0,,0.1453,,0.225,0.3726,,0.12,0.22,,,,,0.1547,,,,,1,,,,,0.35])
 var smallBounceFloor = jsfxr([0,,0.1,,0.22,0.3726,,0.14,0.2,,,,0.12,0.1547,,,,,1,,,,,0.26])
@@ -65,26 +46,26 @@ var bounceWall = jsfxr([0,,0.11,0.16,0.09,0.227,0.04,-0.18,0.34,,,,,0.23,0.12,,,
 
 var shadowColor = RGB(15,15,15,0.5)
 
-var playerUpdate = function() {
+var playerUpdate = function($) {
 //    if (KEYS[38]) {VY=min(3,VY+.1)}  // up
 //    else if (KEYS[40]) {VY=max(-3,VY -.1)} // down
 //    else VY=VY*.9
 
-    var left = Player.left, right=Player.right, jump=Player.jump;
+    var left = $.left, right=$.right, jump=$.jump;
 
-    if (left) {Player.vx -= .15} // left   -
-    else if (right) {Player.vx+= +.15}  // right
-    else Player.vx *= .9
+    if (left) {$.vx -= .15} // left   -
+    else if (right) {$.vx+= +.15}  // right
+    else $.vx *= .9
 
     var maxSpeed = 2.5+jump;//  hack: max speed is higher if space is pressed
-    if (abs(Player.vx) > maxSpeed) {
-        if (left) {Player.vx = min(Player.vx *.95, -maxSpeed)}
-        else if (right) { Player.vx=max(Player.vx *.95, maxSpeed)}
+    if (abs($.vx) > maxSpeed) {
+        if (left) {$.vx = min($.vx *.95, -maxSpeed)}
+        else if (right) { $.vx=max($.vx *.95, maxSpeed)}
     }
 
-    Player.x+=Player.vx;
-    Player.vz-= .2 // Gravity accelerates down
-    Player.z+=Player.vz;
+    $.x+=$.vx;
+    $.vz-= .2 // Gravity accelerates down
+    $.z+=$.vz;
 
     //MAX_PZ = max(MAX_PZ, PZ)
     H=P2R;
@@ -97,96 +78,131 @@ var playerUpdate = function() {
 //    }
 
 
-    if (Player.vz>0) {
-        wall = collide(Player.x+P2R4,Player.y+P2R4,Player.z+P2R4, PR, CollisionBottomFace ); // collide top  - todo change to work with $ for both enemy and player
+    if ($.vz>0) {
+        wall = collide($.x,$.y,$.z, PR, CollisionBottomFace ); // collide top  - todo change to work with $ for both enemy and player
         if (wall) {
             bounceWall.play()
-            Player.z -= Player.vz;
-            Player.vz *= -.8;
+            $.z -= $.vz;
+            $.vz *= -.8;
         }
     }
 
-    if (Player.z < -2000) {
+    if ($.z < -2000) {
         initPlayer()
     }
 
-    Player.floor = findFloor(Player.x+P2R4,Player.y+P2R4,Player.z+P2R4, PR); // todo change to work with $ for both enemy and player
-    if (Player.z <= Player.floor.z ||  // hit floor
-        (jump && Player.z-Player.floor.z < 5 && abs(Player.vz) < 2)) {
-        if (Player.vz < -2 || jump)
+
+    var floor = findFloor($.x,$.y,$.z, PR); // todo change to work with $ for both enemy and player
+    $.floorZ = -Infinity;
+    if (floor.d ) { // real floor should have D dimension
+        $.floorZ = floor.z + P2R4;
+        if ($.z <= $.floorZ ||  // hit floor
+        (jump && $.z-$.floorZ < 5 && abs($.vz) < 2)) {
+        if ($.vz < -2 || jump)
             bounceFloor.play();
-        else if (Player.vz < -1)
+        else if ($.vz < -1)
             smallBounceFloor.play()
 
-        Player.z =Player.floor.z;
+        $.z =$.floorZ;
         if (jump)
-            Player.vz=max(abs(Player.vz/2),6); // jump on touch floor
+            $.vz=max(abs($.vz/2),6); // jump on touch floor
         else
-            Player.vz=max(abs(Player.vz/2),abs(Player.vx)/1.5) // bounce back from fall or  running bounce (ie. bounce when walking)
+            $.vz=max(abs($.vz/2),abs($.vx)/1.5) // bounce back from fall or  running bounce (ie. bounce when walking)
     }
 
-    var wall = collide(Player.x+P2R4,Player.y+P2R4,Player.z+P2R4, PR, Player.vx>0 ? CollisionLeftFace: CollisionRightFace ); // collide left and right
+    }
+
+    var wall = collide($.x,$.y,$.z, PR, $.vx>0 ? CollisionLeftFace: CollisionRightFace ); // collide left and right
     if (wall) {
-        Player.x-= Player.vx;
+        $.x-= $.vx;
         bounceWall.play();
-        if (Player.z-Player.floor.z > 10) {
+        if ($.z-$.floorZ > 10) {
             // collide while in jump - hardly bouncing back to make it easier to jump onto platforms
-            Player.vx *= -.2;
+            $.vx *= -.2;
         }
         else {
             // collide on ground - bounce back
-            Player.vx *= -.8;
+            $.vx *= -.8;
         }
     }
 
     //if (abs(VX) < 0.05) VX = 0;
 
-    $ts(Player)
+    toScreenSpace($)
+    $.sx -= P2R4;
+    $.sy -= P2R4/2;
 
     if (left || right)
-        CameraX = (Player.sx - width *(.5 - Player.vx / 20));
+        CameraX = ($.sx - width *(.5 - $.vx / 20));
 
-    CameraY = Player.sy - height *.7;
+    CameraY = $.sy - height *.7;
 }
 
 var playerDraw=function(){ // TODO: inline
 
     // DRY with enemy
     // TODO: make horizontal ellipse when crashes down with speed to floor,  make vertical ellipse when flying up quick and/or at the top of jump
-    H = P2R;
-    drawBall(Player.floor, Player.vx<0, Player.x,Player.y, Player.z, PR, playerColor,"｡◕  ◕｡", "‿",-5,5 )
+    drawBall(Player )
 }
 
 // Assumes X,Y,H are set already
-var drawBall = function(floor, left, x,y,z, radius, color, face, mouth, mx,my) {
-    X=x;Y=y; // todo this was already set for player - but not for
+var drawBall = function($) {
     // shadow
-    // TODO: use $ for both player and enenmy
-    if (floor && floor.z > -10e6) {
-        Z=floor.z;
-        ts();
+    if ($.floorZ > -10e6) {
+        var sy = $.sy - $.floorZ + $.z;
         C.save();
-        trns(1,0,0,.3, SX+radius-4,SY+2*radius-1);
+        trns(1,0,0,.3, $.sx+ $.radius-4, sy+2* $.radius-1);
         C.beginPath()
-        C.arc(0, 0, radius, 0, TPI);
+        C.arc(0, 0, $.radius, 0, TPI);
         C.fillStyle = shadowColor;
         C.fill();
     }
 
-    Z=z;
-    ts()
     // ball
-    trns(1,0,0,1, SX+radius,SY+radius);
+    trns(1,0,0,1, $.sx+ $.radius, $.sy+ $.radius);
     C.lineWidth=1;
     C.strokeStyle="#111";
-    C.fillStyle = color;
+    C.fillStyle = $.color;
     C.beginPath();
-    C.arc(0, 0, radius, 0, TPI);
+    C.arc(0, 0, $.radius, 0, TPI);
     C.fill();
-    C.scale(left? 1: -1, 1);
+    C.scale($.vx<0 ? 1: -1, 1);
     C.fillStyle = "#222"
-    C.fillText(face,-15,1)
-    C.fillText(mouth,mx,my)
+    C.fillText($.face,-15,1)
+    C.fillText($.mouth, $.mx, $.my)
     C.stroke()
     C.restore()
 }
+
+var Player = {}
+
+var initPlayer = function() {
+    update(Player, {
+        x: IPX+P2R4,
+        y: IPY+P2R4,
+        z: IPZ+P2R4,
+        vx:0,
+        vy:0,
+        vz:0,
+        h:PR,
+        w:PR,
+        d:PR,
+        sw:P2R,
+        sh:P2R,
+        radius: PR,
+        draw: playerDraw,
+        color:playerColor,
+        face:"｡◕  ◕｡",
+        mouth: "‿",
+        mx:-5, // mouth offset
+        my:5,
+        update: playerUpdate
+    })
+    toScreenSpace(Player)
+    CameraX = Player.sx - width *.5;
+    CameraY = Player.sy - height *.7;
+}
+
+initPlayer()
+// Player isn't added - he has special treatment because he can move in the queue of the rendering
+//addSprite(Player)

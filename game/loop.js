@@ -17,6 +17,7 @@ t = 0;
 // TODO: use cached background buffer for these
 
 var rightPlayerEdge = 0
+var spritesIn = []
 
 function tick() {
     t++;
@@ -33,32 +34,45 @@ function tick() {
 
 
 
-    rightPlayerEdge = Player.sx+P2R
+    //playerUpdate()
+    var spritesNear = spritesInWindow(sprites, OffsetX-width/2, OffsetY-height/2, width*2,height*2);
 
-    playerUpdate()
+    Player.update(Player)
 
-    each(sprites, function($,i) {
+    each(spritesNear, function($) {
         // TODO: check clip
-        if ($.update) $.update($)
-        // behind player - draw before player
-        if ($.preDraw($,true)) {
-            $.draw($)
+        if ($.update)
+            $.update($)
+    });
+
+    spritesIn = spritesInWindow(spritesNear, OffsetX, OffsetY, width, height);
+    if (DEBUG && spritesIn.length > MAX_SPRITES_IN_CACHE) {
+        log("too many sprites in screen to fit in cache")
+    }
+
+    var spritesBehindPlayer = [];
+    var spritesAfterPlayer = [];
+    each(spritesIn, function($) {
+        if (behindCube($, Player)) {
+            spritesBehindPlayer.push($)
         }
+        else {
+            spritesAfterPlayer.push($)
+        }
+    })
+
+
+    each(spritesBehindPlayer, function($) {
+        $.draw($)
+    })
+    Player.draw()
+
+    each(spritesAfterPlayer, function($) {
+        _setAlpha($)
+        $.draw($)
     })
     C.globalAlpha = 1
 
-    playerDraw();
-    //each(enemies, drawEnemy)
-
-
-    each(sprites, function($,i) {
-        // not behind player - draw after player
-        // TODO: check clip
-        if ($.preDraw($, false)) {
-            $.draw($)
-        }
-    })
-    C.globalAlpha = 1
 
     // TODO: coins are just front facing sprites
 

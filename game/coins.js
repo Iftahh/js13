@@ -1,9 +1,3 @@
-var RS = [] // rotation scale
-for (i=0; i<128; i++) { // skipping 0 and
-    s = abs(Math.sin(TPI*i/128))
-    if (s> 0.1)
-        RS.push(s)
-}
 
 var baseSound = [0,,0.14,0.445,0.4616,0.6,,,,,,0.587,0.5406,,,,,,1,,,,,0.45]
 
@@ -17,14 +11,7 @@ var coinSoundIndex=0;
 var lastTimeHadCoin =0;
 
 var drawCoins = function($,i) {
-    C.save()
-    C.strokeStyle = "#aa6"
-    C.shadowBlur=30;
-    C.lineWidth=2;
-    C.shadowColor="#ff2"
-    C.shadowOffsetX=0
-    C.shadowOffsetY=0
-
+    // not using each because have to remove coins in mid-loop
     for (var i=0; i<coins.length; i++) {
         var $=coins[i];
 
@@ -38,32 +25,53 @@ var drawCoins = function($,i) {
             lastTimeHadCoin = t;
             continue;
         }
-        C.beginPath();
-        L = RS.length
-        var d= ($.t+t)%L;
-        trns(RS[d],0,0,1, $.x, $.y)
-        C.fillStyle = "#fe4"
-        C.arc(0, 0, 10, 0, TPI);
-        C.fill(); // TODO: can save space by binding to global function:  F= function() {C.fill();}
-        C.fillStyle = "#aa6"
-        if (d>L/2)
-            C.fillText("1",-3,3.5)
-        else
-            C.fillText("♛",-5,3.5)
-        C.stroke();
+
+        var s = (t+ $.t) % coinsImages.length;
+        C.drawImage(coinsImages[s], $.x-COINS_IMG_SIZE/2, $.y-COINS_IMG_SIZE/2);
     }
 
-    C.restore()
 }
+
+var COINS_IMG_SIZE = 80;
+// generate coin textures:
+
+var coinsImages = [];
+range(128, function(i){
+    var scale = abs(Math.sin(TPI*i/128))
+    if (scale> 0.1) {
+        coinsImages.push(r2c(COINS_IMG_SIZE,COINS_IMG_SIZE, function(c) {
+            c.strokeStyle = "#aa6"
+            c.shadowBlur=30;
+            c.lineWidth=2;
+            c.shadowColor="#ff2"
+
+            c.beginPath();
+            c.setTransform(scale,0,0,1,COINS_IMG_SIZE/2,COINS_IMG_SIZE/2);
+            c.fillStyle = "#fe4"
+            c.arc(0, 0, 10, 0, TPI);
+            c.fill(); // TODO: can save space by binding to global function:  F= function() {C.fill();}
+            c.fillStyle = "#aa6"
+            if (i>63)
+                c.fillText("1",-3,3.5)
+            else
+                c.fillText("♛",-5,3.5)
+            c.stroke();
+        }))
+    }
+
+})
+
 
 
 var coins = []; // data
 
 var addCoin = function(x,y) {
-    X=x;Z=y;
-    Y=IPY;
-    H=10;
-    ts();
-    coins.push({x:SX, y:SY, t:irnd(0,100)})
+    var coin = {x:x, z:y, y:IPY, h:10, t:irnd(0,100)}
+    toScreenSpace(coin)
+    coin.x = coin.sx; coin.y= coin.sy;
+    delete coin['sx']
+    delete coin['sy']
+    delete coin['h']
+    coins.push(coin)
 }
 

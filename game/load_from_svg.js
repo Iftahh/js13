@@ -70,12 +70,8 @@ function load_from_svg(svg) {
         }
 
         B = 0xfff;
-        Y=_y
-        X=int(x)
-        Z=fixY(y,h)
-        W=int(w)
-        H=int(h)
-        addCube();
+        Y=_y;
+        addCube(int(x), fixY(y,h), int(w), int(h));
     }
 
     var to_coins=function($) {

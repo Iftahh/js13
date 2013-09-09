@@ -94,9 +94,20 @@ var OffsetX = OffsetY = 0; //  is the integer round of fcur - needed to be int i
 var trns = function(hscale,hskew,vskew,vscale,x,y) { C.setTransform(hscale,hskew,vskew,vscale,x-OffsetX,y-OffsetY) }  //
 
 
+// render to canvas
+var r2c=function (width, height, renderFunction) {
+    var buffer = DC.createElement('canvas');
+    buffer.width = width;
+    buffer.height = height;
+    renderFunction(buffer.getContext('2d'), buffer);
+    buffer.draw = function(x,y,w,h) { C.drawImage(this, x,y,w,h) }
+    return buffer;
+}
+
+
 // these aren't consts but are using to pass parameters (made global to save space on repeating values)
 // TODO: this optimization may be more harmful than worth the saving
-// X,Y,Z,   W,H,D
+// Y  D
 // B - borders
 // BC - border color
 // BW - brick width

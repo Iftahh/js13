@@ -13,15 +13,6 @@
  */
 
 
-// render to canvas
-var r2c=function (width, height, renderFunction) {
-    var buffer = DC.createElement('canvas');
-    buffer.width = width;
-    buffer.height = height;
-    renderFunction(buffer.getContext('2d'), buffer);
-    buffer.draw = function(x,y,w,h) { C.drawImage(this, x,y,w,h) }
-    return buffer;
-}
 
 
 var setPixel=function (d,x, r, g, b, a) {
@@ -88,8 +79,7 @@ var CameraX = 0;
 var CameraY = 0;
 
 // toscreen
-var ts = function () { SX=X+Y/2, SY=height-Y/2-H-Z}
-var $ts = function ($) {$.sx= $.x+ $.y/2; $.sy=height- $.y/2- $.h- $.z}   // TODO: store y/2 ?
+var toScreenSpace = function ($) {$.sx= $.x+ $.y/2; $.sy=height- $.y/2- $.h- $.z}   // TODO: store y/2 ?
 
 var tree = function(x,y,z, w,h1,h2) {
     X=x,Y=y,Z=z,H=h1
@@ -119,56 +109,57 @@ var CollisionBottomFace = []  // collision when moving up (Z++)
 //var CollisionBackFace = [] // when moving front (Y--)
 //var CollisionFrontFace = [] // when moving back (Y++)
 
-var cubesImageCache = {}
+var spritesImageCache = {}
+var spritesImageCacheList = []
 
 var MIN_BLOCK = 16
 // using globals
-// X,Y,Z,   W,H,D
+// Y   D
 // B - borders
 // BL - border color
 // BW - brick width
 // DR - draw
-var addCube = function() {  // container
-    addNonBlockCube()
+var addCube = function(x,z,w,h) {  // container
+    addNonBlockCube(x,z,w,h)
     // hack: because player-Y doesn't change avoid adding collision bodies for Y the player won't hit
     if (Y+D < IPY  || Y > IPY) {
         return;
     }
 
     // add blocking data
-    if (D>MIN_BLOCK && H>MIN_BLOCK) {
+    if (D>MIN_BLOCK && h>MIN_BLOCK) {
         CollisionLeftFace.push({
-            y:Y,z:Z,
-            d:D, h:H, w:0,
-            x:X
+            y:Y,z:z,
+            d:D, h:h, w:0,
+            x:x
         })
         CollisionRightFace.push({
-            y:Y,z:Z,
-            d:D, h:H,w:0,
-            x:X+W
+            y:Y,z:z,
+            d:D, h:h,w:0,
+            x:x+w
         })
     }
-    if (D>MIN_BLOCK && W>MIN_BLOCK) {
+    if (D>MIN_BLOCK && w>MIN_BLOCK) {
         CollisionTopFace.push({
-            x:X,y:Y,
-            w:W, d:D, h:0,
-            z:Z+H
+            x:x,y:Y,
+            w:w, d:D, h:0,
+            z:z+h
         })
         CollisionBottomFace.push({
-            x:X,y:Y,
-            w:W, d:D, h:0,
-            z:Z
+            x:x,y:Y,
+            w:w, d:D, h:0,
+            z:z
         })
     }
-//    if (H>MIN_BLOCK && W>MIN_BLOCK) {    // Changed my mind: this is going to be a left-right up-down game,  no front-back movement
+//    if (h>MIN_BLOCK && w>MIN_BLOCK) {    // Changed my mind: this is going to be a left-right up-down game,  no front-back movement
 //        CollisionBackFace.push({
-//            x:X,z:Z,
-//            w:W, h:H, d:0,
+//            x:x,z:z,
+//            w:w, h:h, d:0,
 //            y:Y+D
 //        })
 //        CollisionFrontFace.push({
-//            x:X,z:Z,
-//            w:W, h:H, d:0,
+//            x:x,z:z,
+//            w:w, h:h, d:0,
 //            y:Y
 //        })
 //    }
@@ -201,70 +192,162 @@ var findFloor = function(x,y,z, r) {
 }
 
 
-// using globals
-// X,Y,Z,   W,H,D
+var spriteId = 0
+
+var addSprite = function($) {
+    $.id = spriteId++;
+    sprites.push($)
+}
+
+// using globals - for values that are usually the same
+// D = depth (ie. width of y-axis)
+// Y = location of y-axis
 // B - borders
 // BC - border color
 // BW - brick width
-// DR - draw
-var addNonBlockCube=function() {
-    ts()
+// DR - draw function or array of 3 draw functions
+var addNonBlockCube=function(x,z,w,h) {
+    BH = BH || BW *.3;
     var cube = {
-        x:X, // world x
+        x:x, // world x
         y:Y,
-        z:Z,
+        z:z,
 
-        br:B,  // border flags
-        bc:BC, // border color
-
-        bw:BW, // brick width
-        bh:BH || BW *.3,
-
-        sx:SX,     // screen x
-        sy:SY,
-
-        w:W, h:H, d:D
+        w:w,
+        h:h,
+        d:D,
+        sw: w+D/2,      // screen width
+        sh: h+D/2,       // screen height
+        uncachedDraw: drawCube00,
+        draw: drawSprite
     }
+    toScreenSpace(cube)
 
-    if (W>0 && H>0) {
-        sprites.push(cloneUpdateObj(cube, {
+    if (w>0 && h>0) {
+        cube.front = {
             col1: FBC1,
             col2: FBC2,
+
             texture: PatternFront,
-            dim1: W,
-            dim2: H,
+            dim1: w,
+            dim2: h,
+            bw:BW, // brick width
+            bh:BH,
+            bc:BC, // border color
             borders: B,
-            preDraw: frontDraw,
+            //preDraw: frontDraw,
             draw: DR[0] || DR   // DR can be array of 3 functions, or a function
-        }))
+        }
     }
 
-    if (D>0 && H>0) {
-        sprites.push(cloneUpdateObj(cube, {
+    if (D>0 && h>0) {
+        cube.right = {
             col1: RBC1,
             col2: RBC2,
             texture: PatternRight,
             dim1: D,
-            dim2: H,
+            dim2: h,
+            bw:BW, // brick width
+            bh:BH,
+            bc:BC, // border color
             borders: B >> 4,
-            preDraw: rightDraw,
+            //preDraw: rightDraw,
             draw: DR[1] || DR
-        }))
+        }
     }
 
-    if (W>0 && D>0) {
-        sprites.push(cloneUpdateObj(cube, {
+    if (w>0 && D>0) {
+        cube.top = {
             col1: TBC1,
             col2: TBC2,
             texture: PatternTop,
-            dim1: W,
+            dim1: w,
             dim2: D,
+            bw:BW, // brick width
+            bh:BH,
+            bc:BC, // border color
             borders: B>> 8,
-            preDraw: topDraw,
+            //preDraw: topDraw,
             draw: DR[2] || DR
-        }))
+        }
     }
+
+    addSprite(cube);
 }
+
+// draw the cube at zero zero location
+var drawCube00 = function(cube) {
+    if (cube.front) {
+        C.setTransform(1, 0,0,1, 0, cube.d/2);
+        cube.front.draw(cube.front);
+    }
+    if (cube.top) {
+        C.setTransform(1, 0,-.5,.5, 0.4 +cube.d/2, 0);
+        cube.top.draw(cube.top);
+    }
+    if (cube.right) {
+        C.setTransform(.5, -.5,0,1, cube.w, cube.d/2);
+        cube.right.draw(cube.right);
+    }
+
+    // draw left facing cubes:
+//    else {  p = -.5
+//        // left
+//        trns(p, p,0,1,x,y)
+//        C.drawImage(dirt2, 0,0, d,h);
+//
+//        // top - for left facing cube
+//        trns(1, 0,-p, -p,x-0.5 +p*d,y+p*d)
+//        C.drawImage(grass, 0,0,w,d);
+//    }
+}
+
+var MAX_SPRITES_IN_CACHE = 50;
+
+var drawSprite = function($) {
+    var index = spritesImageCacheList.indexOf($.id)
+    if (index != -1) {
+        if (index < spritesImageCacheList.length-1) {
+            spritesImageCacheList.splice(index,1)
+            spritesImageCacheList.push($.id)
+        }
+    }
+    else {
+        if (spritesImageCacheList.length >= MAX_SPRITES_IN_CACHE) {
+            var id = spritesImageCacheList.shift();
+            log("Removing from cache cube "+id)
+            delete spritesImageCache[id]
+        }
+        spritesImageCacheList.push($.id);
+        var buffer = r2c($.sw, $.sh, function(canvas) {
+            var oldC = C;
+            C = canvas;
+            $.uncachedDraw($)
+            C = oldC;
+        })
+        log("Adding to cache cube "+ $.id+ "  X:"+ $.x+" Y:"+ $.y+" Z:"+ $.z+" W:"+ $.w+" H:"+ $.h+" D:"+ $.d);
+        spritesImageCache[$.id] = buffer;
+    }
+
+    spritesImageCache[$.id].draw($.sx, $.sy- $.d/2, $.sw, $.sh)
+    //C.fillStyle = RGB(40,50,180, 0.5);
+    //C.fillRect($.sx, $.sy- $.d/2, $.sw, $.sh);
+}
+
+var spritesInWindow = function(collection, x,y,w,h) {
+    var result = [];
+    var right = x+ w, down = y+h;
+    each(collection, function($) {
+        if ($.sx+ $.sw >= x &&
+            $.sx <= right &&
+            $.sy+ $.sh - $.d/2 >= y &&
+            $.sy - $.d/2 <= down ) {
+            result.push($)
+        }
+    })
+    return result;
+}
+
 
 var TBC1 = "#e86" // top brick color 1
 var TBC2 = "#eda"
@@ -310,9 +393,16 @@ var drawBorders=function($) {
     }
 }
 
+// TODO: automatic border cancelation:
+//    ________
+//    |       |_
+//    |        _|   <-- left border of small cube is canceled because contained in right border of big cube
+//    |_______|
+
+
 var _setAlpha=function($) {
-    if ($.sx-10 < Player.sx+P2R && $.sx+10+ $.w+ $.d/2 > Player.sx  && $.y+ $.d < IPY &&
-        $.sy-10 < Player.sy+P2R && $.sy+10+ $.h+ $.d/2 > Player.sy 
+    if ($.sx-10 < Player.sx+Player.sw && $.sx+10+ $.sw > Player.sx  && $.y+ $.d < Player.y &&
+        $.sy-10 < Player.sy+Player.sh && $.sy+10+ $.sh > Player.sy
         ) {
         C.globalAlpha = .3  // TODO: make alpha based on distance from player
     }
@@ -321,67 +411,23 @@ var _setAlpha=function($) {
     }
 }
 
-var topDraw = function($,behind) {
-    // TODO: check clip
-    if (behind) {
-        if ($.z- $.h >= Player.z) {
-            return;
-        }
-    }
-    else {
-        if ($.z- $.h < Player.z) { // above player - draw after player
-            return;
-        }
-    }
-    _setAlpha($)
-    trns(1, 0,-.5,.5, $.sx+0.4 +.5* $.d, $.sy-.5* $.d);
-    return 1;
+// return true if the cubeA should be drawn before the cubeB
+var behindCube = function(cubeA, cubeB) {
+    // I allow up to "few" pixels of intersection because the editor isn't precise
+    var few=3
+    if  ((cubeB.y+cubeB.d <= cubeA.y+few)  ||   // A is behind B
+         (cubeA.z+cubeA.h <= cubeB.z+few)  ||   // A is below B
+         (cubeA.x+cubeA.w <= cubeB.x+few))      // A is to the left of B
+        return true;  // first draw A then B
+    if ((cubeA.y+cubeA.d <= cubeB.y+few)  || // B is behind A
+        (cubeB.z+cubeB.h <= cubeA.z+few)  || // B is below A
+        (cubeB.x+cubeB.w <= cubeA.x+few))    // B is to the left of A
+        return false; // first draw B then draw A
+
+    // the two cubes are intersecting!
+    console.log("cubes intersection: ", cubeA, cubeB);
+    return null;
 }
-
-var frontDraw = function($,behind) {
-    // TODO: check clip
-
-    if (behind) {
-        if ($.y <= Player.y) {
-            return;
-        }
-    }
-    else {
-        if ($.y > Player.y) {
-            return;
-        }
-        _setAlpha($)
-    }
-    trns(1, 0,0,1, $.sx, $.sy);
-    return 1;
-}
-
-var rightDraw = function($,behind) {
-    if (behind) {
-        if ($.x+ $.w >= rightPlayerEdge) {
-            return;
-        }
-    }
-    else {
-        if ($.x+$.w < rightPlayerEdge) {
-            return;
-        }
-    }
-    _setAlpha($)
-    trns(.5, -.5,0,1, $.sx+ $.w, $.sy)
-    return 1;
-}
-
-//    else {  p = -.5
-//        // left
-//        trns(p, p,0,1,x,y)
-//        C.drawImage(dirt2, 0,0, d,h);
-//
-//        // top - for left facing cube
-//        trns(1, 0,-p, -p,x-0.5 +p*d,y+p*d)
-//        C.drawImage(grass, 0,0,w,d);
-//    }
-
 
 
 
@@ -401,45 +447,48 @@ var fourWall=function(x,y,z,w,h,d,wd) {  // wd = wall thickness
     TBC2 = "#385"
     // bottom
     B=0,BW=40
-    X=x,Y=y,Z=z,W=w,H=1,D=d
-    addCube()
+    Y=y; D=d;
+    addCube(x,z,w,1)
     TBC1 = "#e86" // top brick color 1
     TBC2 = "#eda"
 
     // left
-    BC = BBC, Y=y+wd,W=wd,H=h,D=d-wd, B=0x1df,BW=30
-    addCube()
+    BC = BBC; Y=y+wd; D=d-wd; B=0x1df; BW=30
+    addCube(x,z,wd,h)
     // back
-    X+=wd,Y=y+d-wd,W=w-2*wd,D=wd,B=0x1f7,BW=28
-    addCube()
+    Y=y+d-wd; D=wd; B=0x1f7; BW=28
+    addCube(x+wd, z, w-2*wd, h)
     // right
-    X=x+w-wd,Y=y+wd,W=wd,D=d-wd,B=0x1ff,BW=30
-    addCube()
+    Y=y+wd; D=d-wd; B=0x1ff; BW=30
+    addCube(x+w-wd, z, wd, h)
     // front
-    X=x,Y=y,W=w,D=wd,B=0x1df,BW=32
-    addCube()
+    Y=y; D=wd; B=0x1df; BW=32
+    addCube(x,z, w, h)
 }
 
 // TODO: make tw,th,wd  automatic?  relative to y?
 var turret=function( x,y,z, w,h,d, wd, th,tw,tgap, bw) {  // wd= wall thickness,  th=top-square height, tw=top-width, tgap= gap between two top squares
     fourWall( x,y,z,w,h,d,wd);
     // back
-    Y=y+d-wd,Z=z+h-1,W=wd,H=th,D=tw,B=0x1fe,BC=BBC,BW=bw*.9
-    for (X=x; X<=x+w-tw; X+=tw+tgap) {
-        addCube();
+    Y=y+d-wd;
+    var Z=z+h-1;
+    D=tw; B=0x1fe; BC=BBC; BW=bw*.9;
+    for (var X=x; X<=x+w-tw; X+=tw+tgap) {
+        addCube(X, Z, wd, th);
     }
     // sides
-    Z++,B=0x1ef,BW=bw
+    Z++;
+    B=0x1ef; BW=bw
+    var X=x+w-wd;
     for (Y=y+d-wd; Y>y; Y-= tw+tgap) {
-        X=x
-        addCube();
-        X=x+w-wd
-        addCube();
+        addCube(x, Z, wd, th);
+        addCube(X, Z, wd, th);
     }
-    Y=y
-    Z--,B=0x1fe
-    for (X=x; X<=x+w-tw; X+=tw+tgap) {
-        addCube();
+    Y=y;
+    Z--;
+    B=0x1fe;
+    for (var X=x; X<=x+w-tw; X+=tw+tgap) {
+        addCube(X, Z, wd, th);
     }
 
 }
@@ -461,10 +510,14 @@ var faces = ["(ᵔᴥᵔ)", "{◕ ◡ ◕}", "ಠ◡ಠ", "ಠ_๏", "ಥ_ಥ", 
 
 
 var stairs=function (x1,y1,z1,w1,d1,x2,y2,w2,d2, h,n) {
-    BC=BBC,BW=30,B=0x1ee,H=h+1
+    BC=BBC;
+    BW=30;
+    B=0x1ee;
+    H=h+1;
     range(n, function(i){
-        X=x1+i*(x2-x1)/n, Y=y1+i*(y2-y1)/n, Z=z1+i*h-1,W=w1+i*(w2-w1)/n,D=d1+i*(d2-d1)/n
-        addCube()
+        Y=y1+i*(y2-y1)/n;
+        D=d1+i*(d2-d1)/n;
+        addCube(x1+i*(x2-x1)/n,  z1+i*h-1,  w1+i*(w2-w1)/n)
     })
 }
 
