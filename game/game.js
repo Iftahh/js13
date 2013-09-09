@@ -100,7 +100,6 @@ var tree = function(x,y,z, w,h1,h2) {
     })
 }
 
-var sprites = [];
 
 var CollisionLeftFace = []  // collision when moving left (X--)
 var CollisionRightFace = []  // collision when moving right (X++)

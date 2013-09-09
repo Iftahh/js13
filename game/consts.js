@@ -33,22 +33,12 @@ var OA = 255 // opaque alpha
 var PI = Math.PI
 var TPI = 2*PI
 
+var coins = [];
+var sprites = [];
+
+var joystick =0;
 
 
-onresize = function() {
-    var parent = canvases[0].parentElement
-    var offsetY = (parent.offsetTop+(parent.offsetHeight - height)/2)+"px"
-    var offsetX = (parent.offsetLeft+(parent.offsetWidth - width)/2)+"px"
-    each(canvases, function($) {
-        $.style.top = offsetY;
-        $.style.left = offsetX;
-    })
-    width = canvases[0].width; // todo: hard code 800x600 ?
-    height = canvases[0].height
-    BgC.fillStyle="#222"
-    BgC.fillRect(0,0,width,height)
-}
-onresize()
 
 var nrnd = function(a,b) { return a+(b-a)*rnd()}
 var irnd = function(a,b) { return nrnd(a,b)<<0 }

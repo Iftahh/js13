@@ -5,6 +5,44 @@ fcurCameraY = CameraY = (Player.sy - height *.8);
 
 //initBackgroundDraw();
 
+var resetJoystick=function() {
+    joystick = {
+        x: width/8,
+        y: height *.85,
+        move: null,
+        button: null
+    }
+}
+resetJoystick();
+
+onresize = function() {
+    var parent = canvases[0].parentElement;
+    var _w = width, _h = height;
+    width = min(960, parent.offsetWidth);
+    height = min(760, parent.offsetHeight);
+    var offsetY = (parent.offsetTop+(parent.offsetHeight - height)/2)+"px"
+    var offsetX = (parent.offsetLeft+(parent.offsetWidth - width)/2)+"px"
+    each(canvases, function($) {
+        $.style.top = offsetY;
+        $.style.left = offsetX;
+        if (_w != width || _h != height) {
+            $.width = width;
+            $.height = height;
+        }
+    })
+    BgC.fillStyle="#222"
+    BgC.fillRect(0,0,width,height)
+    if (_w != width || _h != height) {
+        each(coins, function($) {
+            toScreenSpace($)
+        })
+        each(sprites, function($){
+            toScreenSpace($)
+        })
+        resetJoystick();
+    }
+}
+onresize()
 
 //texturecube(50, 500, 80, 120, 100, stones[0],stones[1],stones[2]);
 //C.restore()

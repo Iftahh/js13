@@ -17,12 +17,6 @@ DC.body.addEventListener('touchmove', function(event) {
 }, false);
 
 
-var joystick = {
-    x: width/8,
-    y: height *.85,
-    move: null,
-    button: null
-}
 
 
 Tch.fillStyle = RGB(140,150,240,.5);

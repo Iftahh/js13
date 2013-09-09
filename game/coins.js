@@ -15,7 +15,7 @@ var drawCoins = function($,i) {
     for (var i=0; i<coins.length; i++) {
         var $=coins[i];
 
-        if ($.x >= Player.sx && $.x < Player.sx+P2R && $.y >= Player.sy && $.y < Player.sy+P2R) {
+        if ($.sx >= Player.sx && $.sx < Player.sx+P2R && $.sy >= Player.sy && $.sy < Player.sy+P2R) {
             if (t - lastTimeHadCoin > 180) // 3 seconds
                 coinSoundIndex=0;
             coins.splice(i,1);
@@ -27,7 +27,7 @@ var drawCoins = function($,i) {
         }
 
         var s = (t+ $.t) % coinsImages.length;
-        C.drawImage(coinsImages[s], $.x-COINS_IMG_SIZE/2, $.y-COINS_IMG_SIZE/2);
+        C.drawImage(coinsImages[s], $.sx-COINS_IMG_SIZE/2, $.sy-COINS_IMG_SIZE/2);
     }
 
 }
@@ -63,15 +63,10 @@ range(128, function(i){
 
 
 
-var coins = []; // data
 
 var addCoin = function(x,y) {
     var coin = {x:x, z:y, y:IPY, h:10, t:irnd(0,100)}
     toScreenSpace(coin)
-    coin.x = coin.sx; coin.y= coin.sy;
-    delete coin['sx']
-    delete coin['sy']
-    delete coin['h']
     coins.push(coin)
 }
 
