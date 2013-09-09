@@ -261,9 +261,9 @@ var playerDraw=function(){ // TODO: inline
 // Assumes X,Y,H are set already
 var drawBall = function($) {
     // shadow
+    C.save();
     if ($.floorZ > -10e6) {
         var sy = $.sy - $.floorZ + $.z;
-        C.save();
         trns(1,0,0,.3, $.sx+ $.radius-4, sy+2* $.radius-1);
         C.beginPath()
         C.arc(0, 0, $.radius, 0, TPI);
