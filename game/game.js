@@ -424,7 +424,7 @@ var behindCube = function(cubeA, cubeB) {
         return false; // first draw B then draw A
 
     // the two cubes are intersecting!
-    console.log("cubes intersection: ", cubeA, cubeB);
+    log("cubes intersection: ", cubeA, cubeB);
     return null;
 }
 
@@ -494,7 +494,7 @@ var turret=function( x,y,z, w,h,d, wd, th,tw,tgap, bw) {  // wd= wall thickness,
 
 
 //  skull: ☠  ⚠   radioactive: ☢  biohazard: ☣  heart: ♥   flower: ⚘❀❃❁☘♧♣  arrow:➸➱➫   sun: ☀   cloud: ☁   coffin: ⚰⚱
-var faces = ["(ᵔᴥᵔ)", "{◕ ◡ ◕}", "ಠ◡ಠ", "ಠ_๏", "ಥ_ಥ", "(•‿•)", "☼.☼", "ಠ_ಠ", "(͡๏̯͡๏)", "◔̯◔","ತಎತ", "◉_◉","סּ_סּ", "(｡◕‿◕｡)", "｡◕‿◕｡"]
+//var faces = ["(ᵔᴥᵔ)", "{◕ ◡ ◕}", "ಠ◡ಠ", "ಠ_๏", "ಥ_ಥ", "(•‿•)", "☼.☼", "ಠ_ಠ", "(͡๏̯͡๏)", "◔̯◔","ತಎತ", "◉_◉","סּ_סּ", "(｡◕‿◕｡)", "｡◕‿◕｡"]
 
 //
 //addCube(50,50,600,   20, 20, 20,  0x1, "#f0f", 15, brickDraw)
@@ -523,3 +523,50 @@ var stairs=function (x1,y1,z1,w1,d1,x2,y2,w2,d2, h,n) {
 
 
 
+
+var loadLevel=function(lvl) {
+    sprites = []
+    coins = []
+    CollisionLeftFace = []
+    CollisionRightFace = []
+    CollisionTopFace = []
+    CollisionBottomFace = []
+    OffsetX=OffsetY=0
+
+    IPX = 0
+    IPY = 50
+    IPZ= 0;
+
+    BW=27;BC=BBC;
+    B = 0xfff;
+    Y=0; D=100;
+
+    for (var i=0; i<lvl.length;) {
+        var type = lvl[i++];
+        switch (type) {
+            case 0: // player
+                IPX=lvl[i++];
+                IPZ=lvl[i++];
+                initPlayer();
+                break;
+            case 1: // coin
+                addCoin(lvl[i++],lvl[i++])
+                break;
+            case 2: // enemy
+                addEnemy(lvl[i++],lvl[i++])
+                break;
+            case 3: // brick platform
+            case 4: // texture platform
+                DR= type == 3 ? brickDraw : textureDraw;
+                addCube(lvl[i++],lvl[i++],lvl[i++],lvl[i++]);
+                break;
+            case 5: // change Y and D
+                Y = lvl[i++];
+                D = lvl[i++];
+                break;
+            default:
+                log("Error loading level at index "+i+"  type: "+type);
+
+        }
+    }
+}
