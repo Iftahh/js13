@@ -5,8 +5,9 @@ var updateFromKeys = function(e) {
     Player.right = KEYS[39];
     Player.up = KEYS[38];
     Player.down = KEYS[40];
-    Player.jump = KEYS[32]
-    e.preventDefault();
+    Player.jump = KEYS[32];
+    if (e.keyCode == 32 || e.keyCode >=37 && e.keyCoe <= 40)
+        e.preventDefault();
 }
 DC.addEventListener('keydown', updateFromKeys)
 DC.addEventListener('keyup', updateFromKeys)
