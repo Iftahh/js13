@@ -1,23 +1,19 @@
 var KEYS={}
-DC.addEventListener('keydown', function(e){
-    KEYS[e.keyCode]=1;
+var updateFromKeys = function(e) {
+    KEYS[e.keyCode]=  e.type == "keydown";
     Player.left = KEYS[37];
     Player.right = KEYS[39];
     Player.up = KEYS[38];
     Player.down = KEYS[40];
     Player.jump = KEYS[32]
-})
-DC.addEventListener('keyup', function(e){
-    KEYS[e.keyCode]=0;
-    Player.left = KEYS[37];
-    Player.right = KEYS[39];
-    Player.jump = KEYS[32]
-})
+    e.preventDefault();
+}
+DC.addEventListener('keydown', updateFromKeys)
+DC.addEventListener('keyup', updateFromKeys)
 
 DC.body.addEventListener('touchmove', function(event) {
     event.preventDefault();
 }, false);
-
 
 
 
@@ -48,7 +44,7 @@ TchCan.addEventListener('touchstart', function(event) {
     if (jsButton != null) {
         joystickButton(jsButton)
     }
-
+    event.preventDefault();
 });
 
 var joystickMove = function(jsMove) {
@@ -75,6 +71,20 @@ var joystickMove = function(jsMove) {
         Player.left = 0;
         Player.right = 0;
     }
+
+    if (y < joystick.y-15) {
+        Player.up = 1;
+        Player.down = 0;
+    }
+    else if (y > joystick.y +15) {
+        Player.up = 0;
+        Player.down = 1;
+    }
+    else {
+        Player.up = 0;
+        Player.down = 0;
+    }
+    event.preventDefault();
 }
 
 var joystickButton=function(button) {
@@ -106,6 +116,7 @@ TchCan.addEventListener('touchmove', function(event) {
     if (jsButton != null) {
         joystickButton(jsButton)
     }
+    event.preventDefault();
 });
 
 TchCan.addEventListener('touchend', function(event) {
@@ -115,6 +126,8 @@ TchCan.addEventListener('touchend', function(event) {
             joystick.move = null;
             Player.left = 0;
             Player.right = 0;
+            Player.up = 0;
+            Player.down = 0;
             Tch.beginPath();
             Tch.clearRect(0,0,width/2,height);
             Tch.arc(joystick.x, joystick.y, 30, 0, TPI);
@@ -161,26 +174,28 @@ var bounceWall = jsfxr([0,,0.11,0.16,0.09,0.227,0.04,-0.18,0.34,,,,,0.23,0.12,,,
 
 var shadowColor = RGB(15,15,15,0.5)
 
-var playerUpdate = function($) {
+var playerUpdate = function($, dt) {
 //    if (KEYS[38]) {VY=min(3,VY+.1)}  // up
 //    else if (KEYS[40]) {VY=max(-3,VY -.1)} // down
 //    else VY=VY*.9
 
     var left = $.left, right=$.right, jump=$.jump;
 
-    if (left) {$.vx -= .15} // left   -
-    else if (right) {$.vx+= +.15}  // right
-    else $.vx *= .9
+    var speedup = .15*dt;
+    if (left) {$.vx -= speedup} // left   -
+    else if (right) {$.vx+= speedup}  // right
+    else $.vx *= Math.pow(.9,dt)
 
-    var maxSpeed = 2.5+jump;//  hack: max speed is higher if space is pressed
-    if (abs($.vx) > maxSpeed) {
-        if (left) {$.vx = min($.vx *.95, -maxSpeed)}
-        else if (right) { $.vx=max($.vx *.95, maxSpeed)}
+    var maxSpeed = jump? 3.5: 2.5;//  hack: max speed is higher if space is pressed
+    if (abs($.vx) > maxSpeed ) {
+        var slowdown = Math.pow(.95, dt)
+        if ($.vx<0) {$.vx = min($.vx *slowdown, -maxSpeed)}
+        else { $.vx=max($.vx *slowdown, maxSpeed)}
     }
 
-    $.x+=$.vx;
-    $.vz-= .2 // Gravity accelerates down
-    $.z+=$.vz;
+    $.x+=$.vx*dt;
+    $.vz-= .2*dt; // Gravity accelerates down
+    $.z+=$.vz*dt;
 
     //MAX_PZ = max(MAX_PZ, PZ)
     //H=P2R;
@@ -194,10 +209,10 @@ var playerUpdate = function($) {
 
 
     if ($.vz>0) {
-        wall = collide($.x,$.y,$.z, PR, CollisionBottomFace ); // collide top  - todo change to work with $ for both enemy and player
+        wall = collide($.x,$.y,$.z, PR, CollisionBottomFace ); // collide top
         if (wall) {
             bounceWall.play()
-            $.z -= $.vz;
+            $.z = wall.z - PR;  // $.z -= $.vz;
             $.vz *= -.8;
         }
     }
@@ -207,29 +222,28 @@ var playerUpdate = function($) {
     }
 
 
-    var floor = findFloor($.x,$.y,$.z, PR); // todo change to work with $ for both enemy and player
+    var floor = findFloor($.x,$.y,$.z, PR);
     $.floorZ = -Infinity;
     if (floor.d ) { // real floor should have D dimension
         $.floorZ = floor.z + P2R4;
         if ($.z <= $.floorZ ||  // hit floor
-        (jump && $.z-$.floorZ < 5 && abs($.vz) < 2)) {
-        if ($.vz < -2 || jump)
-            bounceFloor.play();
-        else if ($.vz < -1)
-            smallBounceFloor.play()
+            (jump && $.z-$.floorZ < 5 && abs($.vz) < 2)) {
+            if ($.vz < -2 || jump)
+                bounceFloor.play();
+            else if ($.vz < -1)
+                smallBounceFloor.play()
 
-        $.z =$.floorZ;
-        if (jump)
-            $.vz=max(abs($.vz/2),6); // jump on touch floor
-        else
-            $.vz=max(abs($.vz/2),abs($.vx)/1.5) // bounce back from fall or  running bounce (ie. bounce when walking)
-    }
-
+            $.z =$.floorZ;
+            if (jump)
+                $.vz=max(abs($.vz/2),6); // jump on touch floor
+            else
+                $.vz=max(abs($.vz/2),abs($.vx)/1.5) // bounce back from fall or  running bounce (ie. bounce when walking)
+        }
     }
 
     var wall = collide($.x,$.y,$.z, PR, $.vx>0 ? CollisionLeftFace: CollisionRightFace ); // collide left and right
     if (wall) {
-        $.x-= $.vx;
+        $.x = $.vx>0 ?  wall.x-PR : wall.x+wall.w+PR //$.x-= $.vx;
         bounceWall.play();
         if ($.z-$.floorZ > 10) {
             // collide while in jump - hardly bouncing back to make it easier to jump onto platforms
@@ -250,7 +264,16 @@ var playerUpdate = function($) {
     if (left || right)
         CameraX = ($.sx - width *(.5 - $.vx / 20));
 
-    CameraY = $.sy - height *.7;
+    if ($.up)
+        $.uplook -= .01;
+    if ($.down)
+        $.uplook += .01;
+    if ($.up || $.down)
+        $.uplook = min(max($.uplook, -.5),.5)
+    else
+        $.uplook = min(max($.uplook, -.1),.1)
+
+    CameraY = $.sy - height *(.5 - $.uplook);
 }
 
 var playerDraw=function(){ // TODO: inline
@@ -310,7 +333,8 @@ var initPlayer = function() {
         mouth: "‿",
         mx:-5, // mouth offset
         my:5,
-        update: playerUpdate
+        update: playerUpdate,
+        uplook: -.2
     })
     toScreenSpace(Player)
     CameraX = Player.sx - width *.5;

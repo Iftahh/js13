@@ -283,6 +283,25 @@ var drawCube00 = function(cube) {
     if (cube.top) {
         C.setTransform(1, 0,-.5,.5, 0.4 +cube.d/2, 0);
         cube.top.draw(cube.top);
+
+        // special hack... draw flowers
+//        if (cube.top.draw == textureDraw) {
+//            // draw some random flowers
+//            C.font = '14pt sans-serif';
+//            //C.setTransform(1, 0,0,1, 0, 0);
+//            C.beginPath()
+//            C.fillStyle = "#df6060"
+//            C.strokeStyle = "#aa5050"
+//            C.shadowBlur= 10;
+//            C.shadowColor ="#ad6060"
+//            range(irnd(0,cube.w/30), function(i) {
+//
+//                var text = "❀❃❁"[irnd(0,3)];
+//                C.fillText(text, irnd(5, cube.w-5), irnd(5, cube.d-5));
+//            })
+//            C.fill();
+//            C.stroke();
+//        }
     }
     if (cube.right) {
         C.setTransform(.5, -.5,0,1, cube.w, cube.d/2);

@@ -41,14 +41,14 @@ var ER = 22
 var E2R = 2*ER
 var E2R4 = E2R/4
 
-var updateEnemy = function($) {
-    $.x += $.vx;
-    $.vz -= .2 // Gravity accelerates down
-    $.z+= $.vz;
+var updateEnemy = function($,dt) {
+    $.x += $.vx*dt;
+    $.vz -= .2*dt // Gravity accelerates down
+    $.z+= $.vz*dt;
 
     var wall = collide($.x, $.y, $.z, ER, $.vx>0 ? CollisionLeftFace: CollisionRightFace ); // collide left and right
     if (wall) {
-        $.x-= $.vx;
+        $.x = $.vx>0 ?  wall.x-ER : wall.x+wall.w+ER;      //$.x-= $.vx;
         $.vx *= -1;
     }
 
@@ -58,7 +58,7 @@ var updateEnemy = function($) {
     var floor = findFloor($.x, $.y, $.z, ER); // inline?
     if (floor != $.floor) {
         // made it to edge - turn back
-        $.x -= $.vx;
+        $.x = $.vx <0 ? $.floor.x-ER+2: $.floor.x+ $.floor.w-2; //$.x -= $.vx;
         $.vx *= -1;
     }
     else {
@@ -75,13 +75,13 @@ var updateEnemy = function($) {
     var pad=10;
     if ($.sx+ $.sw-pad >= Player.sx && $.sx+pad < Player.sx+Player.sw && $.sy+ $.sh-pad >= Player.sy
         && $.sy+pad < Player.sy+Player.sh) {
-        if (t - lastTimeHadCoin > 180) // 3 seconds
+        if (totalTime - lastTimeHadCoin > 180) // 3 seconds
             coinSoundIndex=0;
         //coins.splice(i,1);
         //i--;
         coinsSounds[coinSoundIndex++].play();
         coinSoundIndex = coinSoundIndex % coinsSounds.length;
-        lastTimeHadCoin = t;
+        lastTimeHadCoin = totalTime;
         initPlayer()
         return;
     }

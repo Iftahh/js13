@@ -8,25 +8,27 @@ range(4, function(i) { coinsSounds.push(jsfxr(cloneUpdateArray(baseSound, {5: .8
 
 var coinSoundIndex=0;
 
+
 var lastTimeHadCoin =0;
 
 var drawCoins = function($,i) {
     // not using each because have to remove coins in mid-loop
+    var pad = 4;
     for (var i=0; i<coins.length; i++) {
         var $=coins[i];
 
-        if ($.sx >= Player.sx && $.sx < Player.sx+P2R && $.sy >= Player.sy && $.sy < Player.sy+P2R) {
-            if (t - lastTimeHadCoin > 180) // 3 seconds
+        if ($.sx >= Player.sx-pad && $.sx < Player.sx+P2R+pad && $.sy >= Player.sy-pad && $.sy < Player.sy+P2R+pad) {
+            if (totalTime - lastTimeHadCoin > 3000) // 3 sec
                 coinSoundIndex=0;
             coins.splice(i,1);
             i--;
             coinsSounds[coinSoundIndex++].play();
             coinSoundIndex = coinSoundIndex % coinsSounds.length;
-            lastTimeHadCoin = t;
+            lastTimeHadCoin = totalTime;
             continue;
         }
 
-        var s = (t+ $.t) % coinsImages.length;
+        var s = (totalTime+ $.t) % coinsImages.length;
         C.drawImage(coinsImages[s], $.sx-COINS_IMG_SIZE/2, $.sy-COINS_IMG_SIZE/2);
     }
 

@@ -39,6 +39,8 @@ var sprites = [];
 
 var joystick =0;
 
+BgC.fillStyle="#222"
+BgC.fillRect(0,0,width,height)
 
 
 var nrnd = function(a,b) { return a+(b-a)*rnd()}
@@ -67,13 +69,14 @@ var breach = function(collection, iterFu) { // breaking each: collection, iterat
 }
 
 
-var rq= window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame;
+var suffix = 'equestAnimationFrame';
+var rq= window['r'+suffix] || window['mozR'+suffix] || window['webkitR'+suffix]
 if (!rq) {
     var lastTime = 0;
     rq = function(callback) {
-        var currTime = new Date().getTime();
+        var currTime = Date.now();
         var timeToCall = Math.max(0, 16 - (currTime - lastTime));
-        var id = window.setTimeout(function() { callback(); },
+        var id = window.setTimeout(function() { callback(currTime + timeToCall); },
             timeToCall);
         lastTime = currTime + timeToCall;
     }
