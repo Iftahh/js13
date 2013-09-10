@@ -34,7 +34,6 @@ var PI = Math.PI
 var TPI = 2*PI
 
 
-var coins = [];
 var sprites = [];
 
 var joystick =0;

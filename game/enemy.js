@@ -41,7 +41,7 @@ var ER = 22
 var E2R = 2*ER
 var E2R4 = E2R/4
 
-var updateEnemy = function($,dt) {
+var updateEnemy = function($, dt) {
     $.x += $.vx*dt;
     $.vz -= .2*dt // Gravity accelerates down
     $.z+= $.vz*dt;
@@ -77,8 +77,6 @@ var updateEnemy = function($,dt) {
         && $.sy+pad < Player.sy+Player.sh) {
         if (totalTime - lastTimeHadCoin > 180) // 3 seconds
             coinSoundIndex=0;
-        //coins.splice(i,1);
-        //i--;
         coinsSounds[coinSoundIndex++].play();
         coinSoundIndex = coinSoundIndex % coinsSounds.length;
         lastTimeHadCoin = totalTime;

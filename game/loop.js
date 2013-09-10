@@ -34,9 +34,6 @@ window.onresize = function() {
     BgC.fillStyle="#222"
     BgC.fillRect(0,0,width,height)
     if (_w != width || _h != height) {
-        each(coins, function($) {
-            toScreenSpace($)
-        })
         each(sprites, function($){
             toScreenSpace($)
         })
@@ -100,18 +97,18 @@ function tick(ts) {
     each(spritesNear, function($) {
         // TODO: check clip
         if ($.update)
-            $.update($, dt)
+            $.update($,dt)
     });
 
     spritesIn = spritesInWindow(spritesNear, OffsetX, OffsetY, width, height);
-    if (DEBUG && spritesIn.length > MAX_SPRITES_IN_CACHE) {
-        log("too many sprites in screen to fit in cache")
-    }
+//    if (DEBUG && spritesIn.length > MAX_SPRITES_IN_CACHE) {  - this isn't useful now that coins are sprites too - they don't take space in cache
+//        log("too many sprites in screen to fit in cache")
+//    }
 
     var spritesBehindPlayer = [];
     var spritesAfterPlayer = [];
     each(spritesIn, function($) {
-        if (behindCube($, Player)) {
+        if ($.isCoin || behindCube($, Player)) {
             spritesBehindPlayer.push($)
         }
         else {
@@ -132,9 +129,7 @@ function tick(ts) {
     C.globalAlpha = 1
 
 
-    // TODO: coins are just front facing sprites
-
-    drawCoins();
+    removePickedCoins();
 
 
 //    trns(1,0,0,1,0,0)

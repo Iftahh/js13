@@ -545,7 +545,6 @@ var stairs=function (x1,y1,z1,w1,d1,x2,y2,w2,d2, h,n) {
 
 var loadLevel=function(lvl) {
     sprites = []
-    coins = []
     CollisionLeftFace = []
     CollisionRightFace = []
     CollisionTopFace = []

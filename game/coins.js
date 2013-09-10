@@ -11,27 +11,37 @@ var coinSoundIndex=0;
 
 var lastTimeHadCoin =0;
 
-var drawCoins = function($,i) {
-    // not using each because have to remove coins in mid-loop
-    var pad = 4;
-    for (var i=0; i<coins.length; i++) {
-        var $=coins[i];
+var coinsToRemove = [];
 
-        if ($.sx >= Player.sx-pad && $.sx < Player.sx+P2R+pad && $.sy >= Player.sy-pad && $.sy < Player.sy+P2R+pad) {
-            if (totalTime - lastTimeHadCoin > 3000) // 3 sec
-                coinSoundIndex=0;
-            coins.splice(i,1);
-            i--;
-            coinsSounds[coinSoundIndex++].play();
-            coinSoundIndex = coinSoundIndex % coinsSounds.length;
-            lastTimeHadCoin = totalTime;
-            continue;
-        }
+var coinPad = 4;
+var updateCoin = function($) {
+    if ($.sx >= Player.sx-coinPad && $.sx < Player.sx+P2R+coinPad && $.sy >= Player.sy-coinPad && $.sy < Player.sy+P2R+coinPad) {
+        if (totalTime - lastTimeHadCoin > 3000) // 3 sec
+            coinSoundIndex=0;
 
-        var s = (totalTime+ $.t) % coinsImages.length;
-        C.drawImage(coinsImages[s], $.sx-COINS_IMG_SIZE/2, $.sy-COINS_IMG_SIZE/2);
+        coinsSounds[coinSoundIndex++].play();
+        coinSoundIndex = coinSoundIndex % coinsSounds.length;
+        lastTimeHadCoin = totalTime;
+        coinsToRemove.push($.id)
     }
+}
 
+var drawCoin = function($) {
+    var s = (totalTime+ $.t) % coinsImages.length;
+    C.drawImage(coinsImages[s], $.sx-COINS_IMG_SIZE/2, $.sy-COINS_IMG_SIZE/2);
+}
+
+var removePickedCoins = function() {
+    each(coinsToRemove, function(id) {
+        for (var j=0;j<sprites.length; j++) {
+            if (sprites[j].id == id){
+                sprites.splice(j,1);
+                break;
+            }
+        }
+    })
+
+    coinsToRemove = [];
 }
 
 var COINS_IMG_SIZE = 80;
@@ -67,8 +77,16 @@ range(128, function(i){
 
 
 var addCoin = function(x,y) {
-    var coin = {x:x, z:y, y:IPY, h:10, t:irnd(0,100)}
+    var coin = {
+        x:x, z:y, y:IPY,
+        h:10, w:10, d:0,
+        sh: 10, sw:10,
+        t:irnd(0,100),
+        update: updateCoin,
+        draw: drawCoin,
+        isCoin:true
+    }
     toScreenSpace(coin)
-    coins.push(coin)
+    addSprite(coin)
 }
 
