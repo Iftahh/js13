@@ -23,11 +23,6 @@ var addEnemy = function(x,y) {
     }
     toScreenSpace($)
 
-    $.floor = findFloor($.x+E2R4, $.y+E2R4, $.z+E2R4, ER);
-    if (DEBUG && !$.floor) {
-        alert("Enemy must be above floor")
-    }
-
     sprites.push($)
 }
 
@@ -46,31 +41,48 @@ var updateEnemy = function($, dt) {
     $.vz -= .2*dt // Gravity accelerates down
     $.z+= $.vz*dt;
 
+    if (!$.floor) {
+        $.floor = findFloor($.x+E2R4, $.y+E2R4, $.z+E2R4, ER);
+        $.floorZ = $.floor.z + E2R4;
+        if (DEBUG && $.floorZ < -10e6) {
+            alert("Enemy must be above floor")
+        }
+    }
+
+    var fell = 0;
+    if ($.vx < 0 && $.x+ER <=  $.floor.x) {
+        // fell of the left edge
+        fell = 1;
+    }
+    else if ($.vx > 0 && $.x > $.floor.x+$.floor.w) {
+        // fell of the right edge
+        fell = 2;
+    }
+
+    if (fell != 0) {
+        var floor = findFloor($.x, $.y, $.z, ER); // inline?
+        if ($.floor != floor && abs(floor.z- $.floor.z ) < 10) {
+            $.floor = floor;
+            $.floorZ = $.floor.z + E2R4;
+        }
+        if (floor != $.floor) {
+            // made it to edge - turn back
+            $.x = fell==1 ? $.floor.x-ER+1: $.floor.x+ $.floor.w-1; //$.x -= $.vx;
+            $.vx *= -1;
+        }
+    }
+    if ($.z <= $.floorZ) {// bounce
+        $.z = $.floorZ;
+        $.vz = 2;
+    }
+
     var wall = collide($.x, $.y, $.z, ER, $.vx>0 ? CollisionLeftFace: CollisionRightFace ); // collide left and right
     if (wall) {
         $.x = $.vx>0 ?  wall.x-ER : wall.x+wall.w+ER;      //$.x-= $.vx;
         $.vx *= -1;
     }
 
-//    if (abs(VX) < 0.05) VX = 0;
 
-
-    var floor = findFloor($.x, $.y, $.z, ER); // inline?
-    if ($.floor != floor && abs(floor.z- $.floor.z ) < 10) {
-        $.floor = floor;
-    }
-    if (floor != $.floor) {
-        // made it to edge - turn back
-        $.x = $.vx <0 ? $.floor.x-ER+2: $.floor.x+ $.floor.w-2; //$.x -= $.vx;
-        $.vx *= -1;
-    }
-    else {
-        $.floorZ = floor.z + E2R4;
-        if ($.z <= $.floorZ) {// bounce
-            $.z = $.floorZ;
-            $.vz = 2;
-        }
-    }
     toScreenSpace($);
     $.sx -= E2R4;
     $.sy -= E2R4/2;

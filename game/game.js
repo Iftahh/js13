@@ -433,15 +433,26 @@ var drawBorders=function($) {
 //    |        _|   <-- left border of small cube is canceled because contained in right border of big cube
 //    |_______|
 
+var alpha = 1;
+var _setAlpha=function(al) {  // not sure this is necessary - will setting the same alpha value to canvas trigger expensive work like setting same width?
+    if (al != alpha) {
+        C.globalAlpha = al;
+        alpha = al;
+    }
+}
 
-var _setAlpha=function($) {
+var setAlpha=function($) {
+    if ($.isCoin) {
+        _setAlpha(1)  // coins never become transparent
+        return;
+    }
     if ($.sx-10 < Player.sx+Player.sw && $.sx+10+ $.sw > Player.sx  && $.y+ $.d < Player.y &&
         $.sy-10 < Player.sy+Player.sh && $.sy+10+ $.sh > Player.sy
         ) {
-        C.globalAlpha = .3  // TODO: make alpha based on distance from player
+        _setAlpha(.3)  // TODO: make alpha based on distance from player
     }
     else {
-        C.globalAlpha = 1
+        _setAlpha(1)
     }
 }
 
@@ -453,11 +464,14 @@ var behindPlayer = function(cubeA) {
     var cubeB= Player;
     // I allow up to "few" pixels of intersection because the editor isn't precise
     var few=3
+    if (cubeA.y+cubeA.d <= cubeB.y+few) // B is behind A
+        return false;
+
     if  ((cubeB.y+cubeB.d <= cubeA.y+few)  ||   // A is behind B
          (cubeA.z+cubeA.h <= cubeB.z+few)  ||   // A is below B
          (cubeA.x+cubeA.w <= cubeB.x+few))      // A is to the left of B
         return true;  // first draw A then B
-    if ((cubeA.y+cubeA.d <= cubeB.y+few)  || // B is behind A
+    if (
         (cubeB.z+cubeB.h <= cubeA.z+few)  || // B is below A
         (cubeB.x+cubeB.w <= cubeA.x+few))    // B is to the left of A
         return false; // first draw B then draw A
@@ -635,7 +649,6 @@ var loadLevel=function(lvl) {
     BW=27;BC=BBC;
     B = 0xfff;
     Y=0; D=100;
-
     for (var i=0; i<lvl.length;) {
         var type = lvl[i++];
         switch (type) {

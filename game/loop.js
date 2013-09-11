@@ -112,7 +112,7 @@ function tick(ts) {
     var spritesBehindPlayer = [];
     var spritesAfterPlayer = [];
     each(spritesIn, function($) {
-        if ($.isCoin || behindPlayer($)) {
+        if (behindPlayer($)) {
             spritesBehindPlayer.push($)
         }
         else {
@@ -127,10 +127,10 @@ function tick(ts) {
     Player.draw()
 
     each(spritesAfterPlayer, function($) {
-        _setAlpha($)
+        setAlpha($)
         $.draw($)
     })
-    C.globalAlpha = 1
+    _setAlpha(1)
 
 
     removePickedCoins();
