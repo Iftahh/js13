@@ -198,7 +198,7 @@ var playerUpdate = function($, dt) {
 
     var realVx = $.vx;
     var realVz = $.vz;
-    if ($.floor && $.floor.vx) {
+    if ($.floor && $.floor.vx && abs($.floorZ - $.floor.z - P2R4)<4) {
         realVx += $.floor.vx;
         realVz += $.floor.vz;
     }
