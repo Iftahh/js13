@@ -63,19 +63,21 @@ var joystickMove = function(jsMove) {
     if (x < joystick.x-15) {
         Player.left = 1;
         Player.right = 0;
+        Player.up = 0;
+        Player.down = 0;
     }
     else if (x > joystick.x +15) {
         Player.left = 0;
         Player.right = 1;
+        Player.up = 0;
+        Player.down = 0;
     }
     else {
         Player.left = 0;
         Player.right = 0;
-        Player.up = 0;
-        Player.down = 0;
     }
 
-    if (Player.left || Player.right) {
+    if (!Player.left && !Player.right) {
         if (y < joystick.y-15) {
             Player.up = 1;
             Player.down = 0;
