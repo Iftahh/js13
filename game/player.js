@@ -71,19 +71,23 @@ var joystickMove = function(jsMove) {
     else {
         Player.left = 0;
         Player.right = 0;
+        Player.up = 0;
+        Player.down = 0;
     }
 
-    if (y < joystick.y-15) {
-        Player.up = 1;
-        Player.down = 0;
-    }
-    else if (y > joystick.y +15) {
-        Player.up = 0;
-        Player.down = 1;
-    }
-    else {
-        Player.up = 0;
-        Player.down = 0;
+    if (Player.left || Player.right) {
+        if (y < joystick.y-15) {
+            Player.up = 1;
+            Player.down = 0;
+        }
+        else if (y > joystick.y +15) {
+            Player.up = 0;
+            Player.down = 1;
+        }
+        else {
+            Player.up = 0;
+            Player.down = 0;
+        }
     }
     event.preventDefault();
 }
