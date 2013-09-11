@@ -7,7 +7,7 @@
   <rect stroke="#000000" id="svg_55" opacity="0.5" fill="#7f3f00" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" x="1872" y="511" width="20" height="84"/>
   <rect opacity="0.5" fill="#7f3f00" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" x="1307.5" y="631" width="123" height="82" id="svg_94" stroke="#000000"/>
   <line stroke="#000000" id="svg_59 move-svg_18" y2="398.49999" x2="1169.5" y1="550.5" x1="1076.5" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke-width="5" fill="none"/>
-  <line stroke="#000000" id="svg_59 move-svg_98" y2="626.99997" x2="401.50001" y1="896.99999" x1="238.5" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke-width="5" fill="none"/>
+  <line stroke="#000000" id="svg_59 move-svg_98" y2="624.99997" x2="379.5" y1="896.99999" x1="238.5" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke-width="5" fill="none"/>
   <rect stroke="#000000" id="svg_101" opacity="0.5" fill="#7f3f00" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" x="488" y="837" width="116" height="98"/>
   <rect stroke="#000000" id="svg_102" opacity="0.5" fill="#7f3f00" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" x="708" y="725" width="20" height="210"/>
   <rect stroke="#000000" id="svg_103" opacity="0.5" fill="#7f3f00" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" x="1496" y="743" width="48" height="188"/>
@@ -96,6 +96,9 @@
   <ellipse id="svg_96 speed-25" fill="#ff7f00" stroke="#000000" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" cx="1023.99998" cy="870.00003" rx="18" ry="16"/>
   <ellipse id="svg_97 speed-5" fill="#ff7f00" stroke="#000000" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" cx="679.99998" cy="860.00003" rx="18" ry="16"/>
   <rect id="svg_98" stroke="#000000" fill="#7f3f00" x="190.82268" y="844.66824" width="150.35462" height="18.66354"/>
+  <rect id="svg_106" height="38" width="42" y="480" x="834" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#bfbfbf"/>
+  <rect id="svg_107" height="52" width="158" y="882" x="1630" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#bfbfbf"/>
+  <rect stroke="#000000" id="svg_108" height="60" width="42" y="654" x="1478" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" fill="#bfbfbf"/>
  </g>
  <g display="inline">
   <title>Front (hiding)</title>

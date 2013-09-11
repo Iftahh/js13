@@ -179,9 +179,9 @@ var speedUpdate=function($,dt) {
     $.vz-= .2*dt; // Gravity accelerates down
     var realVx = $.vx;
     var realVz = $.vz;
-    if ($.floor && $.floor.vx && abs($.floorZ - $.floor.z - P2R4)<4) {
-        realVx += $.floor.vx;
-        realVz += $.floor.vz;
+    if ($.floor && $.floor.sprite.vx && abs($.floorZ - $.floor.z - P2R4)<4) {
+        realVx += $.floor.sprite.vx;
+        realVz += $.floor.sprite.vz;
     }
     $.x+=realVx*dt;
     $.z+=realVz*dt;
@@ -242,7 +242,13 @@ var playerUpdate = function($, dt) {
         $.floor = floor;
         $.floorZ = floor.z + P2R4;
         if ($.z <= $.floorZ ||  // hit floor
-            (jump && $.z-$.floorZ < 5 && abs($.vz) < 2)) {
+            (!$.floor.sprite.spikes && jump && $.z-$.floorZ < 5 && abs($.vz) < 2)) {
+
+            if ($.floor.sprite.spikes) {
+                initPlayer();
+                return
+            }
+
             if ($.vz < -2 || jump)
                 bounceFloor.play();
             else if ($.vz < -1)

@@ -16,7 +16,12 @@ exports.svg_to_lvl = function(svg) {
         }
         else {
             alerted = true;
-            alert(t);
+            try {
+                alert(t);
+            }
+            catch(e) {
+                console.log("\n\n---------> "+t+"  <------\n\n")
+            }
         }
     }
     var ellipse_re = /<ellipse( [^>]+)>/
@@ -97,6 +102,17 @@ exports.svg_to_lvl = function(svg) {
             safeAlert(">>>>  Unknown rect: color:"+color );
             return
         }
+        var speed = 10;
+        var code = $.id.split(' ');
+        if (code.length > 1) {
+            code = code[1].split('-')
+            if (code[0] == "speed") {
+                speed = int(code[1])
+            }
+            else {
+                safeAlert(">>>>> platform with bad code "+$.id);
+            }
+        }
         var x1= int(line.x1), x2=int(line.x2), y1=fixY(line.y1,h), y2=fixY(line.y2,h);
         console.log("Moving Platform ID: "+line.id+"  "+tt+"  at "+x1+","+y1+" -> "+x2+","+y2+"  W:"+w+"  H:"+h)
         lvl.push(x1)
@@ -105,6 +121,7 @@ exports.svg_to_lvl = function(svg) {
         lvl.push(y2)
         lvl.push(w)
         lvl.push(h)
+        lvl.push(speed)
     }
 
     var to_platform=function($) {
@@ -127,6 +144,10 @@ exports.svg_to_lvl = function(svg) {
         else if (color == '7f3f00'){
             tt='brick'
             lvl.push(3)
+        }
+        else if (color == "bfbfbf") {
+            tt= 'spikes'
+            lvl.push(10)
         }
         else {
             safeAlert(">>>>  Unknown rect: color:"+color );
