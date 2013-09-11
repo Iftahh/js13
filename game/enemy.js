@@ -1,11 +1,11 @@
 
 
 
-var addEnemy = function(x,y) {
+var addEnemy = function(x,y, speed) {
     var $ = {
         x:x+E2R4, y:IPY+E2R4,z:y+E2R4,
         h: E2R,
-        vx: -1,
+        vx: speed? speed/-10 :  -1,
         vz: 0,
         h:ER,
         w:ER,
@@ -37,9 +37,6 @@ var E2R = 2*ER
 var E2R4 = E2R/4
 
 var updateEnemy = function($, dt) {
-    $.x += $.vx*dt;
-    $.vz -= .2*dt // Gravity accelerates down
-    $.z+= $.vz*dt;
 
     if (!$.floor) {
         $.floor = findFloor($.x+E2R4, $.y+E2R4, $.z+E2R4, ER);
@@ -48,6 +45,8 @@ var updateEnemy = function($, dt) {
             alert("Enemy must be above floor")
         }
     }
+
+    speedUpdate($,dt)
 
     var fell = 0;
     if ($.vx < 0 && $.x+ER <=  $.floor.x) {

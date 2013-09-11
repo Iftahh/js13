@@ -743,6 +743,9 @@ var loadLevel=function(lvl) {
                 DR = type== 7 ? brickDraw : textureDraw;
                 addMovingCube(lvl[i++],lvl[i++],lvl[i++],lvl[i++],lvl[i++],lvl[i++])
                 break;
+            case 9: // enemy with speed
+                addEnemy(lvl[i++],lvl[i++], lvl[i++])
+                break;
             default:
                 alert("Error loading level at index "+i+"  type: "+type);
 

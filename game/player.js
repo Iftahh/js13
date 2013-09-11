@@ -175,6 +175,20 @@ var bounceWall = jsfxr([0,,0.11,0.16,0.09,0.227,0.04,-0.18,0.34,,,,,0.23,0.12,,,
 
 var shadowColor = RGB(15,15,15,0.5)
 
+var speedUpdate=function($,dt) {
+    $.vz-= .2*dt; // Gravity accelerates down
+    var realVx = $.vx;
+    var realVz = $.vz;
+    if ($.floor && $.floor.vx && abs($.floorZ - $.floor.z - P2R4)<4) {
+        realVx += $.floor.vx;
+        realVz += $.floor.vz;
+    }
+    $.x+=realVx*dt;
+    $.z+=realVz*dt;
+
+
+}
+
 var playerUpdate = function($, dt) {
 //    if (KEYS[38]) {VY=min(3,VY+.1)}  // up
 //    else if (KEYS[40]) {VY=max(-3,VY -.1)} // down
@@ -194,16 +208,8 @@ var playerUpdate = function($, dt) {
         else { $.vx=max($.vx *slowdown, maxSpeed)}
     }
 
-    $.vz-= .2*dt; // Gravity accelerates down
 
-    var realVx = $.vx;
-    var realVz = $.vz;
-    if ($.floor && $.floor.vx && abs($.floorZ - $.floor.z - P2R4)<4) {
-        realVx += $.floor.vx;
-        realVz += $.floor.vz;
-    }
-    $.x+=realVx*dt;
-    $.z+=realVz*dt;
+    speedUpdate($,dt)
 
     //MAX_PZ = max(MAX_PZ, PZ)
     //H=P2R;

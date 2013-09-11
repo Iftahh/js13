@@ -149,12 +149,31 @@ exports.svg_to_lvl = function(svg) {
     }
 
     var to_enemy=function($) {
+        var code = $.id.split(' ');
+        var speed = false;
+        if (code.length > 1) {
+            code = code[1].split('-')
+            if (code[0] == "speed") {
+                speed = int(code[1])
+            }
+            else {
+                safeAlert(">>>>> line with bad code "+line.id);
+            }
+        }
         var x = int($.x);
         var y = flipY($.y)
-        console.log("Enemy ID: "+ $.id+  "  at  "+x+", "+y)
-        lvl.push(2);
-        lvl.push(x);
-        lvl.push(y);
+        console.log("Enemy ID: "+ $.id+  "  at  "+x+", "+y+ "  speed: "+speed)
+        if (speed) {
+            lvl.push(9);
+            lvl.push(x);
+            lvl.push(y);
+            lvl.push(speed)
+        }
+        else {
+            lvl.push(2);
+            lvl.push(x);
+            lvl.push(y);
+        }
     }
 
     var process_ellipse=function(arc) {
