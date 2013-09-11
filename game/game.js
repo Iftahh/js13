@@ -112,15 +112,7 @@ var spritesImageCache = {}
 var spritesImageCacheList = []
 
 var MIN_BLOCK = 16
-// using globals
-// Y   D
-// B - borders
-// BL - border color
-// BW - brick width
-// DR - draw
-var addCube = function(x,z,w,h) {  // container
-    addNonBlockCube(x,z,w,h)
-    // hack: because player-Y doesn't change avoid adding collision bodies for Y the player won't hit
+var addCubeCollision=function(x,z,w,h) {
     if (Y+D < IPY  || Y > IPY) {
         return;
     }
@@ -164,6 +156,18 @@ var addCube = function(x,z,w,h) {  // container
 //    }
 }
 
+// using globals
+// Y   D
+// B - borders
+// BL - border color
+// BW - brick width
+// DR - draw
+var addCube = function(x,z,w,h) {  // container
+    addNonBlockCube(x,z,w,h)
+    // hack: because player-Y doesn't change avoid adding collision bodies for Y the player won't hit
+    addCubeCollision(x,z,w,h)
+}
+
 var collide = function(x,y,z,r, C) {  // C is either CollisionRightFace/CollisionLeftFace/CT/CollisionBackFace/etc..,   (x,y,z) is the bottom left front corner, r is the cube height/width/depth (same all)
     return breach(C, function($,i) {
         // doing cube collision for simplicity - TODO: change to sphere collision
@@ -205,7 +209,7 @@ var addSprite = function($) {
 // BC - border color
 // BW - brick width
 // DR - draw function or array of 3 draw functions
-var addNonBlockCube=function(x,z,w,h) {
+var generateCube=function(x,z,w,h) {
     BH = BH || BW *.3;
     var cube = {
         x:x, // world x
@@ -270,18 +274,25 @@ var addNonBlockCube=function(x,z,w,h) {
             draw: DR[2] || DR
         }
     }
+    return cube;
+}
 
+
+var addNonBlockCube=function(x,z,w,h) {
+    var cube = generateCube(x,z,w,h)
     addSprite(cube);
 }
 
-// draw the cube at zero zero location
-var drawCube00 = function(cube) {
+
+// draw the cube at location (sx,sy)
+var drawCube = function(cube, sx,sy) {
+    var d_2 = cube.d/2;
     if (cube.front) {
-        C.setTransform(1, 0,0,1, 0, cube.d/2);
+        C.setTransform(1, 0,0,1, sx, sy+ d_2);
         cube.front.draw(cube.front);
     }
     if (cube.top) {
-        C.setTransform(1, 0,-.5,.5, 0.4 +cube.d/2, 0);
+        C.setTransform(1, 0,-.5,.5, sx+0.4 +d_2, sy);
         cube.top.draw(cube.top);
 
         // special hack... draw flowers
@@ -304,7 +315,7 @@ var drawCube00 = function(cube) {
 //        }
     }
     if (cube.right) {
-        C.setTransform(.5, -.5,0,1, cube.w, cube.d/2);
+        C.setTransform(.5, -.5,0,1, sx+cube.w, sy+d_2);
         cube.right.draw(cube.right);
     }
 
@@ -318,6 +329,11 @@ var drawCube00 = function(cube) {
 //        trns(1, 0,-p, -p,x-0.5 +p*d,y+p*d)
 //        C.drawImage(grass, 0,0,w,d);
 //    }
+}
+
+// draw the cube at zero zero location
+var drawCube00 = function(cube) {
+    drawCube(cube,0,0)
 }
 
 var MAX_SPRITES_IN_CACHE = 50;
@@ -430,7 +446,11 @@ var _setAlpha=function($) {
 }
 
 // return true if the cubeA should be drawn before the cubeB
-var behindCube = function(cubeA, cubeB) {
+var behindPlayer = function(cubeA) {
+//    if (cubeA.subCubes) {
+//        return breach(cubeA.subCubes, behindPlayer);
+//    }
+    var cubeB= Player;
     // I allow up to "few" pixels of intersection because the editor isn't precise
     var few=3
     if  ((cubeB.y+cubeB.d <= cubeA.y+few)  ||   // A is behind B
@@ -540,7 +560,64 @@ var stairs=function (x1,y1,z1,w1,d1,x2,y2,w2,d2, h,n) {
 }
 
 
+var addGroupCube=function(group, draw, x,z,w,h) {
+    DR=draw;
+    var cube = generateCube(x,z,w,h)
+    group.push(cube)
+    addCubeCollision(x,z,w,h)
+}
 
+var toScreenSpaceForGroup=function(group, sprite) {
+    var minX,minY,minZ,left,top,maxX,maxY,maxZ,right,bottom
+    minX=minY=minZ=left=top=Infinity;
+    maxX=maxY=maxZ=right=bottom=-Infinity;
+
+    each(group, function(cube) {
+        left = min(left, cube.sx);
+        right = max(right, cube.sx+cube.sw)
+        top = min(top, cube.sy)
+        bottom = max(bottom, cube.sy+cube.sh)
+        minX=min(minX, cube.x);
+        maxX=max(maxX, cube.x+cube.w);
+        minY=min(minY, cube.y);
+        maxY=max(maxY, cube.y+cube.d);
+        minZ=min(minZ, cube.z);
+        maxZ=max(maxZ, cube.z+cube.h);
+    })
+    update(sprite, {
+        sx: left,
+        sy: top,
+        sw: right-left+1,
+        sh: bottom-top+1,
+        x:minX,
+        y:minY,
+        z:minZ,
+        w:maxX-minX+1,
+        h:maxZ-minZ+1,
+        d:maxY-minY+1
+    })
+}
+
+var addGroupSprite=function(group) {
+
+    var sprite = {
+        subCubes: group,
+        uncachedDraw: function($) {
+            each($.subCubes, function(cube) {
+                drawCube(cube, cube.sx- $.sx, cube.sy - $.sy);
+            })
+        },
+        draw: drawSprite,
+        toScreenSpace: function($) {
+            each($.subCubes, function(cube) {
+                toScreenSpace(cube)
+            })
+            toScreenSpaceForGroup($.subCubes, $)
+        }
+    }
+    toScreenSpaceForGroup(group, sprite)
+    addSprite(sprite)
+}
 
 
 var loadLevel=function(lvl) {
@@ -576,14 +653,30 @@ var loadLevel=function(lvl) {
             case 3: // brick platform
             case 4: // texture platform
                 DR= type == 3 ? brickDraw : textureDraw;
-                addCube(lvl[i++],lvl[i++],lvl[i++],lvl[i++]);
+                addCube(lvl[i++],lvl[i++],lvl[i++],lvl[i++]);   // todo: also DR, Y and D ?
                 break;
-            case 5: // change Y and D
+            case 5: // change default Y and D
                 Y = lvl[i++];
                 D = lvl[i++];
                 break;
+            case 6: // group
+                var group=lvl[i++];
+                var groupSprite = [];
+                for (var j=0; j<group.length;) {
+                    type = group[j++];
+                    switch(type) {
+                        case 3: // brick platform
+                        case 4: // texture platform
+                            addGroupCube(groupSprite, type == 3 ? brickDraw : textureDraw, group[j++],group[j++],group[j++],group[j++]);
+                            break;
+                        default:
+                            alert("Error loading level at index "+i+"  subindex "+j+" type: "+type);
+                    }
+                }
+                addGroupSprite(groupSprite)
+                break;
             default:
-                log("Error loading level at index "+i+"  type: "+type);
+                alert("Error loading level at index "+i+"  type: "+type);
 
         }
     }

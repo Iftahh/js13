@@ -56,6 +56,9 @@ var updateEnemy = function($, dt) {
 
 
     var floor = findFloor($.x, $.y, $.z, ER); // inline?
+    if ($.floor != floor && abs(floor.z- $.floor.z ) < 10) {
+        $.floor = floor;
+    }
     if (floor != $.floor) {
         // made it to edge - turn back
         $.x = $.vx <0 ? $.floor.x-ER+2: $.floor.x+ $.floor.w-2; //$.x -= $.vx;

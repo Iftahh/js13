@@ -35,7 +35,11 @@ window.onresize = function() {
     BgC.fillRect(0,0,width,height)
     if (_w != width || _h != height) {
         each(sprites, function($){
-            toScreenSpace($)
+            if ($.toScreenSpace) {
+                $.toScreenSpace($)
+            }
+            else
+                toScreenSpace($)
         })
         resetJoystick();
     }
@@ -108,7 +112,7 @@ function tick(ts) {
     var spritesBehindPlayer = [];
     var spritesAfterPlayer = [];
     each(spritesIn, function($) {
-        if ($.isCoin || behindCube($, Player)) {
+        if ($.isCoin || behindPlayer($)) {
             spritesBehindPlayer.push($)
         }
         else {

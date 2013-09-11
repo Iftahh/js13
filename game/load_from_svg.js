@@ -31,6 +31,9 @@ exports.svg_to_lvl = function(svg) {
     var y_re = / y="([^"]+)"/
     var x_re = / x="([^"]+)"/
 
+    var group_re = /<g id="([^"]+)">/
+    var group_end_re = /<\/g>/
+
 
 
     var int=function(n) {
@@ -43,8 +46,9 @@ exports.svg_to_lvl = function(svg) {
         return flipY(y)-int(h)
     }
 
-    var lvl = [];
-
+    var fullLvl = [];
+    var groups = [];
+    var lvl = fullLvl;
 
     var to_player=function($) {
         var x = int($.x);
@@ -113,6 +117,21 @@ exports.svg_to_lvl = function(svg) {
             safeAlert(">>>>>>>>>>>  unknown ellipse: color="+color);
     }
 
+    var to_group=function(id) {
+        console.log("Starting group ID: "+id);
+        var group = []
+        lvl.push(6)
+        lvl.push(group)
+        groups.push(lvl);
+        lvl = group;
+    }
+
+    var to_group_end=function() {
+        if (groups.length) {
+            lvl = groups.pop();
+            console.log("ended group");
+        }
+    }
 
 
     svg = svg.split('\n')
@@ -126,6 +145,7 @@ exports.svg_to_lvl = function(svg) {
             lvl.push(5);
             lvl.push(Y)
             lvl.push(D)
+            continue;
         }
         if (line.indexOf( "<title>Main</title>") > -1) {
             Y=0;
@@ -134,6 +154,7 @@ exports.svg_to_lvl = function(svg) {
             lvl.push(5);
             lvl.push(Y)
             lvl.push(D)
+            continue;
         }
         if (line.indexOf( "<title>Front (hiding)</title>") > -1) {
             Y=0;
@@ -142,6 +163,18 @@ exports.svg_to_lvl = function(svg) {
             lvl.push(5);
             lvl.push(Y)
             lvl.push(D)
+            continue;
+        }
+
+        var group_start = group_re.exec(line)
+        if (group_start) {
+            to_group(group_start[1])
+            continue;
+        }
+        var group_end = group_end_re.exec(line)
+        if (group_end) {
+            to_group_end()
+            continue;
         }
 
         var attributes = rect_re.exec(line)
@@ -157,6 +190,7 @@ exports.svg_to_lvl = function(svg) {
             }
 
             to_platform(rect)
+            continue;
         }
 
 
@@ -171,6 +205,7 @@ exports.svg_to_lvl = function(svg) {
             }
 
             process_ellipse(ellipse)
+            continue;
         }
     }
     return lvl;
