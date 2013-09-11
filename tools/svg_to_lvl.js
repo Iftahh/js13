@@ -14,4 +14,4 @@ var svg = fs.readFileSync(process.argv[2], 'utf8');
 var lvl = lfs.svg_to_lvl(svg)
 var r = /\/([^.\/]+)\.[^\.]+$/
 var lvlname = process.argv[3].split(r)[1]
-fs.writeFileSync(process.argv[3], "var "+lvlname+" = "+JSON.stringify(lvl));
+fs.writeFileSync(process.argv[3], "var "+lvlname+" = "+JSON.stringify(lvl)+";");

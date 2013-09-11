@@ -194,9 +194,16 @@ var playerUpdate = function($, dt) {
         else { $.vx=max($.vx *slowdown, maxSpeed)}
     }
 
-    $.x+=$.vx*dt;
     $.vz-= .2*dt; // Gravity accelerates down
-    $.z+=$.vz*dt;
+
+    var realVx = $.vx;
+    var realVz = $.vz;
+    if ($.floor && $.floor.vx) {
+        realVx += $.floor.vx;
+        realVz += $.floor.vz;
+    }
+    $.x+=realVx*dt;
+    $.z+=realVz*dt;
 
     //MAX_PZ = max(MAX_PZ, PZ)
     //H=P2R;
@@ -226,6 +233,7 @@ var playerUpdate = function($, dt) {
     var floor = findFloor($.x,$.y,$.z, PR);
     $.floorZ = -Infinity;
     if (floor.d ) { // real floor should have D dimension
+        $.floor = floor;
         $.floorZ = floor.z + P2R4;
         if ($.z <= $.floorZ ||  // hit floor
             (jump && $.z-$.floorZ < 5 && abs($.vz) < 2)) {
@@ -240,6 +248,9 @@ var playerUpdate = function($, dt) {
             else
                 $.vz=max(abs($.vz/2),abs($.vx)/1.5) // bounce back from fall or  running bounce (ie. bounce when walking)
         }
+    }
+    else {
+        $.floor = false;
     }
 
     var wall = collide($.x,$.y,$.z, PR, $.vx>0 ? CollisionLeftFace: CollisionRightFace ); // collide left and right

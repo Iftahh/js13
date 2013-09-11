@@ -34,6 +34,11 @@ exports.svg_to_lvl = function(svg) {
     var group_re = /<g id="([^"]+)">/
     var group_end_re = /<\/g>/
 
+    var line_re = /<line( [^>]+)>/
+    var x1_re = / x1="([^"]+)"/
+    var x2_re = / x2="([^"]+)"/
+    var y1_re = / y1="([^"]+)"/
+    var y2_re = / y2="([^"]+)"/
 
 
     var int=function(n) {
@@ -59,8 +64,56 @@ exports.svg_to_lvl = function(svg) {
         console.log("Player   ID: "+ $.id +  "  at  "+x+", "+y)
     }
 
+    var moving = {}
+
+    var process_line=function(line) {
+        var code = line.id.split(' ');
+        if (code.length < 2) {
+            safeAlert(">>>>> line with bad code "+line.id);
+            return;
+        }
+        code = code[1].split('-')
+        if (code[0] == "move") {
+            moving[code[1]] = line;
+        }
+        else {
+            safeAlert(">>>>> line with bad code "+line.id);
+        }
+    }
+
+    var to_moving_platform=function($,line) {
+        var w= int($.w),h= int($.h);
+        var color= $.color;
+        var tt;
+        if (color == '7fff00') {
+            tt='grass'
+            lvl.push(8)
+        }
+        else if (color == '7f3f00'){
+            tt='brick'
+            lvl.push(7)
+        }
+        else {
+            safeAlert(">>>>  Unknown rect: color:"+color );
+            return
+        }
+        var x1= int(line.x1), x2=int(line.x2), y1=fixY(line.y1,h), y2=fixY(line.y2,h);
+        console.log("Moving Platform ID: "+line.id+"  "+tt+"  at "+x1+","+y1+" -> "+x2+","+y2+"  W:"+w+"  H:"+h)
+        lvl.push(x1)
+        lvl.push(y1)
+        lvl.push(x2)
+        lvl.push(y2)
+        lvl.push(w)
+        lvl.push(h)
+    }
+
     var to_platform=function($) {
-        var id= $.id,color= $.color,w= $.w,h= $.h,x= $.x,y= $.y
+        var id= $.id;
+        if (moving[id]) {
+            to_moving_platform($, moving[id]);
+            return;
+        }
+        var color= $.color,w= $.w,h= $.h,x= $.x,y= $.y;
         var xx=int(x);
         var yy=fixY(y,h);
         var ww=int(w);
@@ -134,11 +187,12 @@ exports.svg_to_lvl = function(svg) {
     }
 
 
+
     svg = svg.split('\n')
     for (var i=0; i<svg.length; i++) {
-        var line =svg[i];
+        var text_line =svg[i];
         //print line
-        if (line.indexOf("<title>Back</title>") > -1) {
+        if (text_line.indexOf("<title>Back</title>") > -1) {
             Y=90;
             D=10;
             console.log("****  Back ****  Y="+Y+", D="+D);
@@ -147,7 +201,7 @@ exports.svg_to_lvl = function(svg) {
             lvl.push(D)
             continue;
         }
-        if (line.indexOf( "<title>Main</title>") > -1) {
+        if (text_line.indexOf( "<title>Main</title>") > -1) {
             Y=0;
             D=100;
             console.log("***** Main ****  Y="+Y+", D="+D);
@@ -156,7 +210,7 @@ exports.svg_to_lvl = function(svg) {
             lvl.push(D)
             continue;
         }
-        if (line.indexOf( "<title>Front (hiding)</title>") > -1) {
+        if (text_line.indexOf( "<title>Front (hiding)</title>") > -1) {
             Y=0;
             D=10;
             console.log("***** FRONT *****  Y="+Y+", D="+D);
@@ -166,18 +220,18 @@ exports.svg_to_lvl = function(svg) {
             continue;
         }
 
-        var group_start = group_re.exec(line)
+        var group_start = group_re.exec(text_line)
         if (group_start) {
             to_group(group_start[1])
             continue;
         }
-        var group_end = group_end_re.exec(line)
+        var group_end = group_end_re.exec(text_line)
         if (group_end) {
             to_group_end()
             continue;
         }
 
-        var attributes = rect_re.exec(line)
+        var attributes = rect_re.exec(text_line)
         if (attributes) {
             attributes= attributes[1]
             var rect = {
@@ -193,8 +247,21 @@ exports.svg_to_lvl = function(svg) {
             continue;
         }
 
+        attributes = line_re.exec(text_line)
+        if (attributes) {
+            attributes=attributes[1];
+            var line = {
+                "id": id_re.exec(attributes)[1],
+                "x1": x1_re.exec(attributes)[1],
+                "y1": y1_re.exec(attributes)[1],
+                "x2": x2_re.exec(attributes)[1],
+                "y2": y2_re.exec(attributes)[1]
+            }
+            process_line(line)
+            continue
+        }
 
-        attributes = ellipse_re.exec(line)
+        attributes = ellipse_re.exec(text_line)
         if (attributes) {
             attributes = attributes[1];
             var ellipse = {

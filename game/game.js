@@ -113,34 +113,42 @@ var spritesImageCacheList = []
 
 var MIN_BLOCK = 16
 var addCubeCollision=function(x,z,w,h) {
+    // hack: because player-Y doesn't change avoid adding collision bodies for Y the player won't hit
     if (Y+D < IPY  || Y > IPY) {
         return;
     }
 
+    var result = {
+    }
+
     // add blocking data
     if (D>MIN_BLOCK && h>MIN_BLOCK) {
-        CollisionLeftFace.push({
+        result.CL = {
             y:Y,z:z,
             d:D, h:h, w:0,
             x:x
-        })
-        CollisionRightFace.push({
+        }
+        CollisionLeftFace.push(result.CL);
+        result.CR = {
             y:Y,z:z,
             d:D, h:h,w:0,
             x:x+w
-        })
+        }
+        CollisionRightFace.push(result.CR);
     }
     if (D>MIN_BLOCK && w>MIN_BLOCK) {
-        CollisionTopFace.push({
+        result.CT = {
             x:x,y:Y,
             w:w, d:D, h:0,
             z:z+h
-        })
-        CollisionBottomFace.push({
+        }
+        CollisionTopFace.push(result.CT)
+        result.CB = {
             x:x,y:Y,
             w:w, d:D, h:0,
             z:z
-        })
+        }
+        CollisionBottomFace.push(result.CB)
     }
 //    if (h>MIN_BLOCK && w>MIN_BLOCK) {    // Changed my mind: this is going to be a left-right up-down game,  no front-back movement
 //        CollisionBackFace.push({
@@ -154,6 +162,7 @@ var addCubeCollision=function(x,z,w,h) {
 //            y:Y
 //        })
 //    }
+    return result;
 }
 
 // using globals
@@ -163,9 +172,8 @@ var addCubeCollision=function(x,z,w,h) {
 // BW - brick width
 // DR - draw
 var addCube = function(x,z,w,h) {  // container
-    addNonBlockCube(x,z,w,h)
-    // hack: because player-Y doesn't change avoid adding collision bodies for Y the player won't hit
     addCubeCollision(x,z,w,h)
+    addNonBlockCube(x,z,w,h);
 }
 
 var collide = function(x,y,z,r, C) {  // C is either CollisionRightFace/CollisionLeftFace/CT/CollisionBackFace/etc..,   (x,y,z) is the bottom left front corner, r is the cube height/width/depth (same all)
@@ -179,6 +187,47 @@ var collide = function(x,y,z,r, C) {  // C is either CollisionRightFace/Collisio
     })
 }
 
+var addMovingCube=function(x1,y1,x2,y2, w,h) {
+    var x = x1-w/2;
+    var z = y1-h/2
+    var cube = addNonBlockCube(x,z, w,h);
+    cube.vx = (x2-x1)/160;
+    cube.vz = (y2-y1)/160
+    cube.maxZ = max(y1,y2)
+    cube.minZ = min(y1,y2)
+    cube.maxX = max(x1,x2)
+    cube.minX = min(x1,x2)
+    cube.collisionFaces = addCubeCollision(x,z,w,h);
+    cube.update= function($,dt) {
+        $.x += $.vx*dt;
+        if ($.x > $.maxX || $.x < $.minX) {
+            $.x = max(min($.x, $.maxX), $.minX);
+            $.vx *= -1;
+        }
+        $.z += $.vz*dt;
+        if ($.z > $.maxZ || $.z < $.minZ) {
+            $.z = max(min($.z, $.maxZ), $.minZ);
+            $.vz *= -1;
+        }
+
+        var c = $.collisionFaces;
+        if (c.CL) {
+            c.CL.z= $.z;
+            c.CL.x = $.x;
+            c.CR.z= $.z;
+            c.CR.x = $.x+ $.w;
+        }
+        if (c.CT) {
+            c.CT.x = $.x;
+            c.CT.z = $.z+ $.h;
+            c.CT.vx = $.vx;
+            c.CT.vz = $.vz; // needed for player/enemy standing on top
+            c.CB.x = $.x;
+            c.CB.z = $.z;
+        }
+        toScreenSpace($)
+    }
+}
 
 var findFloor = function(x,y,z, r) {
     // find floor below the point
@@ -281,6 +330,7 @@ var generateCube=function(x,z,w,h) {
 var addNonBlockCube=function(x,z,w,h) {
     var cube = generateCube(x,z,w,h)
     addSprite(cube);
+    return cube;
 }
 
 
@@ -687,6 +737,11 @@ var loadLevel=function(lvl) {
                     }
                 }
                 addGroupSprite(groupSprite)
+                break;
+            case 7: // moving brick platform
+            case 8: // moving texture platform
+                DR = type== 7 ? brickDraw : textureDraw;
+                addMovingCube(lvl[i++],lvl[i++],lvl[i++],lvl[i++],lvl[i++],lvl[i++])
                 break;
             default:
                 alert("Error loading level at index "+i+"  type: "+type);
