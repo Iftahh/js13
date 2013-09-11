@@ -546,6 +546,24 @@ var textureDraw=function($) {
     drawBorders($)
 }
 
+var spikesDraw=function($) {
+    C.fillStyle = RGB(190,190,190)
+    C.strokeStyle = RGB(40,40,40);
+    C.lineWidth = 1;
+    C.beginPath()
+    for (var y = $.d; y >= 0; y-= 20) {
+        var y2 = y/2;
+        for (var x=0; x<= $.w; x+=20) {
+            C.moveTo(x+ y2, $.sh-y2);
+            C.lineTo(x+ y2+5, y2);
+            C.lineTo(x+ y2+10, $.sh-y2);
+        }
+    }
+    C.stroke();
+    C.fill();
+
+}
+
 
 var fourWall=function(x,y,z,w,h,d,wd) {  // wd = wall thickness
     TBC1 = "#226" // top brick color 1
@@ -750,9 +768,9 @@ var loadLevel=function(lvl) {
                 addEnemy(lvl[i++],lvl[i++], lvl[i++])
                 break;
             case 10: // spikes
-                DR = textureDraw;//spikesDraw;
                 var cube = addCube(lvl[i++],lvl[i++],lvl[i++],lvl[i++])
                 cube.spikes = true;
+                cube.uncachedDraw = spikesDraw;
                 break;
             default:
                 alert("Error loading level at index "+i+"  type: "+type);
