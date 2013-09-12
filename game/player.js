@@ -285,7 +285,6 @@ var playerUpdate = function($, dt) {
         }
     }
 
-    //if (abs(VX) < 0.05) VX = 0;
 
     toScreenSpace($)
     $.sx -= P2R4;
@@ -313,6 +312,28 @@ var playerDraw=function(){ // TODO: inline
     drawBall(Player )
 }
 
+var cacheBallImg = function(w,h, $, isLeft) {
+    return r2c(w,h, function(c) {
+        var r = $.radius;
+        c.translate(r,r);
+        c.lineWidth=1;
+        c.strokeStyle="#111";
+        c.fillStyle = $.color;
+        c.beginPath();
+        c.arc(0, 0, r, 0, TPI);
+        c.fill();
+        c.scale(isLeft ? 1: -1, 1);
+        c.fillStyle = "#222"
+        c.fillText($.face,-15,1)
+        c.fillText($.mouth, $.mx, $.my)
+        c.stroke()
+    })
+}
+
+
+
+
+
 var drawBall = function($) {
     // shadow
     C.save();
@@ -325,23 +346,16 @@ var drawBall = function($) {
         C.fill();
     }
 
+    trns(1,0,0,1, $.sx, $.sy);
     // ball
-    trns(1,0,0,1, $.sx+ $.radius, $.sy+ $.radius);
-    C.lineWidth=1;
-    C.strokeStyle="#111";
-    C.fillStyle = $.color;
-    C.beginPath();
-    C.arc(0, 0, $.radius, 0, TPI);
-    C.fill();
-    C.scale($.vx<0 ? 1: -1, 1);
-    C.fillStyle = "#222"
-    C.fillText($.face,-15,1)
-    C.fillText($.mouth, $.mx, $.my)
-    C.stroke()
+    C.drawImage($.vx < 0 ? $.leftImg : $.rightImg, 0,0)
+
     C.restore()
 }
 
-var Player = {}
+var rightPlayerImg, leftPlayerImg = false;
+var Player = {};
+
 
 var initPlayer = function() {
     update(Player, {
@@ -366,10 +380,18 @@ var initPlayer = function() {
         update: playerUpdate,
         uplook: -.2
     })
+    if (!leftPlayerImg) {
+        leftPlayerImg = cacheBallImg(P2R, P2R, Player, true);
+        rightPlayerImg =  cacheBallImg(P2R, P2R, Player, false);
+    }
+    Player.leftImg = leftPlayerImg;
+    Player.rightImg = rightPlayerImg;
+
     toScreenSpace(Player)
     CameraX = Player.sx - width *.5;
     CameraY = Player.sy - height *.7;
 }
 
-// Player isn't added - he has special treatment because he can move in the queue of the rendering
-//addSprite(Player)
+
+
+addSprite(Player)

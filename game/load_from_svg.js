@@ -80,6 +80,7 @@ exports.svg_to_lvl = function(svg) {
         code = code[1].split('-')
         if (code[0] == "move") {
             moving[code[1]] = line;
+            console.log("movment line ID: "+line.id)
         }
         else {
             safeAlert(">>>>> line with bad code "+line.id);
@@ -88,6 +89,7 @@ exports.svg_to_lvl = function(svg) {
 
     var to_moving_platform=function($,line) {
         var w= int($.w),h= int($.h);
+        // note $.x and $.y are ignored
         var color= $.color;
         var tt;
         if (color == '7fff00') {
@@ -211,9 +213,35 @@ exports.svg_to_lvl = function(svg) {
     }
 
     var to_group=function(id) {
-        console.log("Starting group ID: "+id);
+        var speed = 10;
+        var code = id.split(' ');
+        if (code.length > 1) {
+            id = code[0];
+            code = code[1].split('-')
+            if (code[0] == "speed") {
+                speed = int(code[1])
+            }
+            else {
+                safeAlert(">>>>> platform with bad code "+$.id);
+            }
+        }
+
         var group = []
-        lvl.push(6)
+        if (moving[id]) {
+            var line = moving[id];
+            var x1= int(line.x1), x2=int(line.x2), y1=fixY(line.y1,0), y2=fixY(line.y2,0); // unfortunately "h" isn't know at this point
+            console.log("Starting moving group ID: "+line.id+"    at "+x1+","+y1+" -> "+x2+","+y2)
+            lvl.push(11)
+            lvl.push(x1)
+            lvl.push(y1)
+            lvl.push(x2)
+            lvl.push(y2)
+            lvl.push(speed)
+        }
+        else {
+            console.log("Starting group ID: "+id);
+            lvl.push(6)
+        }
         lvl.push(group)
         groups.push(lvl);
         lvl = group;

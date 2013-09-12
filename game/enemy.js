@@ -1,5 +1,5 @@
 
-
+var enemyRightImg, enemyLeftImg = false;
 
 var addEnemy = function(x,y, speed) {
     var $ = {
@@ -21,7 +21,13 @@ var addEnemy = function(x,y, speed) {
         mx:-8,
         my:9
     }
-    toScreenSpace($)
+    toScreenSpace($);
+    if (!enemyLeftImg) {
+        enemyLeftImg = cacheBallImg(E2R, E2R, $, true);
+        enemyRightImg =  cacheBallImg(E2R, E2R, $, false);
+    }
+    $.leftImg = enemyLeftImg;
+    $.rightImg = enemyRightImg;
 
     sprites.push($)
 }

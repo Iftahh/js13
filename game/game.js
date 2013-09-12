@@ -115,7 +115,7 @@ var MIN_BLOCK = 16
 var addCubeCollision=function(x,z,w,h, $) {
     // hack: because player-Y doesn't change avoid adding collision bodies for Y the player won't hit
     if (Y+D < IPY  || Y > IPY) {
-        return;
+        return {};
     }
 
     var result = {
@@ -175,7 +175,7 @@ var addCubeCollision=function(x,z,w,h, $) {
 // DR - draw
 var addCube = function(x,z,w,h) {  // container
     var cube= addNonBlockCube(x,z,w,h);
-    addCubeCollision(x,z,w,h, cube)
+    cube.collisionFaces = addCubeCollision(x,z,w,h, cube)
     return cube;
 }
 
@@ -190,10 +190,7 @@ var collide = function(x,y,z,r, C) {  // C is either CollisionRightFace/Collisio
     })
 }
 
-var addMovingCube=function(x1,y1,x2,y2, w,h, speed) {
-    var x = x1-w/2;
-    var z = y1-h/2
-    var cube = addNonBlockCube(x,z, w,h);
+var addMovingCube=function(cube, x1,y1,x2,y2, speed) {
     update(cube, {
         vx: ((x2-x1)/160)*speed/10,
         vz: ((y2-y1)/160)*speed/10,
@@ -201,7 +198,6 @@ var addMovingCube=function(x1,y1,x2,y2, w,h, speed) {
         minZ: min(y1,y2),
         maxX: max(x1,x2),
         minX: min(x1,x2),
-        collisionFaces: addCubeCollision(x,z,w,h, cube),
         update: function($,dt) {
             $.x += $.vx*dt;
             if ($.x > $.maxX || $.x < $.minX) {
@@ -214,19 +210,24 @@ var addMovingCube=function(x1,y1,x2,y2, w,h, speed) {
                 $.vz *= -1;
             }
 
-            var c = $.collisionFaces;
-            if (c.CL) {
-                c.CL.z= $.z;
-                c.CL.x = $.x;
-                c.CR.z= $.z;
-                c.CR.x = $.x+ $.w;
-            }
-            if (c.CT) {
-                c.CT.x = $.x;
-                c.CT.z = $.z+ $.h;
-                c.CB.x = $.x;
-                c.CB.z = $.z;
-            }
+            var subCubes = $.subCubes || [$]
+            each(subCubes, function(sc) {
+                var c = sc.collisionFaces;
+                // TODO: instead of updating many faces - the faces should point to parent
+                if (c.CL) {
+                    c.CL.z= sc.z;
+                    c.CL.x = sc.x;
+                    c.CR.z= sc.z;
+                    c.CR.x = sc.x+ sc.w;
+                }
+                if (c.CT) {
+                    c.CT.x = sc.x;
+                    c.CT.z = sc.z+ sc.h;
+                    c.CB.x = sc.x;
+                    c.CB.z = sc.z;
+                }
+            })
+
             toScreenSpace($)
         }
     })
@@ -273,7 +274,7 @@ var generateCube=function(x,z,w,h) {
         d:D,
         sw: w+D/2,      // screen width
         sh: h+D/2,       // screen height
-        uncachedDraw: drawCube00,
+        uncachedDraw: drawCube,
         draw: drawSprite
     }
     toScreenSpace(cube)
@@ -339,6 +340,7 @@ var addNonBlockCube=function(x,z,w,h) {
 
 // draw the cube at location (sx,sy)
 var drawCube = function(cube, sx,sy) {
+    sx = sx|0; sy=sy|0;
     var d_2 = cube.d/2;
     if (cube.front) {
         C.setTransform(1, 0,0,1, sx, sy+ d_2);
@@ -384,10 +386,6 @@ var drawCube = function(cube, sx,sy) {
 //    }
 }
 
-// draw the cube at zero zero location
-var drawCube00 = function(cube) {
-    drawCube(cube,0,0)
-}
 
 var MAX_SPRITES_IN_CACHE = 50;
 
@@ -546,22 +544,23 @@ var textureDraw=function($) {
     drawBorders($)
 }
 
-var spikesDraw=function($) {
+var spikesDraw=function($,sx,sy) {
+    sx=sx|0; sy=sy|0;
+    C.setTransform(1, 0,0,1, sx, sy);
     C.fillStyle = RGB(190,190,190)
     C.strokeStyle = RGB(40,40,40);
     C.lineWidth = 1;
-    C.beginPath()
-    for (var y = $.d; y >= 0; y-= 20) {
-        var y2 = y/2;
+    for (var y = $.d/2; y >= 0; y-= 10) {
+        var _y = $.sh - y;
+        C.beginPath()
         for (var x=0; x<= $.w; x+=20) {
-            C.moveTo(x+ y2, $.sh-y2);
-            C.lineTo(x+ y2+5, y2);
-            C.lineTo(x+ y2+10, $.sh-y2);
+            C.moveTo(x+ y, _y);
+            C.lineTo(x+ y+5, _y- $.h);
+            C.lineTo(x+ y+10, _y);
         }
+        C.stroke();
+        C.fill();
     }
-    C.stroke();
-    C.fill();
-
 }
 
 
@@ -645,13 +644,6 @@ var stairs=function (x1,y1,z1,w1,d1,x2,y2,w2,d2, h,n) {
 }
 
 
-var addGroupCube=function(group, draw, x,z,w,h) {
-    DR=draw;
-    var cube = generateCube(x,z,w,h)
-    group.push(cube)
-    addCubeCollision(x,z,w,h, cube)
-}
-
 var toScreenSpaceForGroup=function(group, sprite) {
     var minX,minY,minZ,left,top,maxX,maxY,maxZ,right,bottom
     minX=minY=minZ=left=top=Infinity;
@@ -684,12 +676,11 @@ var toScreenSpaceForGroup=function(group, sprite) {
 }
 
 var addGroupSprite=function(group) {
-
     var sprite = {
         subCubes: group,
         uncachedDraw: function($) {
             each($.subCubes, function(cube) {
-                drawCube(cube, cube.sx- $.sx, cube.sy - $.sy);
+                cube.uncachedDraw(cube, cube.sx- $.sx, cube.sy - $.sy);
             })
         },
         draw: drawSprite,
@@ -701,12 +692,13 @@ var addGroupSprite=function(group) {
         }
     }
     toScreenSpaceForGroup(group, sprite)
-    addSprite(sprite)
+    addSprite(sprite);
+    return sprite;
 }
 
 
 var loadLevel=function(lvl) {
-    sprites = []
+    sprites = [Player]
     CollisionLeftFace = []
     CollisionRightFace = []
     CollisionTopFace = []
@@ -739,41 +731,95 @@ var loadLevel=function(lvl) {
                 DR= type == 3 ? brickDraw : textureDraw;
                 addCube(lvl[i++],lvl[i++],lvl[i++],lvl[i++]);   // todo: also DR, Y and D ?
                 break;
-            case 5: // change default Y and D
-                Y = lvl[i++];
-                D = lvl[i++];
-                break;
-            case 6: // group
-                var group=lvl[i++];
-                var groupSprite = [];
-                for (var j=0; j<group.length;) {
-                    type = group[j++];
-                    switch(type) {
-                        case 3: // brick platform
-                        case 4: // texture platform
-                            addGroupCube(groupSprite, type == 3 ? brickDraw : textureDraw, group[j++],group[j++],group[j++],group[j++]);
-                            break;
-                        default:
-                            alert("Error loading level at index "+i+"  subindex "+j+" type: "+type);
-                    }
-                }
-                addGroupSprite(groupSprite)
-                break;
-            case 7: // moving brick platform
-            case 8: // moving texture platform
-                DR = type== 7 ? brickDraw : textureDraw;
-                addMovingCube(lvl[i++],lvl[i++],lvl[i++],lvl[i++],lvl[i++],lvl[i++], lvl[i++])
-                break;
-            case 9: // enemy with speed
-                addEnemy(lvl[i++],lvl[i++], lvl[i++])
-                break;
             case 10: // spikes
                 var cube = addCube(lvl[i++],lvl[i++],lvl[i++],lvl[i++])
                 cube.spikes = true;
                 cube.uncachedDraw = spikesDraw;
                 break;
+            case 5: // change default Y and D
+                Y = lvl[i++];
+                D = lvl[i++];
+                break;
+            case 11: // moving group
+                var x1=lvl[i++], y1=lvl[i++],x2=lvl[i++],y2=lvl[i++], speed=lvl[i++];
+                // no break!
+            case 6:  // group
+                var _lvl = lvl;
+                var lvl=lvl[i++];
+                var _i = i;  // for efficient compression - repeat lvl[i++]  - need to backup lvl and i
+                var groupSprite = [];
+                var _sprites =  sprites;
+                sprites = groupSprite;
+                var groupW,groupH;
+                if (type == 11) {
+                    var minX = 10e6;
+                    var minY = minX;
+                    var maxX = -10e6;
+                    var maxY = maxX;
+                    for (i=0; i<lvl.length;) {
+                        i++;
+                        var x = lvl[i++]
+                        var y = lvl[i++]
+                        minX = min(minX, x)
+                        minY = min(minY, y)
+                        maxX = max(maxX, x+lvl[i++])
+                        maxY = max(maxY, y+lvl[i++])
+                    }
+                    groupW2 = (maxX-minX)/2;
+                    groupH2 = (maxY-minY)/2;
+                }
+
+                for (i=0; i<lvl.length;) {
+                    var type2 = lvl[i++];
+                    var $x=lvl[i++],$y=lvl[i++],$w=lvl[i++],$h= lvl[i++], x,y;
+                    if (type == 11) {
+                        x = x1-groupW2+$x-minX;
+                        z = y1-groupH2+$y-minY;
+                    }
+                    else {
+                        x=$x; z=$y;
+                    }
+                    switch(type2) {
+                        case 3: // brick platform
+                        case 4: // texture platform
+                            DR = type2 == 3 ? brickDraw : textureDraw;
+                            addCube(x,z,$w,$h);
+                            break;
+                        case 10:
+                            var cube = addCube(x,z,$w,$h);
+                            cube.spikes = true;
+                            cube.uncachedDraw = spikesDraw;
+                            break;
+                        default:
+                            log("Error loading level at index "+_i+"  subindex "+i+" type: "+type2);
+                    }
+                }
+                lvl = _lvl; // restore backups
+                i = _i;
+                sprites = _sprites;
+                var sprite = addGroupSprite(groupSprite);
+                if (type == 11) { // moving group
+                    y1 -= sprite.h;
+                    y2 -= sprite.h;
+                    addMovingCube(sprite, x1,y1,x2,y2, speed)
+                }
+                break;
+            case 7: // moving brick platform
+            case 8: // moving texture platform
+                DR = type== 7 ? brickDraw : textureDraw;
+                var x1=lvl[i++],y1=lvl[i++],x2=lvl[i++],y2=lvl[i++], w=lvl[i++], h=lvl[i++], speed=lvl[i++];
+                var x = x1-w/2;
+                var z = y1-h/2
+                var cube = addNonBlockCube(x,z, w,h);
+                cube.collisionFaces = addCubeCollision(x,z,w,h, cube);
+                addMovingCube(cube, x1,y1,x2,y2, speed)
+                break;
+            case 9: // enemy with speed
+                addEnemy(lvl[i++],lvl[i++], lvl[i++])
+                break;
+
             default:
-                alert("Error loading level at index "+i+"  type: "+type);
+                log("Error loading level at index "+i+"  type: "+type);
 
         }
     }
