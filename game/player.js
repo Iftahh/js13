@@ -182,7 +182,7 @@ var bounceWall = jsfxr([0,,0.11,0.16,0.09,0.227,0.04,-0.18,0.34,,,,,0.23,0.12,,,
 var shadowColor = RGB(15,15,15,0.5)
 
 var speedUpdate=function($,dt) {
-    $.vz-= .2*dt; // Gravity accelerates down
+    $.vz = max(-6, $.vz-.2*dt); // Gravity accelerates down
     var realVx = $.vx;
     var realVz = $.vz;
     if ($.floor && $.floor.sprite.vx && abs($.floorZ - $.floor.z - P2R4)<4) {
@@ -202,7 +202,7 @@ var playerUpdate = function($, dt) {
 
     var left = $.left, right=$.right, jump=$.jump;
 
-    var speedup = .15*dt;
+    var speedup = .22*dt;
     if (left) {$.vx -= speedup} // left   -
     else if (right) {$.vx+= speedup}  // right
     else $.vx *= Math.pow(.9,dt)
