@@ -17,7 +17,7 @@ var levels = [intro, lvl1, lvl2];
 var curLevel = 0;
 
 DR=brickDraw;
-loadLevel(lvl2);
+loadLevel(intro);
 
 window.onresize = function() {
     var parent = canvases[0].parentElement;
