@@ -248,9 +248,9 @@ var playerUpdate = function($, dt) {
         $.floor = floor;
         $.floorZ = floor.z + P2R4;
         if ($.z <= $.floorZ ||  // hit floor
-            (!$.floor.sprite.spikes && jump && $.z-$.floorZ < 5 && abs($.vz) < 2)) {
+            (!$.floor.spikes && jump && $.z-$.floorZ < 5 && abs($.vz) < 2)) {
 
-            if ($.floor.sprite.spikes && $.vz<0) {
+            if ($.floor.spikes && $.vz<0) {
                 initPlayer();
                 return
             }
@@ -394,4 +394,4 @@ var initPlayer = function() {
 
 
 
-addSprite(Player)
+//addSprite(Player)

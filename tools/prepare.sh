@@ -10,7 +10,8 @@ cat jsfxr.js >> all.js
 cat coins.js >> all.js
 cat game.js >> all.js
 cat enemy.js >> all.js
-cat lvl.js >> all.js
+cat lvl1.js >> all.js
+cat lvl2.js >> all.js
 cat player.js >> all.js
 cat loop.js >> all.js
 echo "})()" >> all.js

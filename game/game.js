@@ -199,6 +199,7 @@ var addMovingCube=function(cube, x1,y1,x2,y2, speed) {
         maxX: max(x1,x2),
         minX: min(x1,x2),
         update: function($,dt) {
+            var dx = $.x, dz= $.z;
             $.x += $.vx*dt;
             if ($.x > $.maxX || $.x < $.minX) {
                 $.x = max(min($.x, $.maxX), $.minX);
@@ -209,26 +210,32 @@ var addMovingCube=function(cube, x1,y1,x2,y2, speed) {
                 $.z = max(min($.z, $.maxZ), $.minZ);
                 $.vz *= -1;
             }
+            dx = $.x-dx;
+            dz = $.z-dz;
 
             var subCubes = $.subCubes || [$]
             each(subCubes, function(sc) {
+                sc.sx += dx;
+                sc.sy -= dz; // no real need to calculate the x,z of the subcubes - only sx,sy and collision
                 var c = sc.collisionFaces;
                 // TODO: instead of updating many faces - the faces should point to parent
                 if (c.CL) {
-                    c.CL.z= sc.z;
-                    c.CL.x = sc.x;
-                    c.CR.z= sc.z;
-                    c.CR.x = sc.x+ sc.w;
+                    c.CL.z+=dz;
+                    c.CL.x+=dx;
+                    c.CR.z+=dz;
+                    c.CR.x+=dx;
                 }
                 if (c.CT) {
-                    c.CT.x = sc.x;
-                    c.CT.z = sc.z+ sc.h;
-                    c.CB.x = sc.x;
-                    c.CB.z = sc.z;
+                    c.CT.x+=dx;
+                    c.CT.z+=dz;
+                    c.CB.x+=dx;
+                    c.CB.z+=dz;
                 }
             })
 
-            toScreenSpace($)
+            //toScreenSpace($)
+            $.sx += dx;
+            $.sy -= dz;
         }
     })
 }
@@ -340,7 +347,7 @@ var addNonBlockCube=function(x,z,w,h) {
 
 // draw the cube at location (sx,sy)
 var drawCube = function(cube, sx,sy) {
-    sx = sx|0; sy=sy|0;
+    sx = sx||0; sy=sy||0;
     var d_2 = cube.d/2;
     if (cube.front) {
         C.setTransform(1, 0,0,1, sx, sy+ d_2);
@@ -545,12 +552,12 @@ var textureDraw=function($) {
 }
 
 var spikesDraw=function($,sx,sy) {
-    sx=sx|0; sy=sy|0;
+    sx=sx||0; sy=sy||0;
     C.setTransform(1, 0,0,1, sx, sy);
     C.fillStyle = RGB(190,190,190)
     C.strokeStyle = RGB(40,40,40);
     C.lineWidth = 1;
-    for (var y = $.d/2; y >= 0; y-= 10) {
+    for (var y = $.d/2-5; y >= 0; y-= 10) {
         var _y = $.sh - y;
         C.beginPath()
         for (var x=0; x<= $.w; x+=20) {
@@ -698,7 +705,7 @@ var addGroupSprite=function(group) {
 
 
 var loadLevel=function(lvl) {
-    sprites = [Player]
+    sprites = []
     CollisionLeftFace = []
     CollisionRightFace = []
     CollisionTopFace = []
@@ -733,7 +740,7 @@ var loadLevel=function(lvl) {
                 break;
             case 10: // spikes
                 var cube = addCube(lvl[i++],lvl[i++],lvl[i++],lvl[i++])
-                cube.spikes = true;
+                cube.collisionFaces.CT.spikes = true;
                 cube.uncachedDraw = spikesDraw;
                 break;
             case 5: // change default Y and D
@@ -750,7 +757,7 @@ var loadLevel=function(lvl) {
                 var groupSprite = [];
                 var _sprites =  sprites;
                 sprites = groupSprite;
-                var groupW,groupH;
+                var groupW2,groupH2;
                 if (type == 11) {
                     var minX = 10e6;
                     var minY = minX;
@@ -765,16 +772,20 @@ var loadLevel=function(lvl) {
                         maxX = max(maxX, x+lvl[i++])
                         maxY = max(maxY, y+lvl[i++])
                     }
-                    groupW2 = (maxX-minX)/2;
-                    groupH2 = (maxY-minY)/2;
+                    groupW2 = (maxX-minX+1);
+                    groupH2 = (maxY-minY+1);
+                    y1 -= groupH2; // the import logic had no knowledge of groupH - so needs to be fixed now
+                    y2 -= groupH2;
+                    groupH2 /=2;
                 }
+
 
                 for (i=0; i<lvl.length;) {
                     var type2 = lvl[i++];
                     var $x=lvl[i++],$y=lvl[i++],$w=lvl[i++],$h= lvl[i++], x,y;
                     if (type == 11) {
-                        x = x1-groupW2+$x-minX;
-                        z = y1-groupH2+$y-minY;
+                        x = $x-minX+x1-groupW2;
+                        z = $y-minY+y1-groupH2;
                     }
                     else {
                         x=$x; z=$y;
@@ -787,7 +798,7 @@ var loadLevel=function(lvl) {
                             break;
                         case 10:
                             var cube = addCube(x,z,$w,$h);
-                            cube.spikes = true;
+                            cube.collisionFaces.CT.spikes = true;
                             cube.uncachedDraw = spikesDraw;
                             break;
                         default:
@@ -799,9 +810,13 @@ var loadLevel=function(lvl) {
                 sprites = _sprites;
                 var sprite = addGroupSprite(groupSprite);
                 if (type == 11) { // moving group
-                    y1 -= sprite.h;
-                    y2 -= sprite.h;
-                    addMovingCube(sprite, x1,y1,x2,y2, speed)
+                    each(sprite.subCubes, function($) {
+                        if ($.collisionFaces.CT) {
+                            $.collisionFaces.CT.sprite = sprite;
+                        }
+                    })
+
+                    addMovingCube(sprite, x1-groupW2,y1-groupH2,x2-groupW2,y2-groupH2, speed)
                 }
                 break;
             case 7: // moving brick platform
@@ -810,8 +825,7 @@ var loadLevel=function(lvl) {
                 var x1=lvl[i++],y1=lvl[i++],x2=lvl[i++],y2=lvl[i++], w=lvl[i++], h=lvl[i++], speed=lvl[i++];
                 var x = x1-w/2;
                 var z = y1-h/2
-                var cube = addNonBlockCube(x,z, w,h);
-                cube.collisionFaces = addCubeCollision(x,z,w,h, cube);
+                var cube = addCube(x,z,w,h);
                 addMovingCube(cube, x1,y1,x2,y2, speed)
                 break;
             case 9: // enemy with speed
