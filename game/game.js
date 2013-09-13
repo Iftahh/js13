@@ -101,15 +101,15 @@ var tree = function(x,y,z, w,h1,h2) {
 }
 
 
-var CollisionLeftFace = []  // collision when moving left (X--)
-var CollisionRightFace = []  // collision when moving right (X++)
-var CollisionTopFace = []  // collision when moving down (Z--)
-var CollisionBottomFace = []  // collision when moving up (Z++)
+var CollisionLeftFace;  // collision when moving left (X--)
+var CollisionRightFace;  // collision when moving right (X++)
+var CollisionTopFace;  // collision when moving down (Z--)
+var CollisionBottomFace;  // collision when moving up (Z++)
 //var CollisionBackFace = [] // when moving front (Y--)
 //var CollisionFrontFace = [] // when moving back (Y++)
 
-var spritesImageCache = {}
-var spritesImageCacheList = []
+var spritesImageCache;
+var spritesImageCacheList;
 
 var MIN_BLOCK = 16
 var addCubeCollision=function(x,z,w,h, $) {
@@ -195,12 +195,19 @@ var addBrokenCube=function(x,z,w,h) {
         rx= min(w/5,20);
         rz=0;
     }
+//    var _d=D;
+//    D = max(D/4, 40);
+//    var _y=Y;
     for (var xx=x; xx+dw<=x+w; xx+= dw) {
-        for (var zz=z; zz+dh<=z+h; zz+= dh) {
-            addCube(xx+nrnd(0,rx),zz+nrnd(0,rz),dw,dh);
-            spriteId--; // next cubes will share ID - share cache!
-        }
+//        for (Y=_y+_d; Y>_y; Y-= D) {
+            for (var zz=z; zz+dh<=z+h; zz+= dh) {
+                addCube(xx+nrnd(0,rx),zz+nrnd(0,rz),dw,dh);
+                spriteId--; // next cubes will share ID - share cache!
+            }
+//        }
     }
+//    Y = _y;
+//    D=_d;
     spriteId++;
     if (xx != x+w || zz != z+h) {
         // add one final cube to finish the missing space
@@ -455,7 +462,7 @@ var drawSprite = function($) {
             $.uncachedDraw($)
             C = oldC;
         })
-        log("Adding to cache cube "+ $.id+ "  X:"+ $.x+" Y:"+ $.y+" Z:"+ $.z+" W:"+ $.w+" H:"+ $.h+" D:"+ $.d);
+        log("Adding to cache sprite "+ $.id+ "  X:"+ $.x+" Y:"+ $.y+" Z:"+ $.z+" W:"+ $.w+" H:"+ $.h+" D:"+ $.d);
         spritesImageCache[$.id] = buffer;
     }
 
@@ -741,6 +748,58 @@ var addGroupSprite=function(group) {
     return sprite;
 }
 
+var addTextSprite=function(x,y,color,stroke,fam,size,text) {
+    C.font = size+'pt '+fam;
+    var width = 0;
+    var lines = text.split('\n')
+    each(lines, function(l) {
+        var metrics = C.measureText(l);
+        width = max(width,metrics.width);
+    })
+    var height = size*1.2* (lines.length+1);
+
+    var textSprite = {
+        x:x, z:y, y:Y,
+        h:height, w:width, d:0,
+        sh: height, sw:width,
+        lines:lines,
+        dy: size*1.2,
+        color:color,
+        stroke:stroke,
+        fam:fam,
+        size:size,
+        uncachedDraw: function($,sx,sy) {
+            C.font = $.size+'px '+ $.fam;
+            C.textAlign = 'center';
+            C.fillStyle = '#'+ $.color;
+            C.strokeStyle = '#'+ $.stroke;
+            var y= $.dy;
+            var x = $.w/2
+            each($.lines, function(l) {
+                C.fillText(l, x, y);
+                C.strokeText(l, x, y)
+                y += $.dy;
+            })
+
+        },
+        draw: function($) {
+            var dx = abs(Player.sx - ($.sx+ $.sw/2))
+            if (dx > $.sw+100 ) {
+                return;
+            }
+            var dy = abs(Player.sy - ($.sy+ $.sh/2));
+            if (dy > $.sh+100) {
+                return;
+            }
+            _setAlpha(max(0,min(1, 1.4-(dy/ ($.sh+100)) - (dx/ ($.sw+100)))))
+            drawSprite($)
+            _setAlpha(1)
+        }
+    }
+    toScreenSpace(textSprite)
+    addSprite(textSprite)
+}
+
 
 var loadLevel=function(lvl) {
     sprites = []
@@ -748,7 +807,9 @@ var loadLevel=function(lvl) {
     CollisionRightFace = []
     CollisionTopFace = []
     CollisionBottomFace = []
-    OffsetX=OffsetY=0
+    OffsetX=OffsetY=0;
+    spritesImageCacheList = []
+    spritesImageCache = {}
 
     IPX = 0
     IPY = 50
@@ -874,7 +935,9 @@ var loadLevel=function(lvl) {
                 DR= type == 12 ? brickDraw : textureDraw;
                 addBrokenCube(lvl[i++],lvl[i++],lvl[i++],lvl[i++]);   // todo: also DR, Y and D ?
                 break;
-
+            case 14: // text
+                addTextSprite(lvl[i++], lvl[i++], lvl[i++], lvl[i++], lvl[i++], lvl[i++], lvl[i++]);
+                break;
             default:
                 log("Error loading level at index "+i+"  type: "+type);
 

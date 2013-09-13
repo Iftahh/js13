@@ -45,6 +45,10 @@ exports.svg_to_lvl = function(svg) {
     var y1_re = / y1="([^"]+)"/
     var y2_re = / y2="([^"]+)"/
 
+    var text_re = /<text( [^>]+)>(.+)<\/text>/
+    var font_fam_re = /font-family="([^"]+)"/
+    var font_size_re = /font-size="([^"]+)"/
+    var stroke_re = / stroke="#([0-9a-f]+)"/
 
     var int=function(n) {
         return Math.round(parseFloat(n))
@@ -212,6 +216,18 @@ exports.svg_to_lvl = function(svg) {
             safeAlert(">>>>>>>>>>>  unknown ellipse: color="+color);
     }
 
+    var process_text=function($) {
+        console.log("Text ID: "+ $.text+  "  at  "+ $.x+", "+ $.y)
+        lvl.push(14);
+        lvl.push(int($.x));
+        lvl.push(flipY($.y));
+        lvl.push($.color);
+        lvl.push($.stroke);
+        lvl.push($.font_fam);
+        lvl.push(int($.font_size));
+        lvl.push($.text);
+    }
+
     var to_group=function(id) {
         var speed = 10;
         var code = id.split(' ');
@@ -343,6 +359,25 @@ exports.svg_to_lvl = function(svg) {
             process_ellipse(ellipse)
             continue;
         }
+
+        attributes = text_re.exec(text_line)
+        if (attributes) {
+            var _text = attributes[2]
+            attributes = attributes[1]
+            var text = {
+                "text": _text,
+                "id": id_re.exec(attributes)[1],
+                "y": y_re.exec(attributes)[1],
+                "x": x_re.exec(attributes)[1],
+                "color": fill_re.exec(attributes)[1],
+                "stroke": stroke_re.exec(attributes)[1],
+                "font_fam": font_fam_re.exec(attributes)[1],
+                "font_size": font_size_re.exec(attributes)[1]
+            }
+            process_text(text);
+            continue;
+        }
+
     }
     return lvl;
 }
