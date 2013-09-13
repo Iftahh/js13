@@ -16,7 +16,8 @@ resetJoystick();
 var levels = [intro, lvl1, lvl2];
 var curLevel = 0;
 
-loadLevel(intro);
+DR=brickDraw;
+loadLevel(lvl2);
 
 window.onresize = function() {
     var parent = canvases[0].parentElement;
