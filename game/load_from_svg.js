@@ -156,6 +156,10 @@ exports.svg_to_lvl = function(svg) {
                 tt= 'spikes'
                 lvl.push(10)
                 break;
+            case "ffffaa":
+                tt = 'exit';
+                lvl.push(17)
+                break;
             case 'ff007f':
                 console.log("Flag ID: "+id+" at "+xx+", "+yy+"  H:"+hh)
                 lvl.push(15)

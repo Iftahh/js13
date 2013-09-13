@@ -162,6 +162,33 @@ var addCube = function(x,z,w,h) {
     return cube;
 }
 
+var addExit = function(x,z,w,h) {
+    var cube= addNonBlockCube(x,z,w,h);
+    cube.draw = function($) {
+        C.fillStyle = "#000"
+        C.strokeStyle = "#ff0"
+        C.lineWidth = 5;
+        C.fillRect($.sx, $.sy+ $.d, $.w, $.h);
+        C.strokeRect($.sx, $.sy+ $.d, $.w, $.h)
+    }
+    cube.update = function($) {
+        if (!$.hit && Player.sx+P2R >= $.sx-10 && Player.sx < $.sx+ $.sw+10
+            && Player.sy+P2R >= $.sy-10 && Player.sy < $.sy+ $.sh+10) {
+            $.hit = true;
+            coinSoundIndex = 0;
+            var fu = function() {
+                coinsSounds[coinSoundIndex++].play();
+                coinSoundIndex = coinSoundIndex % coinsSounds.length;
+                lastTimeHadCoin = totalTime;
+                if (coinSoundIndex < 6) {
+                    setTimeout(fu, 200);
+                }
+            }
+            fu();
+        }
+    }
+}
+
 var addBrokenCube=function(x,z,w,h,rr) {
     var dw,dh,rx,rz;
     if (w>h) {
@@ -1002,6 +1029,10 @@ var loadLevel=function(lvl) {
                 break;
             case 16:
                 addKing(lvl[i++],lvl[i++]);
+                break;
+            case 17:
+                addExit(lvl[i++],lvl[i++],lvl[i++],lvl[i++])
+                break;
             default:
                 log("Error loading level at index "+i+"  type: "+type);
 
