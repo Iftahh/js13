@@ -470,7 +470,6 @@ var drawSprite = function($) {
     else {
         if (spritesImageCacheList.length >= MAX_SPRITES_IN_CACHE) {
             var id = spritesImageCacheList.shift();
-            log("Removing from cache cube "+id)
             delete spritesImageCache[id]
         }
         spritesImageCacheList.push($.id);
@@ -480,7 +479,6 @@ var drawSprite = function($) {
             $.uncachedDraw($)
             C = oldC;
         })
-        log("Adding to cache sprite "+ $.id+ "  X:"+ $.x+" Y:"+ $.y+" Z:"+ $.z+" W:"+ $.w+" H:"+ $.h+" D:"+ $.d);
         spritesImageCache[$.id] = buffer;
     }
 
@@ -598,7 +596,6 @@ var behindPlayer = function(cubeA) {
         return false; // first draw B then draw A
 
     // the two cubes are intersecting!
-    log("cubes intersection: ", cubeA, cubeB);
     return null;
 }
 
@@ -994,8 +991,6 @@ var loadLevel=function(lvl) {
                             cube.collisionFaces.CT.spikes = true;
                             cube.uncachedDraw = spikesDraw;
                             break;
-                        default:
-                            log("Error loading level at index "+_i+"  subindex "+i+" type: "+type2);
                     }
                 }
                 lvl = _lvl; // restore backups
@@ -1041,8 +1036,6 @@ var loadLevel=function(lvl) {
             case 17:
                 addExit(lvl[i++],lvl[i++],lvl[i++],lvl[i++])
                 break;
-            default:
-                log("Error loading level at index "+i+"  type: "+type);
 
         }
     }

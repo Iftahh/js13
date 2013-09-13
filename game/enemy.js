@@ -37,9 +37,6 @@ var addKing = function(x,y) {
             if (!$.floor) {
                 $.floor = findFloor($.x+K2R4, $.y+K2R4, $.z+K2R4, KR);
                 $.floorZ = $.floor.z + K2R4;
-                if (DEBUG && $.floorZ < -10e6) {
-                    alert("King must be above floor")
-                }
             }
 
             speedUpdate($,dt)
@@ -118,9 +115,6 @@ var updateEnemy = function($, dt) {
     if (!$.floor) {
         $.floor = findFloor($.x+E2R4, $.y+E2R4, $.z+E2R4, ER);
         $.floorZ = $.floor.z + E2R4;
-        if (DEBUG && $.floorZ < -10e6) {
-            alert("Enemy must be above floor")
-        }
     }
 
     speedUpdate($,dt)

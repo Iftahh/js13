@@ -1,10 +1,3 @@
-DEBUG=true  // TODO: remove all debug from code
-
-if (DEBUG) {
-    onerror = function (message, url, line) {
-        alert(message, url, line);
-    }
-}
 
 var DC = document
 
@@ -143,4 +136,3 @@ B=0xfff;
 BC=BBC // border color
 
 //var log = function(){}
-var log = function(x) { if(!DEBUG) {alert("Forgot a log")} console.log(x) }
