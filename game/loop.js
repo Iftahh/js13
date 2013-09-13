@@ -13,7 +13,7 @@ var resetJoystick=function() {
 }
 resetJoystick();
 
-var levels = [intro, lvl1];
+var levels = [intro, lvl1, lvl2];
 var curLevel = 0;
 
 loadLevel(intro);
