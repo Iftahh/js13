@@ -36,7 +36,7 @@ exports.svg_to_lvl = function(svg) {
     var y_re = / y="([^"]+)"/
     var x_re = / x="([^"]+)"/
 
-    var group_re = /<g id="([^"]+)">/
+    var group_re = /<g[^>]* id="([^"]+)"[^>]*>/
     var group_end_re = /<\/g>/
 
     var line_re = /<line( [^>]+)>/
@@ -143,21 +143,29 @@ exports.svg_to_lvl = function(svg) {
         var hh=int(h);
 
         var tt;
-        if (color == '7fff00') {
-            tt='grass'
-            lvl.push(broken ?  13: 4)
-        }
-        else if (color == '7f3f00'){
-            tt='brick'
-            lvl.push(broken ? 12: 3)
-        }
-        else if (color == "bfbfbf") {
-            tt= 'spikes'
-            lvl.push(10)
-        }
-        else {
-            safeAlert(">>>>  Unknown rect: color:"+color );
-            return
+        switch(color) {
+            case '7fff00':
+                tt='grass'
+                lvl.push(broken ?  13: 4)
+                break;
+            case '7f3f00':
+                tt='brick'
+                lvl.push(broken ? 12: 3)
+                break;
+            case "bfbfbf":
+                tt= 'spikes'
+                lvl.push(10)
+                break;
+            case 'ff007f':
+                console.log("Flag ID: "+id+" at "+xx+", "+yy+"  H:"+hh)
+                lvl.push(15)
+                lvl.push(xx);
+                lvl.push(yy);
+                lvl.push(hh);
+                return;
+            default:
+                safeAlert(">>>>  Unknown rect: color:"+color );
+                return
         }
         console.log("Platform ID: "+id+"  "+tt+"  at "+xx+", "+yy+"  W:"+ww+"  H:"+hh)
         lvl.push(xx)

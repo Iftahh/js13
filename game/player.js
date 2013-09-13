@@ -237,7 +237,7 @@ var playerUpdate = function($, dt) {
         }
     }
 
-    if ($.z < -2000) {
+    if ($.z < -1000) {
         initPlayer()
     }
 

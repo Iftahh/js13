@@ -31,7 +31,7 @@ window.onresize = function() {
             $.height = height;
         }
     })
-    BgC.fillStyle="#222"
+    BgC.fillStyle=BgCStyle
     BgC.fillRect(0,0,width,height)
     if (_w != width || _h != height) {
         each(sprites, function($){
@@ -48,7 +48,7 @@ onresize()
 
 if(navigator.userAgent.match(/Android/i)){
     window.scrollTo(0,1);
-    BgC.fillStyle="#222"
+    BgC.fillStyle=BgCStyle
     BgC.fillRect(0,0,width,height)
 }
 

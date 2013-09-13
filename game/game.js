@@ -81,24 +81,7 @@ var CameraY = 0;
 // toscreen
 var toScreenSpace = function ($) {$.sx= $.x+ $.y/2; $.sy=height- $.y/2- $.h- $.z}   // TODO: store y/2 ?
 
-var tree = function(x,y,z, w,h1,h2) {
-    X=x,Y=y,Z=z,H=h1
-    ts()
-    grd = C.createLinearGradient(SX,SY,SX+w,SY)
-    grd.addColorStop(0, '#752');
-    grd.addColorStop(1, '#964');
-    C.fillStyle=grd
-    C.fillRect(SX,SY, w,h1)
-    SX+=w/2
 
-    range(30+h2, function(i) {
-        C.fillStyle=RGB(irnd(25,30),irnd(170,210),irnd(55,70),0.7)
-        C.beginPath()
-        Y=rnd()
-        C.arc(SX+2*w*Y*nrnd(-1,1),SY-h2+Y*(h2+5), 5+Y*rnd()*9,0,TPI)
-        C.fill()
-    })
-}
 
 
 var CollisionLeftFace;  // collision when moving left (X--)
@@ -748,6 +731,72 @@ var addGroupSprite=function(group) {
     return sprite;
 }
 
+var addTreeSprite=function(x,y) {
+    var tree = function(x,y,z, w,h1,h2) {
+        X=x,Y=y,Z=z,H=h1
+        ts()
+        grd = C.createLinearGradient(SX,SY,SX+w,SY)
+        grd.addColorStop(0, '#752');
+        grd.addColorStop(1, '#964');
+        C.fillStyle=grd
+        C.fillRect(SX,SY, w,h1)
+        SX+=w/2
+
+        range(30+h2, function(i) {
+            C.fillStyle=RGB(irnd(25,30),irnd(170,210),irnd(55,70),0.7)
+            C.beginPath()
+            Y=rnd()
+            C.arc(SX+2*w*Y*nrnd(-1,1),SY-h2+Y*(h2+5), 5+Y*rnd()*9,0,TPI)
+            C.fill()
+        })
+    }
+}
+
+var imgFlag=0;
+
+var addFlag=function(x,y,height) {
+    var flag = {
+        x:x,z:y, y:IPY+10,
+        h:height,w:10,d:0,
+        sh:height,sw:10,
+        hit:false,
+        draw: function($) {
+            C.fillStyle = "#a73";
+            C.fillRect($.sx, $.sy, $.sw, $.sh);
+            if ($.hit) {
+                if (!imgFlag) {
+                    imgFlag = r2c(50,30, function(c) {
+                        c.fillStyle = "#aaf";
+                        c.strokeStyle = "#000";
+                        c.fillRect(0,0,50,30);
+                        c.strokeRect(0,0,50,30);
+                        c.fillStyle = "#fe7"
+                        c.font="24px arial";
+                        c.drawImage(Player.rightImg, 15,8, 20,20);
+                        c.fillText("♛",12,12)
+                    })
+                }
+                C.drawImage(imgFlag, $.sx-50, $.sy);
+            }
+        },
+        update: function($) {
+            if (!$.hit && $.sx >= Player.sx-coinPad && $.sx < Player.sx+P2R+coinPad && $.sy+ $.sh >= Player.sy-coinPad && $.sy < Player.sy+P2R+coinPad) {
+                if (totalTime - lastTimeHadCoin > 3000) // 3 sec
+                    coinSoundIndex=0;
+
+                coinsSounds[coinSoundIndex++].play();
+                coinSoundIndex = coinSoundIndex % coinsSounds.length;
+                lastTimeHadCoin = totalTime;
+                $.hit = true;
+                IPX = $.x;
+                IPZ = $.z;
+            }
+        }
+    }
+    toScreenSpace(flag);
+    addSprite(flag)
+}
+
 var addTextSprite=function(x,y,color,stroke,fam,size,text) {
     C.font = size+'pt '+fam;
     var width = 0;
@@ -937,6 +986,9 @@ var loadLevel=function(lvl) {
                 break;
             case 14: // text
                 addTextSprite(lvl[i++], lvl[i++], lvl[i++], lvl[i++], lvl[i++], lvl[i++], lvl[i++]);
+                break;
+            case 15: // flag
+                addFlag(lvl[i++],lvl[i++],lvl[i++]);
                 break;
             default:
                 log("Error loading level at index "+i+"  type: "+type);

@@ -38,7 +38,8 @@ var sprites = [];
 
 var joystick =0;
 
-BgC.fillStyle="#222"
+BgCStyle = "#222"
+BgC.fillStyle=BgCStyle;
 BgC.fillRect(0,0,width,height)
 
 
