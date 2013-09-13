@@ -261,7 +261,7 @@ exports.svg_to_lvl = function(svg) {
         var text_line =svg[i];
         //print line
         if (text_line.indexOf("<title>Back</title>") > -1) {
-            Y=90;
+            Y=100;
             D=10;
             console.log("****  Back ****  Y="+Y+", D="+D);
             lvl.push(5);

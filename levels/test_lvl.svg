@@ -1,0 +1,122 @@
+<svg width="2640" height="1480" xmlns="http://www.w3.org/2000/svg">
+ <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
+ <g display="inline">
+  <title>Back</title>
+  <line stroke="#000000" fill="none" stroke-width="5" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" x1="216.50001" y1="892.99999" x2="419.49999" y2="633.00002" id="svg_59 move-svg_96"/>
+  <rect stroke="#000000" id="svg_12" height="166.00001" width="20" y="440.49999" x="691" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" fill="#7f3f00" opacity="0.5"/>
+  <rect stroke="#000000" height="78" width="20" y="606.5" x="724" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" fill="#7f3f00" opacity="0.5" id="svg_54"/>
+  <rect height="84" width="20" y="511" x="1872" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" fill="#7f3f00" opacity="0.5" id="svg_55" stroke="#000000"/>
+  <rect stroke="#000000" id="svg_94" height="82" width="123" y="631" x="1307.5" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" fill="#7f3f00" opacity="0.5"/>
+  <line fill="none" stroke-width="5" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" x1="1076.5" y1="550.5" x2="1169.5" y2="398.49999" id="svg_59 move-svg_18" stroke="#000000"/>
+  <text xml:space="preserve" text-anchor="middle" font-family="Sans-serif" font-size="19" id="svg_78" y="711" x="265" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke-width="0" stroke="#000000" fill="#000000">moving platform group</text>
+  <rect height="98" width="116" y="837" x="488" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" fill="#7f3f00" opacity="0.5" id="svg_101" stroke="#000000"/>
+  <rect height="210" width="20" y="725" x="708" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" fill="#7f3f00" opacity="0.5" id="svg_102" stroke="#000000"/>
+  <rect height="188" width="48" y="743" x="1496" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" fill="#7f3f00" opacity="0.5" id="svg_103" stroke="#000000"/>
+  <rect height="182" width="92" y="751" x="1218" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" fill="#7f3f00" opacity="0.5" id="svg_104" stroke="#000000"/>
+  <text xml:space="preserve" text-anchor="middle" font-family="serif" font-size="24" id="svg_81" y="394" x="1043" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke-width="0" stroke="#000000" fill="#000000">moving platform!</text>
+  <text filter="url(#svg_95_blur)" font-weight="bold" xml:space="preserve" text-anchor="middle" font-family="serif" font-size="24" id="svg_95" y="443" x="864" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke-width="0" stroke="#000000" fill="#ff0000">danger: spikes</text>
+ </g>
+ <g display="inline">
+  <title>Main</title>
+  <rect stroke="#000000" id="svg_3" height="70.66348" width="141.35461" y="615" x="837.82271" fill="#7fff00"/>
+  <rect id="svg_1" height="34" width="614" y="686.16281" x="471.76744" stroke="#000000" fill="#7fff00" stroke-dasharray="2,2"/>
+  <rect id="svg_5" stroke="#000000" height="16" width="174.00001" y="438.16281" x="579.26745" fill="#7f3f00"/>
+  <ellipse ry="16" rx="18" id="svg_6" cy="612.66281" cx="541.26744" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#0000ff"/>
+  <rect stroke="#000000" id="svg_2" height="11.66355" width="141.35461" y="606.49926" x="608.76745" fill="#7f3f00"/>
+  <ellipse ry="11" rx="12" cy="588.00003" cx="980.99999" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00" id="svg_14"/>
+  <ellipse ry="16" rx="18" cy="576.00003" cx="938.99998" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ff7f00" id="svg_80"/>
+  <rect stroke="#000000" id="svg_4" height="27.70094" width="141.35461" y="520.16281" x="782.91285" fill="#7f3f00"/>
+  <rect height="34" width="462.00001" y="714.99997" x="1161.99999" fill="#7fff00" id="svg_15" stroke="#000000"/>
+  <ellipse ry="11" rx="12" cy="668.75003" cx="1190.49999" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00" id="svg_19"/>
+  <ellipse ry="11" rx="12" cy="686.25003" cx="1242.49999" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00" id="svg_20"/>
+  <ellipse ry="11" rx="12" cy="651.75003" cx="1228.49999" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00" id="svg_21"/>
+  <ellipse ry="11" rx="12" cy="692.75003" cx="1274.49999" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00" id="svg_22"/>
+  <ellipse ry="11" rx="12" cy="686.25003" cx="1211.49999" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00" id="svg_23"/>
+  <ellipse ry="11" rx="12" cy="665.75003" cx="1264.49999" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00" id="svg_24"/>
+  <ellipse ry="11" rx="12" cy="525.50003" cx="1524.49999" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00" id="svg_25"/>
+  <ellipse ry="11" rx="12" cy="528.00003" cx="1576.49999" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00" id="svg_26"/>
+  <ellipse ry="11" rx="12" cy="528.50003" cx="1628.49999" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00" id="svg_27"/>
+  <ellipse ry="11" rx="12" cy="555.50003" cx="1576.49999" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00" id="svg_28"/>
+  <ellipse ry="11" rx="12" cy="528.00003" cx="1552.49999" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00" id="svg_29"/>
+  <ellipse ry="11" rx="12" cy="528.50003" cx="1603.49999" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00" id="svg_30"/>
+  <ellipse ry="11" rx="12" cy="580.00003" cx="1576.99999" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00" id="svg_31"/>
+  <ellipse ry="11" rx="12" cy="604.00003" cx="1577.74999" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00" id="svg_32"/>
+  <ellipse ry="11" rx="12" cy="627.50003" cx="1579.74999" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00" id="svg_33"/>
+  <ellipse ry="11" rx="12" cy="652.00003" cx="1569.24999" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00" id="svg_34"/>
+  <ellipse ry="11" rx="12" cy="657.00003" cx="1543.99999" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00" id="svg_35"/>
+  <ellipse ry="11" rx="12" cy="637.00003" cx="1525.99999" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00" id="svg_36"/>
+  <rect fill="#7fff00" stroke-width="null" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" x="1671" y="707" width="259" height="42" id="svg_37" stroke="#000000"/>
+  <ellipse ry="11" rx="12" cy="540.75003" cx="1705.24999" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00" id="svg_38"/>
+  <ellipse ry="11" rx="12" cy="517.25003" cx="1756.24999" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00" id="svg_39"/>
+  <ellipse ry="11" rx="12" cy="410.75003" cx="1386.24999" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00" id="svg_40"/>
+  <ellipse ry="11" rx="12" cy="567.75003" cx="1708.24999" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00" id="svg_41"/>
+  <ellipse ry="11" rx="12" cy="521.25003" cx="1728.24999" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00" id="svg_42"/>
+  <ellipse ry="11" rx="12" cy="533.75003" cx="1778.24999" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00" id="svg_43"/>
+  <ellipse ry="11" rx="12" cy="592.25003" cx="1729.74999" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00" id="svg_44"/>
+  <ellipse ry="11" rx="12" cy="609.25003" cx="1752.49999" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00" id="svg_45"/>
+  <ellipse ry="11" rx="12" cy="636.75003" cx="1771.49999" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00" id="svg_46"/>
+  <ellipse ry="11" rx="12" cy="658.25003" cx="1752.99999" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00" id="svg_47"/>
+  <ellipse ry="11" rx="12" cy="662.25003" cx="1721.74999" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00" id="svg_48"/>
+  <ellipse ry="11" rx="12" cy="643.25003" cx="1695.74999" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00" id="svg_49"/>
+  <rect height="109.66347" width="141.35461" y="597.66827" x="1822.32271" fill="#7fff00" id="svg_51" stroke="#000000"/>
+  <rect height="27.70094" width="111.35461" y="471.14957" x="1796.3227" fill="#7f3f00" stroke="#000000" id="svg_57"/>
+  <rect height="27.70094" width="168.35462" y="418.14957" x="1577.32265" fill="#7f3f00" id="svg_58" stroke="#000000"/>
+  <rect fill="#7f3f00" stroke-width="null" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" x="1936" y="532" width="53" height="65" id="svg_61" stroke="#000000"/>
+  <ellipse ry="11" rx="12" cy="328.00003" cx="1623.37499" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00" id="svg_62"/>
+  <ellipse ry="11" rx="12" cy="352.50003" cx="1623.87499" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00" id="svg_63"/>
+  <ellipse ry="11" rx="12" cy="376.50003" cx="1624.62499" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00" id="svg_64"/>
+  <ellipse ry="11" rx="12" cy="400.00003" cx="1624.62499" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00" id="svg_65"/>
+  <ellipse ry="11" rx="12" cy="302.75003" cx="1670.49999" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00" id="svg_66"/>
+  <ellipse ry="11" rx="12" cy="309.25003" cx="1727.49999" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00" id="svg_67"/>
+  <ellipse ry="11" rx="12" cy="304.25003" cx="1699.49999" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00" id="svg_68"/>
+  <ellipse ry="11" rx="12" cy="350.00003" cx="1688.99999" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00" id="svg_70"/>
+  <ellipse ry="11" rx="12" cy="335.75003" cx="1710.49999" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00" id="svg_69"/>
+  <ellipse ry="11" rx="12" cy="401.00003" cx="1715.99999" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00" id="svg_73"/>
+  <ellipse ry="11" rx="12" cy="377.00003" cx="1730.99999" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00" id="svg_72"/>
+  <ellipse ry="11" rx="12" cy="362.00003" cx="1715.99999" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00" id="svg_71"/>
+  <ellipse ry="11" rx="12" cy="406.00003" cx="1689.99999" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00" id="svg_74"/>
+  <ellipse ry="11" rx="12" cy="393.00003" cx="1664.99999" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00" id="svg_75"/>
+  <ellipse ry="11" rx="12" cy="303.00003" cx="1622.99999" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00" id="svg_76"/>
+  <ellipse id="svg_88" ry="11" rx="12" cy="666.00003" cx="1318.49999" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00"/>
+  <ellipse id="svg_89" ry="11" rx="12" cy="689.50003" cx="1373.49999" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00"/>
+  <ellipse id="svg_90" ry="11" rx="12" cy="670.00003" cx="1356.49999" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00"/>
+  <ellipse id="svg_91" ry="11" rx="12" cy="689.00003" cx="1402.49999" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00"/>
+  <ellipse id="svg_92" ry="11" rx="12" cy="683.50003" cx="1339.49999" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00"/>
+  <ellipse id="svg_93" ry="11" rx="12" cy="663.00003" cx="1392.49999" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00"/>
+  <rect stroke="#000000" id="svg_11" height="19.70094" width="87.35461" y="607.14952" x="1606.82264" fill="#7f3f00"/>
+  <ellipse ry="11" rx="12" id="svg_7" cy="398.66281" cx="599.76745" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00"/>
+  <ellipse id="svg_8" ry="11" rx="12" cy="416.16281" cx="651.76745" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00"/>
+  <ellipse id="svg_9" ry="11" rx="12" cy="395.66281" cx="706.76745" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ffff00"/>
+  <rect height="27.70094" width="111.35461" y="594.14957" x="1194.3227" fill="#7f3f00" id="svg_17" stroke="#000000"/>
+  <g id="svg_79">
+   <rect stroke="#000000" height="130.70103" width="124.3546" y="496.14977" x="1306.32271" fill="#7f3f00" id="svg_16"/>
+   <rect stroke="#000000" id="svg_87" height="208.70098" width="46.35457" y="505.14962" x="1430.82269" fill="#7f3f00"/>
+  </g>
+  <rect height="18.66354" width="150.35462" y="520.16822" x="1021.32268" fill="#7f3f00" id="svg_18" stroke="#000000"/>
+  <rect fill="#7f3f00" stroke-width="null" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" x="156" y="934" width="1627.99995" height="32" id="svg_82" stroke="#000000"/>
+  <ellipse ry="16" rx="18" cy="866.00003" cx="1373.99998" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ff7f00" id="svg_95 speed-40"/>
+  <ellipse ry="16" rx="18" cy="870.00003" cx="1023.99998" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ff7f00" id="svg_96 speed-25"/>
+  <ellipse ry="16" rx="18" cy="860.00003" cx="679.99998" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ff7f00" id="svg_97 speed-5"/>
+  <rect fill="#bfbfbf" stroke="#000000" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" x="834" y="480" width="42" height="38" id="svg_106"/>
+  <rect fill="#bfbfbf" stroke="#000000" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" x="1630" y="882" width="158" height="52" id="svg_107"/>
+  <g id="svg_96">
+   <g opacity="0.5" id="svg_97">
+    <rect height="18.66354" width="150.35462" y="903.66824" x="137.82268" fill="#7f3f00" stroke="#000000" id="svg_98 speed-25"/>
+    <rect id="svg_59" fill="#bfbfbf" stroke="#000000" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" x="141.5" y="866" width="42" height="38"/>
+    <rect stroke="#000000" id="svg_53" height="39.66349" width="93.35461" y="864.3365" x="182.82271" fill="#7fff00"/>
+   </g>
+  </g>
+  <ellipse ry="16" rx="18" cy="461.00003" cx="1412.99998" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ff7f00" id="svg_50"/>
+  <rect fill="#bfbfbf" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" x="1472" y="653" width="42" height="60" id="svg_108" stroke="#000000"/>
+ </g>
+ <g display="inline">
+  <title>Front (hiding)</title>
+  <rect stroke="#000000" id="svg_10" height="79" width="50" y="607" x="644" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" fill="#7f3f00" opacity="0.5"/>
+  <rect stroke="#000000" height="94.00001" width="27" y="520.99998" x="874" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" fill="#7f3f00" opacity="0.5" id="svg_52"/>
+  <rect height="97.00001" width="20" y="503.99999" x="1839" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" fill="#7f3f00" opacity="0.5" id="svg_56" stroke="#000000"/>
+  <rect stroke="#000000" opacity="0.5" id="svg_86" height="95.701" width="142.3546" y="623.64947" x="1299.82271" fill="#7f3f00"/>
+  <rect stroke="#000000" opacity="0.5" height="95.701" width="142.3546" y="844.1495" x="412.82265" fill="#7f3f00" id="svg_83"/>
+  <rect stroke="#000000" opacity="0.5" height="95.701" width="142.3546" y="842.1495" x="796.82265" fill="#7f3f00" id="svg_84"/>
+  <rect stroke="#000000" opacity="0.5" height="95.701" width="142.3546" y="842.1495" x="1142.82265" fill="#7f3f00" id="svg_85"/>
+ </g>
+</svg>

@@ -13,7 +13,7 @@ var resetJoystick=function() {
 }
 resetJoystick();
 
-loadLevel(lvl1);
+loadLevel(test_lvl);
 
 
 window.onresize = function() {

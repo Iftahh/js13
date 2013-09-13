@@ -233,9 +233,10 @@ var addMovingCube=function(cube, x1,y1,x2,y2, speed) {
                 }
             })
 
-            //toScreenSpace($)
-            $.sx += dx;
-            $.sy -= dz;
+            if ($.subCubes) {
+                $.sx += dx;
+                $.sy -= dz;
+            }
         }
     })
 }
