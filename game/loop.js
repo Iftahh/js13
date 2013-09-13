@@ -13,7 +13,8 @@ var resetJoystick=function() {
 }
 resetJoystick();
 
-loadLevel(test_lvl);
+if (sprites.length == 0)
+    loadLevel(test_lvl);
 
 
 window.onresize = function() {
@@ -93,7 +94,6 @@ function tick(ts) {
     trns(1,0,0,1,0,0);
     C.clearRect(OffsetX, OffsetY, width, height);
 
-    //playerUpdate()
     var spritesNear = spritesInWindow(sprites, OffsetX-width/2, OffsetY-height/2, width*2,height*2);
 
     Player.update(Player, dt)

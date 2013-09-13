@@ -162,20 +162,20 @@ var addCube = function(x,z,w,h) {
     return cube;
 }
 
-var addBrokenCube=function(x,z,w,h) {
+var addBrokenCube=function(x,z,w,h,rr) {
     var dw,dh,rx,rz;
     if (w>h) {
         // break horizontal floor
         dw = min(w,40);
         dh=h;
         rx=0;
-        rz = min(h/5,10);
+        rz = max(h/5,rr||10);
     }
     else {
         // break vertical wall
         dw=w;
         dh = min(h,40);
-        rx= min(w/5,20);
+        rx= max(w/5,rr||20);
         rz=0;
     }
 //    var _d=D;
@@ -731,25 +731,30 @@ var addGroupSprite=function(group) {
     return sprite;
 }
 
-var addTreeSprite=function(x,y) {
-    var tree = function(x,y,z, w,h1,h2) {
-        X=x,Y=y,Z=z,H=h1
-        ts()
-        grd = C.createLinearGradient(SX,SY,SX+w,SY)
-        grd.addColorStop(0, '#752');
-        grd.addColorStop(1, '#964');
-        C.fillStyle=grd
-        C.fillRect(SX,SY, w,h1)
-        SX+=w/2
+var addTreeSprite=function(x,z,w,h) {
+    var tree = {
+        x:x,z:z,y:Y, w:w, h:h, d:0,
+        sw:w,sh:h,
+        uncachedDraw: function($) {
+           var grd = C.createLinearGradient(SX,SY,SX+w,SY)
+           grd.addColorStop(0, '#752');
+           grd.addColorStop(1, '#964');
+           C.fillStyle=grd
+           C.fillRect(SX,SY, w,h1)
+           SX+=w/2
 
-        range(30+h2, function(i) {
-            C.fillStyle=RGB(irnd(25,30),irnd(170,210),irnd(55,70),0.7)
-            C.beginPath()
-            Y=rnd()
-            C.arc(SX+2*w*Y*nrnd(-1,1),SY-h2+Y*(h2+5), 5+Y*rnd()*9,0,TPI)
-            C.fill()
-        })
+           range(30+h2, function(i) {
+              C.fillStyle=RGB(irnd(25,30),irnd(170,210),irnd(55,70),0.7)
+              C.beginPath()
+              Y=rnd()
+              C.arc(SX+2*w*Y*nrnd(-1,1),SY-h2+Y*(h2+5), 5+Y*rnd()*9,0,TPI)
+              C.fill()
+           })
+        },
+        draw:drawSprite
     }
+    toScreenSpace(tree);
+    addSprite(tree);
 }
 
 var imgFlag=0;
@@ -760,6 +765,7 @@ var addFlag=function(x,y,height) {
         h:height,w:10,d:0,
         sh:height,sw:10,
         hit:false,
+        flagY:-1,
         draw: function($) {
             C.fillStyle = "#a73";
             C.fillRect($.sx, $.sy, $.sw, $.sh);
@@ -776,7 +782,10 @@ var addFlag=function(x,y,height) {
                         c.fillText("♛",12,12)
                     })
                 }
-                C.drawImage(imgFlag, $.sx-50, $.sy);
+                if ($.flagY > $.sy) {
+                    $.flagY -= 2;
+                }
+                C.drawImage(imgFlag, $.sx-50, $.flagY);
             }
         },
         update: function($) {
@@ -787,6 +796,7 @@ var addFlag=function(x,y,height) {
                 coinsSounds[coinSoundIndex++].play();
                 coinSoundIndex = coinSoundIndex % coinsSounds.length;
                 lastTimeHadCoin = totalTime;
+                $.flagY = $.sy+ $.sh-30;
                 $.hit = true;
                 IPX = $.x;
                 IPZ = $.z;

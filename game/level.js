@@ -46,8 +46,6 @@ turret(280,250,0,    50, 100, 200, 20,  14, 20, 20, 30)
 
 //stairs(100,100,0,250,100, 300,100,50,100, 20,5)
 
-for (i=0; i<10; i++) {
-    addCoin(rnd()*700+50, rnd()*500+50)
-}
+
 
 // TODO: addSprite should get the params...  at least X,Z,W,H
