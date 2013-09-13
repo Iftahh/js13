@@ -173,10 +173,47 @@ var addCubeCollision=function(x,z,w,h, $) {
 // BL - border color
 // BW - brick width
 // DR - draw
-var addCube = function(x,z,w,h) {  // container
+var addCube = function(x,z,w,h) {
     var cube= addNonBlockCube(x,z,w,h);
     cube.collisionFaces = addCubeCollision(x,z,w,h, cube)
     return cube;
+}
+
+var addBrokenCube=function(x,z,w,h) {
+    var dw,dh,rx,rz;
+    if (w>h) {
+        // break horizontal floor
+        dw = min(w,40);
+        dh=h;
+        rx=0;
+        rz = min(h/5,10);
+    }
+    else {
+        // break vertical wall
+        dw=w;
+        dh = min(h,40);
+        rx= min(w/5,20);
+        rz=0;
+    }
+    for (var xx=x; xx+dw<=x+w; xx+= dw) {
+        for (var zz=z; zz+dh<=z+h; zz+= dh) {
+            addCube(xx+nrnd(0,rx),zz+nrnd(0,rz),dw,dh);
+            spriteId--; // next cubes will share ID - share cache!
+        }
+    }
+    spriteId++;
+    if (xx != x+w || zz != z+h) {
+        // add one final cube to finish the missing space
+        if (zz == z+h) {
+            w = w-xx+x;
+            x=xx;
+        }
+        else {
+            h = h-zz+z;
+            z = zz;
+        }
+        addCube(x+nrnd(0,rx),z+nrnd(0,rz), w,h);
+    }
 }
 
 var collide = function(x,y,z,r, C) {  // C is either CollisionRightFace/CollisionLeftFace/CT/CollisionBackFace/etc..,   (x,y,z) is the bottom left front corner, r is the cube height/width/depth (same all)
@@ -831,6 +868,11 @@ var loadLevel=function(lvl) {
                 break;
             case 9: // enemy with speed
                 addEnemy(lvl[i++],lvl[i++], lvl[i++])
+                break;
+            case 12:// brick platform - broken
+            case 13: // texture platform - broken
+                DR= type == 12 ? brickDraw : textureDraw;
+                addBrokenCube(lvl[i++],lvl[i++],lvl[i++],lvl[i++]);   // todo: also DR, Y and D ?
                 break;
 
             default:

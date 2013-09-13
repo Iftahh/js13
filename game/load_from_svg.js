@@ -132,7 +132,7 @@ exports.svg_to_lvl = function(svg) {
             to_moving_platform($, moving[id]);
             return;
         }
-        var color= $.color,w= $.w,h= $.h,x= $.x,y= $.y;
+        var color= $.color,w= $.w,h= $.h,x= $.x,y= $.y, broken= $.broken;
         var xx=int(x);
         var yy=fixY(y,h);
         var ww=int(w);
@@ -141,11 +141,11 @@ exports.svg_to_lvl = function(svg) {
         var tt;
         if (color == '7fff00') {
             tt='grass'
-            lvl.push(4)
+            lvl.push(broken ?  13: 4)
         }
         else if (color == '7f3f00'){
             tt='brick'
-            lvl.push(3)
+            lvl.push(broken ? 12: 3)
         }
         else if (color == "bfbfbf") {
             tt= 'spikes'
@@ -308,7 +308,8 @@ exports.svg_to_lvl = function(svg) {
                 "x": x_re.exec(attributes)[1],
                 "color": fill_re.exec(attributes)[1],
                 "w": width_re.exec(attributes)[1],
-                "h": height_re.exec(attributes)[1]
+                "h": height_re.exec(attributes)[1],
+                "broken": attributes.indexOf('stroke-dasharray="2,2"') != -1
             }
 
             to_platform(rect)

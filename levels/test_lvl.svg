@@ -93,7 +93,7 @@
    <rect stroke="#000000" id="svg_87" height="208.70098" width="46.35457" y="505.14962" x="1430.82269" fill="#7f3f00"/>
   </g>
   <rect height="18.66354" width="150.35462" y="520.16822" x="1021.32268" fill="#7f3f00" id="svg_18" stroke="#000000"/>
-  <rect fill="#7f3f00" stroke-width="null" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" x="156" y="934" width="1627.99995" height="32" id="svg_82" stroke="#000000"/>
+  <rect fill="#7f3f00" stroke-width="null" stroke-dasharray="2,2" stroke-linejoin="null" stroke-linecap="null" x="156" y="934" width="1627.99995" height="32" id="svg_82" stroke="#000000"/>
   <ellipse ry="16" rx="18" cy="866.00003" cx="1373.99998" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ff7f00" id="svg_95 speed-40"/>
   <ellipse ry="16" rx="18" cy="870.00003" cx="1023.99998" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ff7f00" id="svg_96 speed-25"/>
   <ellipse ry="16" rx="18" cy="860.00003" cx="679.99998" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke="#000000" fill="#ff7f00" id="svg_97 speed-5"/>
