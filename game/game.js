@@ -778,8 +778,8 @@ var addFlag=function(x,y,height) {
                         c.strokeRect(0,0,50,30);
                         c.fillStyle = "#fe7"
                         c.font="24px arial";
-                        c.drawImage(Player.rightImg, 15,8, 20,20);
                         c.fillText("♛",12,12)
+                        c.drawImage(Player.rightImg, 15,8, 20,20);
                     })
                 }
                 if ($.flagY > $.sy) {
@@ -810,7 +810,7 @@ var addFlag=function(x,y,height) {
 var addTextSprite=function(x,y,color,stroke,fam,size,text) {
     C.font = size+'pt '+fam;
     var width = 0;
-    var lines = text.split('\n')
+    var lines = text.split('\\n')
     each(lines, function(l) {
         var metrics = C.measureText(l);
         width = max(width,metrics.width);
@@ -1000,6 +1000,8 @@ var loadLevel=function(lvl) {
             case 15: // flag
                 addFlag(lvl[i++],lvl[i++],lvl[i++]);
                 break;
+            case 16:
+                addKing(lvl[i++],lvl[i++]);
             default:
                 log("Error loading level at index "+i+"  type: "+type);
 

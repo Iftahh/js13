@@ -183,6 +183,15 @@ exports.svg_to_lvl = function(svg) {
         lvl.push(y);
     }
 
+    var to_king=function($) {
+        var x = int($.x);
+        var y = flipY($.y)
+        console.log("King ID: "+ $.id+  "  at  "+x+", "+y)
+        lvl.push(16);
+        lvl.push(x);
+        lvl.push(y);
+    }
+
     var to_enemy=function($) {
         var code = $.id.split(' ');
         var speed = false;
@@ -220,6 +229,8 @@ exports.svg_to_lvl = function(svg) {
             to_enemy(arc)
         else if (color  == 'ffff00')
             to_coins(arc)
+        else if (color == 'aaaaff')
+            to_king(arc)
         else
             safeAlert(">>>>>>>>>>>  unknown ellipse: color="+color);
     }

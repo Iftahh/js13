@@ -13,8 +13,7 @@ var resetJoystick=function() {
 }
 resetJoystick();
 
-if (sprites.length == 0)
-    loadLevel(test_lvl);
+loadLevel(intro);
 
 
 window.onresize = function() {
@@ -124,7 +123,7 @@ function tick(ts) {
     each(spritesBehindPlayer, function($) {
         $.draw($)
     })
-    Player.draw()
+    Player.draw(Player)
 
     each(spritesAfterPlayer, function($) {
         setAlpha($)

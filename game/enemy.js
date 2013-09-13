@@ -1,4 +1,75 @@
 
+var kingColor = C.createRadialGradient(15, -9, 3, 15, -9, 32);
+// light red
+kingColor.addColorStop(0, '#67B6FE');
+// dark red
+kingColor.addColorStop(1, '#535CB3');
+
+var KR = 32
+var K2R = 2*KR
+var K2R4 = K2R/4
+
+var kingLeftImg=0;
+var addKing = function(x,y) {
+    var $ = {
+        x:x+K2R4, y:IPY+K2R4,z:y+K2R4,
+        h: K2R,
+        vx: 0,
+        vz: 4,
+        h:KR,
+        w:KR,
+        d:KR,
+        sw:K2R,
+        sh:K2R,
+        radius:KR,
+        draw: function($) {
+            C.strokeStyle = "#221";
+            C.fillRect(0,0,50,30);
+            C.strokeRect(0,0,50,30);
+            C.fillStyle = "#fe7"
+            C.font="36px arial";
+            C.fillText("♛",$.sx+15,$.sy+2)
+
+            drawBall($);
+        },
+        update: function($, dt) {
+
+            if (!$.floor) {
+                $.floor = findFloor($.x+K2R4, $.y+K2R4, $.z+K2R4, KR);
+                $.floorZ = $.floor.z + K2R4;
+                if (DEBUG && $.floorZ < -10e6) {
+                    alert("King must be above floor")
+                }
+            }
+
+            speedUpdate($,dt)
+
+            if ($.z <= $.floorZ) {// bounce
+                $.z = $.floorZ;
+                $.vz = abs($.vz);
+            }
+
+            toScreenSpace($);
+            $.sx -= K2R4;
+            $.sy -= K2R4/2;
+        },
+        color:kingColor,
+        face: "ಠ ಎ ಠ",
+        mouth: "⁔",
+        mx:-8,
+        my:9
+    }
+    toScreenSpace($);
+    if (!kingLeftImg) {
+        kingLeftImg = cacheBallImg(K2R, K2R, $, true);
+    }
+    $.leftImg = kingLeftImg;
+    $.rightImg = kingLeftImg;
+
+    sprites.push($)
+
+}
+
 var enemyRightImg, enemyLeftImg = false;
 
 var addEnemy = function(x,y, speed) {
@@ -13,7 +84,7 @@ var addEnemy = function(x,y, speed) {
         sw:E2R,
         sh:E2R,
         radius:ER,
-        draw: drawEnemy,
+        draw: drawBall,
         update: updateEnemy,
         color:enemyColor,
         face: "◕` ᐟ◕ ノ",
@@ -106,9 +177,4 @@ var updateEnemy = function($, dt) {
 
 }
 
-var drawEnemy = function($) {
-
-
-    drawBall($)
-}
 

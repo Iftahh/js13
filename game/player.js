@@ -303,12 +303,6 @@ var playerUpdate = function($, dt) {
     CameraY = $.sy - height *(.5 - $.uplook);
 }
 
-var playerDraw=function(){ // TODO: inline
-
-    // DRY with enemy
-    // TODO: make horizontal ellipse when crashes down with speed to floor,  make vertical ellipse when flying up quick and/or at the top of jump
-    drawBall(Player )
-}
 
 var cacheBallImg = function(w,h, $, isLeft) {
     return r2c(w,h, function(c) {
@@ -369,7 +363,7 @@ var initPlayer = function() {
         sw:P2R,
         sh:P2R,
         radius: PR,
-        draw: playerDraw,
+        draw: drawBall,
         color:playerColor,
         face:"｡◕  ◕｡",
         mouth: "‿",
