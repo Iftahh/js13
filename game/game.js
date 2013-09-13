@@ -162,6 +162,8 @@ var addCube = function(x,z,w,h) {
     return cube;
 }
 
+
+
 var addExit = function(x,z,w,h) {
     var cube= addNonBlockCube(x,z,w,h);
     cube.draw = function($) {
@@ -175,6 +177,12 @@ var addExit = function(x,z,w,h) {
         if (!$.hit && Player.sx+P2R >= $.sx-10 && Player.sx < $.sx+ $.sw+10
             && Player.sy+P2R >= $.sy-10 && Player.sy < $.sy+ $.sh+10) {
             $.hit = true;
+            curLevel++;
+            if (curLevel > levels.length) {
+                alert("You win...");
+                curLevel = 0;
+            }
+            loadLevel(levels[curLevel]);
             coinSoundIndex = 0;
             var fu = function() {
                 coinsSounds[coinSoundIndex++].play();

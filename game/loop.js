@@ -13,8 +13,10 @@ var resetJoystick=function() {
 }
 resetJoystick();
 
-loadLevel(intro);
+var levels = [intro, lvl1];
+var curLevel = 0;
 
+loadLevel(intro);
 
 window.onresize = function() {
     var parent = canvases[0].parentElement;
